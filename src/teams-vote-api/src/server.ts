@@ -45,6 +45,10 @@ function getMutex(meetingId: string) {
   return mutex;
 }
 
+app.get("/", async () => {
+    return { status: "healthy" };
+});
+
 app.post("/submit", async (request, reply) => {
   const body = request.body as SessionData & Submission<Deck>;
   const { meetingId, roundKey, token, user, score } = body;

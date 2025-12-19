@@ -1,9 +1,14 @@
 @meetingId = SomeTeamsChannelGuid
 @roundKey = SomeJiraKey
 
+### Health
+GET http://localhost:10000/
+
+###
+
 ### Start a new round
 # @name start
-POST http://localhost:3000/start
+POST http://localhost:10000/start
 Content-Type: application/json
 
 {
@@ -17,7 +22,7 @@ Content-Type: application/json
 @token = {{start.response.body.token}}
 
 ### Submit a user's input
-POST http://localhost:3000/submit
+POST http://localhost:10000/submit
 Content-Type: application/json
 
 {
@@ -34,7 +39,7 @@ Content-Type: application/json
 ###
 
 ### Submit another user's input
-POST http://localhost:3000/submit
+POST http://localhost:10000/submit
 Content-Type: application/json
 
 {
@@ -51,7 +56,7 @@ Content-Type: application/json
 ###
 
 ### Submit another user's input
-POST http://localhost:3000/submit
+POST http://localhost:10000/submit
 Content-Type: application/json
 
 {
@@ -68,7 +73,7 @@ Content-Type: application/json
 ###
 
 ### Aggregate results
-POST http://localhost:3000/aggregate
+POST http://localhost:10000/aggregate
 Content-Type: application/json
 
 {
