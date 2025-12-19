@@ -1,0 +1,8 @@
+{
+  "name": "teams-vote",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.17.1",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
