@@ -1,3 +1,7 @@
-registry: https://registry.npmjs.org/
 packages:
   - src/*
+
+ignoredBuiltDependencies:
+  - esbuild
+
+registry: https://registry.npmjs.org/

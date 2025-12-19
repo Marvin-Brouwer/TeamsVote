@@ -1,0 +1,15 @@
+{
+  "name": "@teams-vote/plugin",
+  "type": "module",
+  "scripts": {
+    "start:bot": "ts-node bots/bot.ts",
+    "update-manifest": "tsx scripts/update-manifest.mts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "botbuilder": "^4"
+  }
+}
