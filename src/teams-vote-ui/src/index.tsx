@@ -1,8 +1,21 @@
 /* @refresh reload */
 import { render } from 'solid-js/web'
-import './index.css'
-import App from './App.tsx'
+import { Router, Route } from '@solidjs/router'
+import { routeBase, PagesReRouter, namedLazy } from '@quick-vite/gh-pages-spa/solidjs'
 
-const root = document.getElementById('root')
+import { AppRoot } from './app'
+const ManagementView = namedLazy(() => import("./pages/manage").then(m => m.ManagementView));
+const VoterView = namedLazy(() => import("./pages/vote").then(m => m.VoterView));
+const NotSupportedPage = namedLazy(() => import("./pages/not-supported").then(m => m.NotSupportedPage));
 
-render(() => <App />, root!)
+render(() =>
+    <Router base={routeBase()} root={AppRoot}>
+        <PagesReRouter>
+            <Route path="/manage/:teamsChannelId/" component={ManagementView} />
+            <Route path="/vote/:teamsChannelId/" component={VoterView} />
+            <Route path="/" component={NotSupportedPage} />
+            <Route path="*404" component={NotSupportedPage} />
+        </PagesReRouter>
+    </Router>,
+    document.getElementById('root')!
+)
