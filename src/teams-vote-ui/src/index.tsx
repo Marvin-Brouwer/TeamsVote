@@ -11,8 +11,8 @@ const NotSupportedPage = namedLazy(() => import("./pages/not-supported").then(m 
 render(() =>
     <Router base={routeBase()} root={AppRoot}>
         <PagesReRouter>
-            <Route path="/manage/:teamsChannelId/" component={ManagementView} />
-            <Route path="/vote/:teamsChannelId/" component={VoterView} />
+            <Route path="/manage/:teamsChannelId/:roundKey" component={ManagementView} />
+            <Route path="/vote/:teamsChannelId/:roundKey/:token" component={VoterView} />
             <Route path="/" component={NotSupportedPage} />
             <Route path="*404" component={NotSupportedPage} />
         </PagesReRouter>

@@ -80,6 +80,24 @@ app.post("/submit", async (request, reply) => {
   });
 });
 
+app.post("/status", async (request, reply) => {
+  const body = request.body as SessionData;
+  const { meetingId, roundKey, token } = body;
+
+  const session = sessions.get(meetingId);
+  if (!session || session.roundKey !== roundKey || session.token !== token) {
+    reply.status(404);
+    return { error: "Session not found" };
+  }
+
+  const submissions = Array.from(session.submissions.values());
+  const result = {
+    submissions
+  }
+
+  return { result };
+});
+
 app.post("/aggregate", async (request, reply) => {
   const body = request.body as SessionData;
   const { meetingId, roundKey, token } = body;
