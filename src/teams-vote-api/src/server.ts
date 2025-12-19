@@ -10,7 +10,10 @@ import { calculateAverage, validateScore } from "./average";
 const sessionLocks = new Map<string, Mutex>();
 
 const app = Fastify({ logger: true });
-app.register(cors, { origin: true });
+app.register(cors, {
+  origin: true,
+  methods: ["GET", "POST", "OPTIONS"]
+});
 
 // Start a round
 app.post("/start", async (request, reply) => {
@@ -46,7 +49,10 @@ function getMutex(meetingId: string) {
 }
 
 app.get("/", async () => {
-    return { status: "healthy" };
+  return { status: "healthy" };
+});
+app.get("/health", async () => {
+  return { status: "healthy" };
 });
 
 app.post("/submit", async (request, reply) => {
@@ -63,8 +69,8 @@ app.post("/submit", async (request, reply) => {
     }
 
     if (!validateScore(session.type, score)) {
-        reply.status(403);
-        return { error: "Incorrect score" };
+      reply.status(403);
+      return { error: "Incorrect score" };
     }
 
     session.submissions.set(user.id, { user, score });
