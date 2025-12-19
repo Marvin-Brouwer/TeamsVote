@@ -1,10 +1,9 @@
 import { defineConfig } from "vite";
-import path from 'path';
 import { builtinModules } from 'module';
 
 export default defineConfig({
   server: {
-    port: 3000
+    port: 10000
   },
   build: {
     target: 'node18',

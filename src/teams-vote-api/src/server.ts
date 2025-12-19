@@ -92,7 +92,7 @@ app.post("/aggregate", async (request, reply) => {
 });
 
 // Start server
-const port = Number(process.env.PORT) || 3000;
+const port = Number(process.env.PORT) || 10000;
 app.listen({ port }, (err, address) => {
   if (err) {
     app.log.error(err);
