@@ -1,25 +1,33 @@
+@meetingId = SomeTeamsChannelGuid
+@roundKey = SomeJiraKey
+
 ### Start a new round
 # @name start
 POST http://localhost:3000/start
 Content-Type: application/json
 
 {
-  "meetingId": "meeting-123"
+  "meetingId": "{{meetingId}}",
+  "roundKey": "{{roundKey}}"
 }
 
 ###
 
-@roundId = {{start.response.body.roundId}}
+@token = {{start.response.body.token}}
 
 ### Submit a user's input
 POST http://localhost:3000/submit
 Content-Type: application/json
 
 {
-  "meetingId": "meeting-123",
-  "roundId": "{{roundId}}",
-  "userId": "user-1",
-  "input": "My first input"
+  "meetingId": "{{meetingId}}",
+  "roundKey": "{{roundKey}}",
+  "token": "{{token}}",
+  "user": {
+    "name": "User One",
+    "id": "user-1"
+  },
+  "score": 5
 }
 
 ###
@@ -29,10 +37,31 @@ POST http://localhost:3000/submit
 Content-Type: application/json
 
 {
-  "meetingId": "meeting-123",
-  "roundId": "{{roundId}}",
-  "userId": "user-2",
-  "input": "Another input"
+  "meetingId": "{{meetingId}}",
+  "roundKey": "{{roundKey}}",
+  "token": "{{token}}",
+  "user": {
+    "name": "User Two",
+    "id": "user-2"
+  },
+  "score": 3
+}
+
+###
+
+### Submit another user's input
+POST http://localhost:3000/submit
+Content-Type: application/json
+
+{
+  "meetingId": "{{meetingId}}",
+  "roundKey": "{{roundKey}}",
+  "token": "{{token}}",
+  "user": {
+    "name": "User Three",
+    "id": "user-3"
+  },
+  "score": "skip"
 }
 
 ###
@@ -42,6 +71,7 @@ POST http://localhost:3000/aggregate
 Content-Type: application/json
 
 {
-  "meetingId": "meeting-123",
-  "roundId": "{{roundId}}"
+  "meetingId": "{{meetingId}}",
+  "roundKey": "{{roundKey}}",
+  "token": "{{token}}"
 }
