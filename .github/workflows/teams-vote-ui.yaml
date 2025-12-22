@@ -47,7 +47,8 @@ jobs:
           cache-dependency-path: 'pnpm-lock.yaml'
           check-latest: true
       - name: Install dependencies
-        run: pnpm install --include=optional
+        run: pnpm install
+        working-directory: '.'
       - name: Build app
         env: 
           VITE_API_URL: ${{  vars.VITE_API_URL }}
