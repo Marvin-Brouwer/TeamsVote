@@ -68,8 +68,11 @@ jobs:
         run: pnpm update-manifest
         working-directory: './src/teams-vote-plugin'
       - name: Zip Plugin
-        run: zip teams-vote.zip manifest.json images/icon-color.png images/icon-outline.png
+        run: zip teams-vote.zip manifest.json images/color.png images/outline.png
         working-directory: './src/teams-vote-plugin'
       - name: Update plugin
-        run: m365 teams app update --filePath teams-vote.zip
+        run: >
+          m365 teams app update 
+           --id ${{ secrets.TEAMS_APP_ID }}
+          --filePath teams-vote.zip
         working-directory: './src/teams-vote-plugin'
