@@ -73,6 +73,6 @@ jobs:
       - name: Update plugin
         run: >
           m365 teams app update 
-           --id ${{ secrets.TEAMS_APP_ID }}
+          --id ${{ secrets.TEAMS_APP_ID }}
           --filePath teams-vote.zip
         working-directory: './src/teams-vote-plugin'
