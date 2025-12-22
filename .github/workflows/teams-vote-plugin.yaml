@@ -7,7 +7,7 @@ on:
       - main
     paths:
       # Only publish when the example changes
-      - teams-vote-plugin/**
+      - src/teams-vote-plugin/**
       - .github/workflows/teams-vote-plugin.yml
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -48,6 +48,10 @@ jobs:
           check-latest: true
       - name: Install dependencies
         run: pnpm install
+        working-directory: '.'
+      - name: Install tools
+        run: pnpm install -g @pnp/cli-microsoft365
+        working-directory: '.'
       - name: Login Teams Dev portal
         run: m365 login --authType identity --tenant ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
         working-directory: './src/teams-vote-plugin'
