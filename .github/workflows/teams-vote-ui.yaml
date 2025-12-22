@@ -7,7 +7,7 @@ on:
       - main
     paths:
       # Only publish when the example changes
-      - teams-vote-ui/**
+      - src/teams-vote-ui/**
       - .github/workflows/teams-vote-ui.yml
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -47,7 +47,7 @@ jobs:
           cache-dependency-path: 'pnpm-lock.yaml'
           check-latest: true
       - name: Install dependencies
-        run: pnpm install --include=optional
+        run: pnpm install --include=optional --frozen-lockfile --prefer-frozen-lockfile
       - name: Build app
         env: 
           VITE_API_URL: ${{  vars.VITE_API_URL }}

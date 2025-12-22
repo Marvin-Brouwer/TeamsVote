@@ -1,7 +1,9 @@
 packages:
   - src/*
 
-ignoredBuiltDependencies:
+onlyBuiltDependencies:
+  - '@swc/core'
   - esbuild
+  - protobufjs
 
 registry: https://registry.npmjs.org/
