@@ -53,7 +53,7 @@ jobs:
         run: pnpm add -g @pnp/cli-microsoft365
         working-directory: '.'
       - name: Login Teams Dev portal
-        run: m365 login --authType identity --tenant ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
+        run: m365 login --authType password --user ${{ secrets.M365_USER }} --password ${{ secrets.M365_PASS }} --tenant ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
         working-directory: './src/teams-vote-plugin'
       - name: Build Manifest
         env: 
