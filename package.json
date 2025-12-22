@@ -2,7 +2,11 @@
   "name": "teams-vote",
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.17.1",
+  "scripts": {
+    "m365": "m365"
+  },
   "devDependencies": {
+    "@pnp/cli-microsoft365": "^11.3.1",
     "typescript": "^5.9.3"
   }
 }

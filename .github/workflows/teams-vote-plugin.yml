@@ -53,7 +53,11 @@ jobs:
         run: pnpm add -g @pnp/cli-microsoft365
         working-directory: '.'
       - name: Login Teams Dev portal
-        run: m365 login --authType password --user ${{ secrets.M365_USER }} --password ${{ secrets.M365_PASS }} --tenant ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
+        run: > 
+          m365 login --authType secret
+          --clientId ${{ secrets.TEAMS_PLUGIN_AZURE_CLIENT_ID }} 
+          --clientSecret  ${{ secrets.TEAMS_PLUGIN_AZURE_CLIENT_SECRET }} 
+          --tenant ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
         working-directory: './src/teams-vote-plugin'
       - name: Build Manifest
         env: 
@@ -62,7 +66,7 @@ jobs:
         run: pnpm update-manifest
         working-directory: './src/teams-vote-plugin'
       - name: Zip Plugin
-        run: zip teams-vote.zip manifest/manifest.json images/icon-color.png images/icon-outline.png
+        run: zip teams-vote.zip manifest.json images/icon-color.png images/icon-outline.png
         working-directory: './src/teams-vote-plugin'
       - name: Update plugin
         run: m365 teams app update --filePath teams-vote.zip

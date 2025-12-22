@@ -2,7 +2,7 @@
     "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.23/MicrosoftTeams.schema.json",
     "manifestVersion": "1.23",
     "version": "1.0.0",
-    "id": "YOUR-APP-ID-HERE",
+    "id": "<TEAMS_APP_ID>",
     "developer": {
         "name": "Marvin Brouwer",
         "websiteUrl": "https://github.com/Marvin-Brouwer/TeamsVote",
@@ -17,30 +17,26 @@
         "short": "Teams scrum voting, but simple",
         "full": "Every scrum voting website or teams plugin does too much. \nJust request estimates from team members and collect the total."
     },
+    "accentColor": "#ffffff",
     "icons": {
-        "color": "color.png",
-        "outline": "outline.png"
+        "color": "images/color.png",
+        "outline": "images/outline.png"
     },
     "permissions": [
         "identity",
         "messageTeamMembers"
     ],
-    "composeExtensions": [
+    "webApplicationInfo": {
+        "id": "<TEAMS_APP_CLIENT_ID>",
+        "resource": "<TEAMS_APP_CLIENT_ID_URL>"
+    },
+    "staticTabs": [
         {
-            "id": "voteExtension",
-            "botId": null,
-            "commands": [
-                {
-                    "id": "voteCommand",
-                    "type": "action",
-                    "title": "Vote",
-                    "description": "Open voting popup",
-                    "taskInfo": {
-                        "url": "https://localhost:3000",
-                        "height": "small",
-                        "width": "medium"
-                    }
-                }
+            "entityId": "teamsVoteTab",
+            "name": "Vote",
+            "contentUrl": "<TEAMS_UI_URL>",
+            "scopes": [
+                "personal"
             ]
         }
     ]

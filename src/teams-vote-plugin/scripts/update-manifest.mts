@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const devManifestPath = path.join(__dirname, "../manifest/manifest.dev.json");
-const outputManifestPath = path.join(__dirname, "../manifest/manifest.json");
+const outputManifestPath = path.join(__dirname, "../manifest.json");
 
 const appId = process.env.TEAMS_APP_ID;
 const appUrl = process.env.TEAMS_UI_URL;
@@ -23,19 +23,28 @@ if (!appUrl) {
   console.error("❌ TEAMS_UI_URL environment variable is not set");
   process.exit(1);
 }
-// Read dev manifest
-const manifestContent = fs.readFileSync(devManifestPath, "utf-8");
-const manifestJson = JSON.parse(manifestContent);
 
-// Replace id
-manifestJson.id = appId;
-// Replace url
-(manifestJson.composeExtensions as { id:string, commands: { id: string, taskInfo: any }[] }[])
-  .find(extension => extension.id === 'voteExtension')!
-  .commands.find(command => command.id === 'voteCommand')!
-  .taskInfo.url = appUrl;
+function getEnv(key: string) {
+  const value = process.env[key];
+  if (!value) {
+    console.error(`❌ ${key} environment variable is not set`);
+    process.exit(1);
+  }
+  return value;
+}
+// Read dev manifest
+let manifestContent = fs.readFileSync(devManifestPath, "utf-8");
+
+function replaceEnv(key: string) {
+  manifestContent = manifestContent.replace(`<${key}>`, getEnv(key));
+}
+replaceEnv('TEAMS_APP_ID');
+replaceEnv('TEAMS_UI_URL');
+replaceEnv('TEAMS_APP_CLIENT_ID');
+replaceEnv('TEAMS_APP_CLIENT_ID_URL');
 
 // Write updated manifest
+const manifestJson = JSON.parse(manifestContent);
 fs.writeFileSync(outputManifestPath, JSON.stringify(manifestJson, null, 2));
 
 console.log(`✅ Manifest updated`);
