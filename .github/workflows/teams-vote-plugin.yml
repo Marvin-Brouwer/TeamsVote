@@ -71,8 +71,16 @@ jobs:
         run: zip teams-vote.zip manifest.json images/color.png images/outline.png
         working-directory: './src/teams-vote-plugin'
       - name: Update plugin
+        # The publish command doesn't work without teams in your subscription
+        # For now, just generate a zip and replace
+        if: true
         run: >
           m365 teams app update 
           --id ${{ secrets.TEAMS_APP_ID }}
           --filePath teams-vote.zip
         working-directory: './src/teams-vote-plugin'
+      - name: Upload Teams app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: teams-vote-app
+          path: ./src/teams-vote-ui/teams-vote.zip
