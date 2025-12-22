@@ -46,7 +46,9 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
           check-latest: true
-      - name: Setup Pages
+      - name: Install dependencies
+        run: pnpm install
+      - name: Login Teams Dev portal
         run: m365 login --authType identity --tenant ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
         working-directory: './src/teams-vote-plugin'
       - name: Build Manifest
