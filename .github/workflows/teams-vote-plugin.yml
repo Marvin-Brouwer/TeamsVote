@@ -73,7 +73,7 @@ jobs:
       - name: Update plugin
         # The publish command doesn't work without teams in your subscription
         # For now, just generate a zip and replace
-        if: true
+        if: false
         run: >
           m365 teams app update 
           --id ${{ secrets.TEAMS_APP_ID }}
