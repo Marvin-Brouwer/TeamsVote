@@ -55,9 +55,9 @@ jobs:
       - name: Login Teams Dev portal
         run: > 
           m365 login --authType secret
-          --clientId ${{ secrets.TEAMS_PLUGIN_AZURE_CLIENT_ID }} 
-          --clientSecret  ${{ secrets.TEAMS_PLUGIN_AZURE_CLIENT_SECRET }} 
           --tenant ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
+          --appId ${{ secrets.TEAMS_PLUGIN_AZURE_CLIENT_ID }}
+          --secret ${{ secrets.TEAMS_PLUGIN_AZURE_CLIENT_SECRET }}
         working-directory: './src/teams-vote-plugin'
       - name: Build Manifest
         env: 
