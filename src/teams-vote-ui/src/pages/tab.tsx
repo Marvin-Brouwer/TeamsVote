@@ -1,5 +1,5 @@
 import { createResource, createSignal, JSX, onCleanup, Show, type Component } from "solid-js";
-import { useTeams, type TeamsContext } from "../contexts/teams-context";
+import { postCard, useTeams, type TeamsContext } from "../contexts/teams-context";
 import { ButtonAppearance, TextFieldAppearance } from "@fluentui/web-components";
 
 import "./tab.css"
@@ -131,20 +131,3 @@ function createJoinCard(pageUrl: string, roundKey: string, teamsContext: TeamsCo
     return card;
 }
 
-
-async function postCard(chatId: string, accessToken: string, cardPayload: any) {
-    const response = await fetch(`https://graph.microsoft.com/v1.0/chats/${chatId}/messages`, {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cardPayload),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to post card: ${await response.text()}`);
-    }
-
-    console.log("Card posted successfully!");
-}

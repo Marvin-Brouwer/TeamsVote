@@ -133,7 +133,7 @@ app.post("/aggregate", async (request, reply) => {
     reply.status(404);
     return { error: "Session not found" };
   }
-  if (!user.admin) {
+  if (!currentUser.admin) {
     reply.status(403);
     return { error: "User is no admin" };
   }
@@ -161,7 +161,7 @@ app.post("/accept", async (request, reply) => {
     reply.status(404);
     return { error: "Session not found" };
   }
-  if (!user.admin) {
+  if (!currentUser.admin) {
     reply.status(403);
     return { error: "User is no admin" };
   }
@@ -186,7 +186,7 @@ app.post("/reset", async (request, reply) => {
     reply.status(404);
     return { error: "Session not found" };
   }
-  if (!user.admin) {
+  if (!currentUser.admin) {
     reply.status(403);
     return { error: "User is no admin" };
   }

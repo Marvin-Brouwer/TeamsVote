@@ -1,12 +1,11 @@
-import { Accessor, Component, createEffect, createMemo, createSignal, mapArray, on, onCleanup } from "solid-js";
-import { ButtonAppearance, DataGrid } from "@fluentui/web-components";
+import { Accessor, Component, createMemo, mapArray, Show } from "solid-js";
 import { useSession } from "../contexts/session-context";
 
 import "./vote.css";
 
 export const UserList: Component = () => {
 
-    const { session } = useSession()!;
+    const { session, showScores, aggregate } = useSession()!;
     const gridData = createMemo(() => {
         if (!session.users) return
         if (!session.submissions) return
@@ -21,7 +20,8 @@ export const UserList: Component = () => {
     })
 
     return <div class="users">
-        <UserStatusGrid data={gridData} />
+        <UserStatusGrid data={gridData} showScores={showScores} />
+        <TotalsRow showScores={showScores()} aggregate={aggregate()} />
     </div>
 }
 
@@ -34,29 +34,43 @@ function formatScore(score: string | number | undefined, showScores: boolean) {
 }
 
 type UserGridStatus = {
-    user: { id: string, name: string}
-    score: string | number | undefined
+    user: { id: string, name: string }
+    score: string | number | undefined,
 }
-const UserStatusGrid: Component<{ data: Accessor<UserGridStatus[] | undefined> }> = (props) => {
+const UserStatusGrid: Component<{ data: Accessor<UserGridStatus[] | undefined>, showScores: Accessor<boolean> }> = (props) => {
 
     // Build the rows ourselves, because the fastUI keeps rerendering on data change.
     const gridRows = mapArray(
-        () => (props.data() ??[]),
+        () => (props.data() ?? []),
         (row, i) => <fluent-data-grid-row rowIndex={i()}>
             <fluent-data-grid-cell grid-column="1" cell-type="columnheader">
                 {row.user.name}
             </fluent-data-grid-cell>
             <fluent-data-grid-cell grid-column="2" cell-type="default">
-                {formatScore(row.score, false)}
+                {formatScore(row.score, props.showScores())}
             </fluent-data-grid-cell>
         </fluent-data-grid-row>
     )
 
-    return <>
-        <p> here</p>
-        <fluent-data-grid generate-header="none">
-            {gridRows()}
-        </fluent-data-grid>
-    </>
+    return <fluent-data-grid generate-header="none">
+        {gridRows()}
+    </fluent-data-grid>
 
+}
+const TotalsRow: Component<{ showScores: boolean, aggregate: number | string | undefined }> = (props) => {
+
+
+    return <Show when={props.showScores && props.aggregate !== undefined}>
+        <p>&nbsp;</p>
+        <fluent-data-grid generate-header="none">
+            <fluent-data-grid-row rowIndex={-1}>
+                <fluent-data-grid-cell grid-column="1" cell-type="columnheader">
+                    Average
+                </fluent-data-grid-cell>
+                <fluent-data-grid-cell grid-column="2" cell-type="default">
+                    <fluent-badge appearance="accent">{props.aggregate}</fluent-badge>
+                </fluent-data-grid-cell>
+            </fluent-data-grid-row>
+        </fluent-data-grid>
+    </Show>
 }
