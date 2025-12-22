@@ -2,7 +2,7 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { v4 as uuid } from "uuid";
-import { Deck, SessionData, sessions, Submission } from './state';
+import { Deck, SessionData, SessionRequest, sessions, Submission, User } from './state';
 import { Session } from "./state";
 import { Mutex } from "async-mutex";
 import { calculateAverage, validateScore } from "./average";
@@ -17,12 +17,13 @@ app.register(cors, {
 
 // Start a round
 app.post("/start", async (request, reply) => {
-  const body = request.body as { roundKey: string, meetingId: string, type: Deck };
-  const { roundKey, meetingId, type } = body;
+  const body = request.body as { roundKey: string, meetingId: string, type: Deck, user: User };
+  const { roundKey, meetingId, type, user } = body;
 
   if (!meetingId) return reply.status(400).send({ error: "meetingId required" });
   if (!roundKey) return reply.status(400).send({ error: "roundKey required" });
   if (!type) return reply.status(400).send({ error: "type required" });
+  if (!user) return reply.status(400).send({ error: "user required" });
 
   const roundToken = uuid();
 
@@ -31,8 +32,14 @@ app.post("/start", async (request, reply) => {
     roundKey,
     token: roundToken,
     type,
+    users: new Map(),
     submissions: new Map()
   }
+
+  session.users.set(user.id, {
+    ...user,
+    admin: true
+  })
 
   sessions.set(meetingId, session);
 
@@ -57,13 +64,13 @@ app.get("/health", async () => {
 
 app.post("/submit", async (request, reply) => {
   const body = request.body as SessionData & Submission<Deck>;
-  const { meetingId, roundKey, token, user, score } = body;
+  const { meetingId, token, user, score } = body;
 
   const mutex = getMutex(meetingId);
 
   return mutex.runExclusive(() => {
     const session = sessions.get(meetingId);
-    if (!session || session.roundKey !== roundKey || session.token !== token) {
+    if (!session || session.token !== token) {
       reply.status(404);
       return { error: "Session not found" };
     }
@@ -81,31 +88,54 @@ app.post("/submit", async (request, reply) => {
 });
 
 app.post("/status", async (request, reply) => {
-  const body = request.body as SessionData;
-  const { meetingId, roundKey, token } = body;
+  const body = request.body as SessionRequest;
+  const { meetingId, token, user } = body;
 
-  const session = sessions.get(meetingId);
-  if (!session || session.roundKey !== roundKey || session.token !== token) {
-    reply.status(404);
-    return { error: "Session not found" };
-  }
+  const mutex = getMutex(meetingId);
 
-  const submissions = Array.from(session.submissions.values());
-  const result = {
-    submissions
-  }
+  return mutex.runExclusive(() => {
 
-  return { result };
+    const session = sessions.get(meetingId);
+    if (!session || session.token !== token) {
+      reply.status(404);
+      return { error: "Session not found" };
+    }
+    const currentUser = session.users.get(user.id)
+    if (!currentUser) {
+      session.users.set(user.id, user)
+    }
+
+    const submissions = Array.from(session.submissions.values());
+    const users = Array.from(session.users.values());
+
+    const result = {
+      roundKey: session.roundKey,
+      admin: (currentUser ?? user).admin ?? false,
+      submissions,
+      users
+    }
+
+    return { result };
+  });
 });
 
 app.post("/aggregate", async (request, reply) => {
-  const body = request.body as SessionData;
-  const { meetingId, roundKey, token } = body;
+  const body = request.body as SessionRequest;
+  const { meetingId, token, user } = body;
 
   const session = sessions.get(meetingId);
-  if (!session || session.roundKey !== roundKey || session.token !== token) {
+  if (!session || session.token !== token) {
     reply.status(404);
     return { error: "Session not found" };
+  }
+  const currentUser = session.users.get(user.id)
+  if (!currentUser) {
+    reply.status(404);
+    return { error: "Session not found" };
+  }
+  if (!user.admin) {
+    reply.status(403);
+    return { error: "User is no admin" };
   }
 
   const submissions = Array.from(session.submissions.values());
@@ -114,9 +144,58 @@ app.post("/aggregate", async (request, reply) => {
     average: calculateAverage(session.type, submissions)
   }
 
+  return { result };
+});
+
+app.post("/accept", async (request, reply) => {
+  const body = request.body as SessionRequest;
+  const { meetingId, token, user } = body;
+
+  const session = sessions.get(meetingId);
+  if (!session || session.token !== token) {
+    reply.status(404);
+    return { error: "Session not found" };
+  }
+  const currentUser = session.users.get(user.id)
+  if (!currentUser) {
+    reply.status(404);
+    return { error: "Session not found" };
+  }
+  if (!user.admin) {
+    reply.status(403);
+    return { error: "User is no admin" };
+  }
+
   sessions.delete(meetingId);
 
-  return { result };
+  reply.status(200)
+  return undefined;
+});
+
+app.post("/reset", async (request, reply) => {
+  const body = request.body as SessionRequest;
+  const { meetingId, token, user } = body;
+
+  const session = sessions.get(meetingId);
+  if (!session || session.token !== token) {
+    reply.status(404);
+    return { error: "Session not found" };
+  }
+  const currentUser = session.users.get(user.id)
+  if (!currentUser) {
+    reply.status(404);
+    return { error: "Session not found" };
+  }
+  if (!user.admin) {
+    reply.status(403);
+    return { error: "User is no admin" };
+  }
+  
+  session.submissions.clear();
+  sessions.set(meetingId, session);
+
+  reply.status(200)
+  return undefined;
 });
 
 // Start server

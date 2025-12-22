@@ -1,0 +1,10 @@
+.launcher {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: flex-start;
+    justify-content: center;
+    align-items: center;
+    gap: 1ex;
+    padding: 1ex;
+}

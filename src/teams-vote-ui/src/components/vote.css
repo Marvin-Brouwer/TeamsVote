@@ -1,0 +1,18 @@
+.cards, .admin {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: flex-start;
+    justify-content: center;
+    align-items: center;
+    gap: 1ex;
+    padding: 1ex;
+}
+
+.cards fluent-button {
+    height: 12ex;
+    width: 8ex;
+}
+.admin fluent-button {
+    width: 18ex;
+}

@@ -46,9 +46,12 @@ export const TeamsProvider: ParentComponent = (props) => {
         chat: {
             id: 'test-chat'
         },
+        channel: {
+            id: 'test-channel'
+        },
         user: {
-            id: 'user-1',
-            displayName: 'User one'
+            id: new URL(window.location.href).searchParams.get('userId') ?? 'user-1',
+            displayName: new URL(window.location.href).searchParams.get('userName') ??'User one'
         },
         dialogParameters: {}
     });
@@ -84,6 +87,12 @@ export const TeamsProvider: ParentComponent = (props) => {
                 id,
                 displayName: name
             })
+        }
+        (window as any).asNewUser = (id: string, name: string) => {
+            const url = new URL(window.location.href);
+            url.searchParams.set('userName', name);
+            url.searchParams.set('userId', id);
+            window.open(url, '_blank');
         }
     }
 

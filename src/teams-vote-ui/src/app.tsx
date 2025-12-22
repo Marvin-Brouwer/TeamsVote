@@ -1,15 +1,14 @@
-import { RouteSectionProps, useLocation } from '@solidjs/router'
+import { RouteSectionProps } from '@solidjs/router'
 import { children, createEffect, createSignal, Show, type Component } from 'solid-js'
 
 import './app.css'
 
-import { DesignSystemProvider, fluentBadge, fluentButton, fluentCard, provideFluentDesignSystem } from '@fluentui/web-components'
+import { DesignSystemProvider, fluentBadge, fluentButton, fluentCard, fluentDataGrid, fluentDataGridCell, fluentDataGridRow, fluentTextField, provideFluentDesignSystem } from '@fluentui/web-components'
 // TODO move to themecontext
-import { teamsLightTheme, } from '@fluentui/tokens';
+import { teamsLightTheme } from '@fluentui/tokens';
 
 export const AppRoot: Component<RouteSectionProps> = (props) => {
 
-    const route = useLocation()
     const [themeRef, setThemeRef] = createSignal<DesignSystemProvider>();
     const [themeLoaded, setThemeLoaded] = createSignal(false);
 
@@ -19,19 +18,24 @@ export const AppRoot: Component<RouteSectionProps> = (props) => {
 
         provideFluentDesignSystem(themeRoot)
             .register(fluentButton())
+            .register(fluentTextField())
             .register(fluentBadge())
             .register(fluentCard())
+            .register(
+                fluentDataGridCell(),
+                fluentDataGridRow(),
+                fluentDataGrid()
+            )
             .withShadowRootMode('open')
-            .withDesignTokenRoot(themeRoot);
+            .withDesignTokenRoot(document);
 
         setThemeLoaded(true)
     })
 
     return <fluent-design-system-provider
-        ref={setThemeRef} use-provider-registrations
+        ref={setThemeRef}
         design-system={teamsLightTheme}
     >
-        <p>Route: {route.pathname}</p>
         <Show when={themeLoaded()}>{children(() => props.children)()}</Show>
     </fluent-design-system-provider>
 }
