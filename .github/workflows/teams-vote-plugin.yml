@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  update:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -63,8 +63,8 @@ jobs:
         env: 
           TEAMS_APP_ID: ${{ secrets.TEAMS_APP_ID }}
           TEAMS_UI_URL: ${{  vars.TEAMS_UI_URL }}
-          TEAMS_APP_CLIENT_ID: ${{ secrets.TEAMS_APP_CLIENT_ID }}
-          TEAMS_APP_CLIENT_ID_URL: ${{  secrets.TEAMS_APP_CLIENT_ID_URL }}
+          TEAMS_APP_CLIENT_ID: ${{ secrets.TEAMS_PLUGIN_AZURE_CLIENT_ID }}
+          TEAMS_APP_CLIENT_ID_URL: ${{ secrets.TEAMS_PLUGIN_AZURE_CLIENT_URL }}
         run: pnpm update-manifest
         working-directory: './src/teams-vote-plugin'
       - name: Zip Plugin
