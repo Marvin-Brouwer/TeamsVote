@@ -52,8 +52,8 @@ jobs:
       - name: Build app
         env: 
           VITE_API_URL: ${{  vars.VITE_API_URL }}
-        run: pnpm build
-        working-directory: './src/teams-vote-ui'
+        run: pnpm -r build --filter ./src/teams-vote-ui
+        working-directory: '.'
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
