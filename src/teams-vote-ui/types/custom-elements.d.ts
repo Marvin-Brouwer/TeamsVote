@@ -1,5 +1,5 @@
 // src/custom-elements.d.ts
-import { Badge, Button, Card, DataGrid, DesignSystemProvider, Divider, ProgressRing, TextField } from "@fluentui/web-components";
+import { Badge, Button, Card, DataGrid, DataGridCell, DataGridRow, DesignSystemProvider, Divider, ProgressRing, TextField } from "@fluentui/web-components";
 
 // Extend JSX to include all custom elements
 declare module "solid-js" {
@@ -13,6 +13,8 @@ declare module "solid-js" {
         'fluent-divider': HTMLAttributes<Divider> | Divider
         'fluent-progress-ring': HTMLAttributes<ProgressRing> | ProgressRing
         'fluent-data-grid': HTMLAttributes<DataGrid> | DataGrid
+        'fluent-data-grid-row': HTMLAttributes<DataGridRow> | DataGridRow
+        'fluent-data-grid-cell': HTMLAttributes<DataGridCell> | DataGridCell
     }
   }
 }

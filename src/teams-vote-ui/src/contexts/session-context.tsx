@@ -58,7 +58,11 @@ export const SessionProvider: ParentComponent = (props) => {
     onMount(() => {
         interval = setInterval(async () => {
             const status = await postStatus(teamsChannelId!, roundKey, token, user!, abortController.signal)
-            setSession({ ...status.result, meetingId: teamsChannelId, user, token })
+            const newValue = { ...status.result, meetingId: teamsChannelId, user, token }
+            setSession(s => {
+                if (JSON.stringify(newValue) === JSON.stringify(s)) return s;
+                return newValue;
+            })
         }, 200);
     })
     onCleanup(() => clearInterval(interval))
