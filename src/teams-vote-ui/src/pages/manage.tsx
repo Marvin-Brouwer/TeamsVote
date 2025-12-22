@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createResource, createSignal, onCleanup, onMount, Show, type Component } from "solid-js";
+import { createResource, createSignal, onCleanup, Show, type Component } from "solid-js";
 import { useParams } from "@solidjs/router";
 import { useTeams, type TeamsContext } from "../contexts/teams-context";
 
@@ -17,7 +17,7 @@ export const ManagementView: Component = () => {
     const running = () => healthCheck() === true;
 
     // TODO render link if roundKey is url
-    const { teamsChannelId, roundKey } = useParams()
+    const { teamsChannelId, roundKey } = useParams() as { teamsChannelId: string, roundKey: string}
     const [voteStarted, setVoteStarted] = createSignal(false)
 
     async function startEstimate() {
@@ -31,7 +31,7 @@ export const ManagementView: Component = () => {
 
     return <>
         <h1>Estimate</h1>
-        <h2>{roundKey.toString()}</h2>
+        <h2>{roundKey}</h2>
         <Show when={!running()}>
             <p>Loading API service...</p>
         </Show>
