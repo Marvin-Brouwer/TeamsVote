@@ -1,6 +1,7 @@
 import { type Accessor, children, createContext, createSignal, onMount, type ParentComponent, Show, useContext } from "solid-js";
 
 import * as microsoftTeams from "@microsoft/teams-js";
+import { useLocation } from '@solidjs/router';
 
 export type TeamsContext = microsoftTeams.app.Context
 export type UseTeamsContext = {
