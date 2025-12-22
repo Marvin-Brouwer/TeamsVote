@@ -12,6 +12,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+fluent-badge[appearance="tint"] {
+  outline: 2px dashed red !important;
+}
 
 a {
   font-weight: 500;

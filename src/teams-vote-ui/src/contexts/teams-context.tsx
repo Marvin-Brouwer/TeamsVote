@@ -1,7 +1,8 @@
-import { type Accessor, children, createContext, createSignal, onMount, type ParentComponent, Show, useContext } from "solid-js";
+import { type Accessor, children, createContext, createMemo, createSignal, onMount, type ParentComponent, Show, useContext } from "solid-js";
 
 import * as microsoftTeams from "@microsoft/teams-js";
 import { useLocation } from '@solidjs/router';
+import { createStore } from "solid-js/store";
 
 export type TeamsContext = microsoftTeams.app.Context
 export type UseTeamsContext = {
@@ -22,8 +23,11 @@ async function getContext() {
     }
 }
 
-const testTeamsContext: UseTeamsContext | undefined = import.meta.env.PROD ? undefined : ({
-    teamsContext: () => ({
+
+export const TeamsProvider: ParentComponent = (props) => {
+
+    const [getTeamsContext, setTeamsContext] = createSignal<TeamsContext | undefined>(undefined)
+    const [testTeamsContext, setTestTeamsContext] = createStore<TeamsContext>({
         app: {
             appId: new microsoftTeams.AppId('local-test'),
             locale: 'en',
@@ -42,17 +46,19 @@ const testTeamsContext: UseTeamsContext | undefined = import.meta.env.PROD ? und
         chat: {
             id: 'test-chat'
         },
+        user: {
+            id: 'user-1',
+            displayName: 'User one'
+        },
         dialogParameters: {}
-    }),
-    teamsTasks: microsoftTeams.tasks,
-    getAuthToken() {
-        return Promise.resolve('fake-auth')
-    },
-})
-
-export const TeamsProvider: ParentComponent = (props) => {
-
-    const [getTeamsContext, setTeamsContext] = createSignal<TeamsContext | undefined>(undefined)
+    });
+    const useTestTeamsContext = import.meta.env.PROD ? undefined : {
+        teamsContext: () => testTeamsContext,
+        teamsTasks: microsoftTeams.tasks,
+        getAuthToken() {
+            return Promise.resolve('fake-auth')
+        },
+    }
 
     onMount(async () => {
         const windowTeamsContext = await getContext();
@@ -65,9 +71,30 @@ export const TeamsProvider: ParentComponent = (props) => {
         });
     };
 
-    return <teamsContext.Provider value={!getTeamsContext() ? testTeamsContext : { teamsContext: getTeamsContext as Accessor<TeamsContext>, teamsTasks: microsoftTeams.tasks, getAuthToken }}>
-        <Show when={import.meta.env.DEV && getTeamsContext()?.app.sessionId === 'fake-session'}>
-            <p>DEV MODE: Fake session</p>
+    const activeTeamsContext = createMemo(() => {
+        if (!getTeamsContext() && import.meta.env.DEV) {
+            return useTestTeamsContext
+        }
+        return { teamsContext: getTeamsContext as Accessor<TeamsContext>, teamsTasks: microsoftTeams.tasks, getAuthToken }
+    })
+
+    if (import.meta.env.DEV) {
+        (window as any).updateTestUser = (id: string, name: string) => {
+            setTestTeamsContext("user", {
+                id,
+                displayName: name
+            })
+        }
+    }
+
+    return <teamsContext.Provider value={activeTeamsContext()}>
+        <Show when={import.meta.env.DEV && !getTeamsContext()}>
+            <fluent-card>
+                <p>
+                    DEV MODE: Fake session 
+                    <fluent-badge appearance="outline" color="red">{testTeamsContext.user?.displayName} ({testTeamsContext.user?.id})</fluent-badge>
+                </p>
+            </fluent-card>
         </Show>
         <Show when={!!getTeamsContext() || import.meta.env.DEV}>
             {children(() => props.children)()}

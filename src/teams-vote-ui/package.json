@@ -13,7 +13,10 @@
     "solid-js": "^1.9.10",
     "@quick-vite/gh-pages-spa": "^7.1.0",
     "@solidjs/router": "^0.15.4",
-    "@microsoft/teams-js": "^2.47.2"
+    "@microsoft/teams-js": "^2.47.2",
+    "@fluentui/web-components": "^2.6.1",
+    "@fluentui/tokens": "^1.0.0-alpha.22",
+    "@microsoft/fast-foundation": "^2.50.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

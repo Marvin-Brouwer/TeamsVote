@@ -27,7 +27,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    "types": ["vite/client"]
+    "types": ["vite/client", "./types/custom-elements.d.ts"]
   },
 	"include": ["src"]
 }

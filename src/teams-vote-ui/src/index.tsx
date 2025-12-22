@@ -5,6 +5,7 @@ import { routeBase, PagesReRouter, namedLazy } from '@quick-vite/gh-pages-spa/so
 
 import { AppRoot } from './app';
 import { TeamsProvider } from './contexts/teams-context'
+
 const ManagementView = namedLazy(() => import("./pages/manage").then(m => m.ManagementView));
 const VoterView = namedLazy(() => import("./pages/vote").then(m => m.VoterView));
 const NotSupportedPage = namedLazy(() => import("./pages/not-supported").then(m => m.NotSupportedPage));
@@ -20,5 +21,6 @@ export const routes = () => <Router base={routeBase()} root={AppRoot}>
     </PagesReRouter>
 </Router>
 
-console.log('pre-render')
-render(routes, document.getElementById('root')!)
+const root = document.getElementById('root')!
+
+render(routes, root);
