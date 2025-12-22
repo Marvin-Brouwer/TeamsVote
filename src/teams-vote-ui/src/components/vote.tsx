@@ -57,7 +57,7 @@ export const AdminPanel: Component = () => {
         setShowScores(true)
     }
     async function accept() {
-        console.log(await acceptScore(session.meetingId, session.token, session.user, abortController.signal))
+        await acceptScore(session.meetingId, session.token, session.user, abortController.signal)
         setShowScores(true)
     }
 
@@ -111,14 +111,12 @@ async function requestAggregate(meetingId: string, token: string, user: { id: st
 }
 
 async function acceptScore(meetingId: string, token: string, user: { id: string, name: string }, signal: AbortSignal) {
-    const response = await fetch(`${apiUrl}/accept`, {
+    await fetch(`${apiUrl}/accept`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ meetingId, token, user }),
         signal
     }).then(async httpResponse => {
         if (!httpResponse.ok) throw await httpResponse.text();
-        return httpResponse.json();
     });
-    return response;
 }

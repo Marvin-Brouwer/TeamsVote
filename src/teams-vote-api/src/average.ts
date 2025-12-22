@@ -25,7 +25,7 @@ function calculateAverageShirt(submissions: Submission<'t-shirt'>[]) {
         validScores.push(num);
     }
 
-    if (validScores.length === 0) return "None";
+    if (validScores.length === 0) return undefined;
 
     const average = validScores.reduce((sum, x) => sum + x, 0) / validScores.length;
     const nearestCard = roundToNearestCard(average, tShirtDeck);
@@ -50,7 +50,7 @@ function calculateAverageFibonacci(
         validScores.push(score);
     }
 
-    if (validScores.length === 0) return 0;
+    if (validScores.length === 0) return undefined;
 
     const average = validScores.reduce((sum, number) => sum + number, 0) / validScores.length;
     return roundToNearestCard(average, deck);
@@ -74,6 +74,8 @@ function roundToNearestCard(average: number, deck: number[]) {
 }
 
 export function calculateAverage(type: Deck, submissions: Submission<Deck>[]) {
+    if (submissions.length === 0) return undefined
+
     if (type === 'fibonacci') return calculateAverageFibonacci(submissions as Submission<'fibonacci'>[], baseFibonacci);
     if (type === 'modified-fibonacci') return calculateAverageFibonacci(submissions as Submission<'fibonacci'>[], modifiedFibonacci);
     if (type === 't-shirt') return calculateAverageShirt(submissions as Submission<'t-shirt'>[]);

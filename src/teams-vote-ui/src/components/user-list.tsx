@@ -27,7 +27,7 @@ export const UserList: Component = () => {
 
 function formatScore(score: string | number | undefined, showScores: boolean) {
     if (score === 'skip') return <fluent-badge appearance="neutral">skipped</fluent-badge>
-    if (score === undefined) return <fluent-badge appearance="neutral">pending</fluent-badge>
+    if (score === undefined) return <fluent-badge appearance="neutral">{showScores ? 'skipped' : 'pending'}</fluent-badge>
     if (showScores) return <fluent-badge appearance="accent">{score}</fluent-badge>
 
     return <fluent-badge appearance="neutral">voted</fluent-badge>

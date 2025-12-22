@@ -19,7 +19,7 @@ export type SessionContext = {
         name: string
     }[],
     token: string,
-    submissions: {user: { id: string, name: string}, score: number | string}[]
+    submissions: { user: { id: string, name: string }, score: number | string }[]
 }
 export type UseSessionContext = {
     session: SessionContext,
@@ -69,32 +69,36 @@ export const SessionProvider: ParentComponent = (props) => {
     let interval: number | undefined;
     onMount(() => {
         interval = setInterval(async () => {
-            try{
-            const status = await postStatus(teamsChannelId!, roundKey, token, user!, abortController.signal)
-            const newValue = { ...status.result, meetingId: teamsChannelId, user, token }
-            setSession(s => {
-                if (JSON.stringify(newValue) === JSON.stringify(s)) return s;
-                return newValue;
-            })
-        } catch  {
-            setSession(s => ({ ...s, ended: true }))
-            clearInterval(interval);
-            const summaryCard = createSummaryCard(session().roundKey, aggregate());
-            const authToken = await getAuthToken()
-            if (import.meta.env.PROD) {
-                await postCard(teamsContext()!.chat!.id, authToken, summaryCard)
+            try {
+                const status = await postStatus(teamsChannelId!, roundKey, token, user!, abortController.signal)
+                const newValue = { ...status.result, meetingId: teamsChannelId, user, token }
+                setSession(s => {
+                    if (JSON.stringify(newValue) === JSON.stringify(s)) return s;
+                    return newValue;
+                })
+            } catch {
+                setSession(s => ({ ...s, ended: true }))
+                clearInterval(interval);
+                const summaryCard = createSummaryCard(session().roundKey, aggregate());
+                const authToken = await getAuthToken()
+                if (import.meta.env.PROD) {
+                    await postCard(teamsContext()!.chat!.id, authToken, summaryCard)
+                }
+                else {
+                    navigator.clipboard.writeText(JSON.stringify(summaryCard, null, 2))
+                        .then(() => {
+                            alert(JSON.stringify(summaryCard, null, 2))
+                        })
+                        .catch(err => console.error("Failed to copy:", err));
+                }
+                // TODO see if this works in teams
+                window.close();
             }
-            else {
-                alert(JSON.stringify(summaryCard, null, 2))
-            }
-            // TODO see if this works in teams
-            window.close();
-        }
         }, 200);
     })
     onCleanup(() => clearInterval(interval))
-    
-    return <sessionContext.Provider value={{...sessionContext.defaultValue, session: session(),showScores, setShowScores, aggregate, setAggregate }}>
+
+    return <sessionContext.Provider value={{ ...sessionContext.defaultValue, session: session(), showScores, setShowScores, aggregate, setAggregate }}>
         <Show when={!!activeSession}>
             {children(() => props.children)()}
         </Show>
@@ -122,31 +126,44 @@ async function postStatus(meetingId: string, roundKey: string, token: string, us
 function createSummaryCard(roundKey: string, score: string | number | undefined) {
 
     const card = {
-        type: "message",
-        attachments: [
+        "type": "AdaptiveCard",
+        "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+        "version": "1.5",
+        "body": [
             {
-                contentType: "application/vnd.microsoft.card.adaptive",
-                content: {
-                    type: "AdaptiveCard",
-                    body: [
-                        {
-                            type: "TextBlock",
-                            text: `Vote on ${roundKey}`,
-                        },
-                        score ? 
-                        {
-                            type: "TextBlock",
-                            text: `Result: ${score}`,
-                        } : {
-                            text: `No result`,
-                        }
-                    ],
-                    $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
-                    version: "1.4",
-                },
+                "type": "TextBlock",
+                "text": "Teams Vote",
+                "wrap": true,
+                "style": "heading",
+                "size": "Large"
             },
-        ],
-    };
+            {
+                "type": "TextBlock",
+                "text": `Vote on [${roundKey}](${roundKey})`,
+                "wrap": true,
+                "separator": true
+            },
+            {
+                "type": "TextBlock",
+                "text": `Average score: **${score}**`,
+                "wrap": true,
+                "spacing": "None"
+            },
+            {
+                "type": "ActionSet",
+                "actions": [
+                    {
+                        "type": "Action.Submit",
+                        "title": "Copy",
+                        "data": {
+                            "copyValue": score
+                        },
+                        "iconUrl": "icon:Copy"
+                    }
+                ]
+            }
+        ]
+    }
 
     return card;
 }

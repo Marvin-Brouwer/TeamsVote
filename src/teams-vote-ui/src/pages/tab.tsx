@@ -1,6 +1,6 @@
 import { createResource, createSignal, JSX, onCleanup, Show, type Component } from "solid-js";
 import { postCard, useTeams, type TeamsContext } from "../contexts/teams-context";
-import { ButtonAppearance, TextFieldAppearance } from "@fluentui/web-components";
+import { Button, ButtonAppearance, TextFieldAppearance } from "@fluentui/web-components";
 
 import "./tab.css"
 
@@ -12,6 +12,7 @@ export const TabView: Component = () => {
 
     const { teamsContext, getAuthToken } = useTeams()!;
     const [roundKey, setRoundKey] = createSignal<string>()
+    let startButton!: Button & HTMLButtonElement;
 
     const abortController = new AbortController();
     onCleanup(() => abortController.abort('onCleanup'))
@@ -29,6 +30,8 @@ export const TabView: Component = () => {
         const roundKeyValue = roundKey();
         if (!roundKeyValue) return;
 
+        startButton.disabled = true;
+
         const session = await postStart(teamsChannelId, roundKeyValue, user, abortController.signal);
         const appOrigin = window.location.origin;
         const pageUrl = `${appOrigin}/TeamsVote/teams/vote/${teamsChannelId}/${session.token}`;
@@ -41,9 +44,16 @@ export const TabView: Component = () => {
             // TODO open popup automatically
         }
         else {
-            alert(JSON.stringify(card, null, 2))
-            window.open(pageUrl, '_blank')
+            navigator.clipboard.writeText(JSON.stringify(card, null, 2))
+                .then(() => {
+                    alert(JSON.stringify(card, null, 2))
+                    window.open(pageUrl, '_blank')
+                })
+                .catch(err => console.error("Failed to copy:", err));
         }
+
+        startButton.disabled = false;
+        setRoundKey('')
     }
 
     return <>
@@ -59,10 +69,10 @@ export const TabView: Component = () => {
             </pre>
             <p>&nbsp;</p>
             <fluent-card class="launcher">
-                <fluent-text-field appearance={"filled" as TextFieldAppearance}placeholder="What are you estimating" onInput={(e) => {
+                <fluent-text-field appearance={"filled" as TextFieldAppearance} placeholder="What are you estimating" onInput={(e) => {
                     setRoundKey(e.currentTarget.value)
-                }} /> {" "}
-                <fluent-button appearance={"accent"  as ButtonAppearance} onClick={startEstimate} disabled={!running() || !roundKey()}>Estimate</fluent-button>
+                }} value={roundKey()} /> {" "}
+                <fluent-button ref={startButton} appearance={"accent" as ButtonAppearance} onClick={startEstimate} disabled={!running() || !roundKey()}>Estimate</fluent-button>
             </fluent-card>
         </Show>
     </>
@@ -81,7 +91,7 @@ async function checkHealth() {
     return response;
 }
 
-async function postStart(meetingId: string, roundKey: string, user: { id: string, name: string}, signal: AbortSignal) {
+async function postStart(meetingId: string, roundKey: string, user: { id: string, name: string }, signal: AbortSignal) {
     const response = await fetch(`${apiUrl}/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -102,31 +112,36 @@ function createJoinCard(pageUrl: string, roundKey: string, teamsContext: TeamsCo
     const deepLink = `https://teams.microsoft.com/l/task/${teamsContext.app.appId}?url=${encodeURIComponent(pageUrl)}&height=large&width=medium&title=Vote`;
 
     const card = {
-        type: "message",
-        attachments: [
+        "type": "AdaptiveCard",
+        "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+        "version": "1.5",
+        "body": [
             {
-                contentType: "application/vnd.microsoft.card.adaptive",
-                content: {
-                    type: "AdaptiveCard",
-                    body: [
-                        {
-                            type: "TextBlock",
-                            text: `Vote on ${roundKey}`,
-                        },
-                    ],
-                    actions: [
-                        {
-                            type: "Action.OpenUrl",
-                            title: "Vote",
-                            url: deepLink,
-                        },
-                    ],
-                    $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
-                    version: "1.4",
-                },
+                "type": "TextBlock",
+                "text": "Teams Vote",
+                "wrap": true,
+                "style": "heading",
+                "size": "Large"
             },
-        ],
-    };
+            {
+                "type": "TextBlock",
+                "text": `Vote on [${roundKey}](${roundKey})`,
+                "wrap": true,
+                "separator": true
+            },
+            {
+                "type": "ActionSet",
+                "actions": [
+                    {
+                        "type": "Action.OpenUrl",
+                        "title": "Vote",
+                        "iconUrl": "icon:Vote",
+                        "url": deepLink
+                    }
+                ]
+            }
+        ]
+    }
 
     return card;
 }
