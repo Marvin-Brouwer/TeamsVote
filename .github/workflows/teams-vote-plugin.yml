@@ -63,6 +63,8 @@ jobs:
         env: 
           TEAMS_APP_ID: ${{ secrets.TEAMS_APP_ID }}
           TEAMS_UI_URL: ${{  vars.TEAMS_UI_URL }}
+          TEAMS_APP_CLIENT_ID: ${{ secrets.TEAMS_APP_CLIENT_ID }}
+          TEAMS_APP_CLIENT_ID_URL: ${{  secrets.TEAMS_APP_CLIENT_ID_URL }}
         run: pnpm update-manifest
         working-directory: './src/teams-vote-plugin'
       - name: Zip Plugin
@@ -71,16 +73,3 @@ jobs:
       - name: Update plugin
         run: m365 teams app update --filePath teams-vote.zip
         working-directory: './src/teams-vote-plugin'
-  deploy:
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: teams-plugin
-      # url: TODO Install page
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
