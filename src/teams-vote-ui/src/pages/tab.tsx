@@ -1,9 +1,9 @@
 import { createResource, createSignal, JSX, onCleanup, Show, type Component } from "solid-js";
 import { postCard, useTeams, type TeamsContext } from "../contexts/teams-context";
 import { Button, ButtonAppearance, TextFieldAppearance } from "@fluentui/web-components";
+import { formatUrl } from "../helpers/url";
 
 import "./tab.css"
-import { formatUrl } from "../helpers/url";
 
 const apiUrl = import.meta.env.VITE_API_URL as string;
 
@@ -62,19 +62,26 @@ export const TabView: Component = () => {
             <fluent-progress-ring />
         </Show>
         <Show when={running()}>
-            <p>TODO: Maybe history will be shown here</p>
-            <p>If that's not possible, we'll add a basic readme</p>
-            <p>&nbsp;</p>
-            <pre style="display: inline-block; text-align: left; overflow-x: scroll; height: 200px; width: 100%;">
-                {JSON.stringify(teamsContext(), null, 2)}
-            </pre>
-            <p>&nbsp;</p>
-            <fluent-card class="launcher">
-                <fluent-text-field appearance={"filled" as TextFieldAppearance} placeholder="What are you estimating" onInput={(e) => {
-                    setRoundKey(e.currentTarget.value)
-                }} value={roundKey()} /> {" "}
-                <fluent-button ref={startButton} appearance={"accent" as ButtonAppearance} onClick={startEstimate} disabled={!running() || !roundKey()}>Estimate</fluent-button>
-            </fluent-card>
+            <div class="view" style={import.meta.env.DEV && teamsChannelId === 'test-channel' ? '--vote-height: calc(100% - 70px);' : undefined}>
+                <div class="content">
+                    <p>TODO: Maybe history will be shown here</p>
+                    <p>If that's not possible, we'll add a basic readme</p>
+                    <p>&nbsp;</p>
+                    <pre style="display: inline-block; text-align: left; width: 100%;">
+                        {JSON.stringify(teamsContext(), null, 2)}
+                    </pre>
+                    <p>&nbsp;</p>
+                </div>
+                <div class="menu">
+                    <fluent-card class="launcher">
+                        <fluent-text-field appearance={"filled" as TextFieldAppearance} placeholder="What are you estimating" onInput={(e) => {
+                            setRoundKey(e.currentTarget.value)
+                        }} value={roundKey()} /> {" "}
+                        <fluent-button ref={startButton} appearance={"accent" as ButtonAppearance} onClick={startEstimate} disabled={!running() || !roundKey()}>Estimate</fluent-button>
+                    </fluent-card>
+                </div>
+            </div>
+
         </Show>
     </>
 }

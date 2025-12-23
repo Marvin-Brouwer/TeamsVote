@@ -1,9 +1,9 @@
 import { RouteSectionProps } from '@solidjs/router'
 import { children, createEffect, createSignal, Show, type Component } from 'solid-js'
+import { DesignSystemProvider, fluentBadge, fluentButton, fluentCard, fluentDataGrid, fluentDataGridCell, fluentDataGridRow, fluentTextField, provideFluentDesignSystem } from '@fluentui/web-components'
 
 import './app.css'
 
-import { DesignSystemProvider, fluentBadge, fluentButton, fluentCard, fluentDataGrid, fluentDataGridCell, fluentDataGridRow, fluentTextField, provideFluentDesignSystem } from '@fluentui/web-components'
 // TODO move to themecontext
 import { teamsLightTheme } from '@fluentui/tokens';
 

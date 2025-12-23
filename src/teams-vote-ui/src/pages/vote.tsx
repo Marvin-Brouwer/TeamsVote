@@ -4,18 +4,16 @@ import { useSession } from "../contexts/session-context";
 import { UserList } from "../components/user-list";
 import { KeyDisplay } from "../components/key-display";
 
-import "./vote.css";
-
 export const VoterView: Component = () => {
 
     const { session } = useSession();
 
-    return <div class="vote-view" style={import.meta.env.DEV && session.meetingId === 'test-channel' ? '--vote-height: calc(100% - 70px);' : undefined}>
+    return <div class="view" style={import.meta.env.DEV && session.meetingId === 'test-channel' ? '--vote-height: calc(100% - 70px);' : undefined}>
         <div class="content">
-        <h2><KeyDisplay key={session.roundKey} /></h2>
-        {/* TODO link preview? */}
-        <fluent-divider />
-        <UserList />
+            <h2><KeyDisplay key={session.roundKey} /></h2>
+            {/* TODO link preview? */}
+            <fluent-divider />
+            <UserList />
         </div>
         <div class="menu">
             <fluent-card>
