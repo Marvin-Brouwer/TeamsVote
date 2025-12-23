@@ -1,10 +1,10 @@
-import { createResource, createSignal, JSX, onCleanup, Show, type Component } from "solid-js";
+import { createResource, createSignal, onCleanup, Show, type Component } from "solid-js";
 import { postCard, useTeams, type TeamsContext } from "../contexts/teams-context";
 import { Button, ButtonAppearance, TextFieldAppearance } from "@fluentui/web-components";
 import { formatUrl } from "../helpers/url";
+import { Deck, defaultDeck, SessionResponse, StartRequest } from "@teams-vote/data";
 
 import "./tab.css"
-import { Portal } from "solid-js/web";
 
 const apiUrl = import.meta.env.VITE_API_URL as string;
 
@@ -13,6 +13,7 @@ const [healthCheck] = createResource(() => true, checkHealth);
 export const TabView: Component = () => {
 
     const { teamsContext, getAuthToken } = useTeams()!;
+    const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
     let startButton!: Button & HTMLButtonElement;
 
@@ -33,8 +34,14 @@ export const TabView: Component = () => {
         if (!roundKeyValue) return;
 
         startButton.disabled = true;
+        const startRequest: StartRequest = { 
+            meetingId: teamsChannelId, 
+            roundKey: roundKeyValue,
+            type: deck(),
+            user
+        }
 
-        const session = await postStart(teamsChannelId, roundKeyValue, user, abortController.signal);
+        const session = await postStart(startRequest, abortController.signal);
         const appOrigin = window.location.origin;
         const pageUrl = `${appOrigin}/TeamsVote/teams/vote/${teamsChannelId}/${session.token}`;
 
@@ -89,6 +96,8 @@ export const TabView: Component = () => {
                         <div>
                             <fluent-select
                                 id="type-select"
+                                value={deck()}
+                                onChange={e => changeDeck(e.currentTarget.value as Deck)}
                             >
                                 <fluent-option value="modified-fibonacci">Modified fibonacci</fluent-option>
                                 <fluent-option value="fibonacci">Fibonacci</fluent-option>
@@ -125,19 +134,17 @@ async function checkHealth() {
     return response;
 }
 
-async function postStart(meetingId: string, roundKey: string, user: { id: string, name: string }, signal: AbortSignal) {
+async function postStart(startRequest: StartRequest, signal: AbortSignal) {
     const response = await fetch(`${apiUrl}/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // TODO dropdown for type
-        body: JSON.stringify({ meetingId, roundKey, type: "modified-fibonacci", user }),
+        body: JSON.stringify(startRequest),
         signal
     }).then(async httpResponse => {
         if (!httpResponse.ok) throw await httpResponse.text();
-        return httpResponse.json();
+        return httpResponse.json() as Promise<SessionResponse>;
     });
 
-    console.log(response)
     return response;
 }
 

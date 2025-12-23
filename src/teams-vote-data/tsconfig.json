@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2020",                     // modern JS output
-    "module": "nodenext",                     // keep ESM for Node + Vite
-    "moduleResolution": "nodenext",             // resolve node_modules
+    "module": "ESNext",                     // keep ESM for Node + Vite
+    "moduleResolution": "Node",             // resolve node_modules
     "esModuleInterop": true,                // allow import express from 'express'
     "forceConsistentCasingInFileNames": true,
     "strict": true,                         // enable strict type checking
@@ -10,8 +10,7 @@
     "resolveJsonModule": true,               // allow import *.json files
     "outDir": "dist",                        // compiled JS output
     "rootDir": "src",                        // source files
-    "sourceMap": true,
-    "types": ["node"]                        // include Node typings
+    "sourceMap": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

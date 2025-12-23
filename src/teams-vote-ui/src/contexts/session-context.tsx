@@ -2,24 +2,15 @@ import { useParams } from "@solidjs/router";
 import { type Accessor, children, createContext, createMemo, createSignal, onCleanup, onMount, type ParentComponent, Setter, Show, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { postCard, useTeams } from "./teams-context";
+import { ClientSession, Deck, User, StatusRequest, StatusResponse } from '@teams-vote/data';
 
 const apiUrl = import.meta.env.VITE_API_URL as string;
 
-export type SessionContext = {
+export type SessionContext = ClientSession & {
     admin: boolean,
     ended: boolean,
-    roundKey: string,
-    meetingId: string,
-    user: {
-        id: string,
-        name: string
-    },
-    users: {
-        id: string,
-        name: string
-    }[],
-    token: string,
-    submissions: { user: { id: string, name: string }, score: number | string }[]
+
+    user: User
 }
 export type UseSessionContext = {
     session: SessionContext,
@@ -29,24 +20,26 @@ export type UseSessionContext = {
     aggregate: Accessor<number | string | undefined>
 }
 
-const sessionContext = createContext<UseSessionContext>({
-    session: {
-        admin: false,
-        ended: false,
-        roundKey: '',
-        user: {
-            id: '',
-            name: '',
-        },
-        meetingId: '',
-        token: '',
-        users: [],
-        submissions: []
+const defaultSession: SessionContext = {
+    admin: false,
+    ended: false,
+    roundKey: '',
+    user: {
+        id: '',
+        name: '',
     },
+    meetingId: '',
+    token: '',
+    users: [],
+    submissions: [],
+    type: 'modified-fibonacci'
+}
+const sessionContext = createContext<UseSessionContext>({
+    session: defaultSession,
     setShowScores: () => false,
     showScores: () => false,
     setAggregate: () => undefined,
-    aggregate: () => undefined,
+    aggregate: () => undefined
 })
 export const SessionProvider: ParentComponent = (props) => {
 
@@ -70,10 +63,17 @@ export const SessionProvider: ParentComponent = (props) => {
     onMount(() => {
         interval = setInterval(async () => {
             try {
-                const status = await postStatus(teamsChannelId!, roundKey, token, user!, abortController.signal)
-                const newValue = { ...status.result, meetingId: teamsChannelId, user, token }
+                const statusRequest: StatusRequest = {
+                    roundKey,
+                    meetingId: teamsChannelId!,
+                    user: user!,
+                    token
+                }
+                const status = await postStatus(statusRequest, abortController.signal)
                 setSession(s => {
+                    const newValue = { ...s, ...statusRequest, ...status };
                     if (JSON.stringify(newValue) === JSON.stringify(s)) return s;
+                    console.log(newValue)
                     return newValue;
                 })
             } catch {
@@ -85,7 +85,7 @@ export const SessionProvider: ParentComponent = (props) => {
                     await postCard(teamsContext()!.chat!.id, authToken, summaryCard)
                 }
                 else {
-                    navigator.clipboard.writeText(JSON.stringify(summaryCard, null, 2))
+                    await navigator.clipboard.writeText(JSON.stringify(summaryCard, null, 2))
                         .then(() => {
                             alert(JSON.stringify(summaryCard, null, 2))
                         })
@@ -98,7 +98,12 @@ export const SessionProvider: ParentComponent = (props) => {
     })
     onCleanup(() => clearInterval(interval))
 
-    return <sessionContext.Provider value={{ ...sessionContext.defaultValue, session: session(), showScores, setShowScores, aggregate, setAggregate }}>
+    return <sessionContext.Provider value={{ 
+        ...sessionContext.defaultValue, 
+        session: session(), 
+        showScores, setShowScores, 
+        aggregate, setAggregate
+    }}>
         <Show when={!!activeSession}>
             {children(() => props.children)()}
         </Show>
@@ -108,15 +113,15 @@ export const SessionProvider: ParentComponent = (props) => {
 export function useSession() { return useContext(sessionContext); };
 
 
-async function postStatus(meetingId: string, roundKey: string, token: string, user: { id: string, name: string }, signal: AbortSignal) {
+async function postStatus(statusRequest: StatusRequest, signal: AbortSignal) {
     const response = await fetch(`${apiUrl}/status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ meetingId, roundKey, token, user }),
+        body: JSON.stringify(statusRequest),
         signal
     }).then(async httpResponse => {
         if (!httpResponse.ok) throw await httpResponse.text();
-        return httpResponse.json();
+        return httpResponse.json() as Promise<StatusResponse>;
     });
 
     return response;

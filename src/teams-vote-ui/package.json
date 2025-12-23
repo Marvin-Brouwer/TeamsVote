@@ -16,7 +16,8 @@
     "@microsoft/teams-js": "^2.47.2",
     "@fluentui/web-components": "^2.6.1",
     "@fluentui/tokens": "^1.0.0-alpha.22",
-    "@microsoft/fast-foundation": "^2.50.0"
+    "@microsoft/fast-foundation": "^2.50.0",
+    "@teams-vote/data": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

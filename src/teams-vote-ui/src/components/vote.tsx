@@ -3,6 +3,7 @@ import { ButtonAppearance } from "@fluentui/web-components";
 import { useSession } from "../contexts/session-context";
 
 import "./vote.css";
+import { AggregateResponse, StatusRequest, SubmissionRequest } from '@teams-vote/data';
 
 const apiUrl = import.meta.env.VITE_API_URL as string;
 
@@ -14,7 +15,7 @@ export const VotePanel: Component = () => {
     onCleanup(() => abortController.abort('onCleanup'))
 
     async function vote(score: number | string) {
-        await submitVote(session.meetingId, session.token, session.user, score, abortController.signal)
+        await submitVote({ ...session, score }, abortController.signal)
     }
 
     const selectedAppearance: ButtonAppearance = "accent"
@@ -46,18 +47,18 @@ export const AdminPanel: Component = () => {
     onCleanup(() => abortController.abort('onCleanup'))
 
     async function vote(score: number | string) {
-        await submitVote(session.meetingId, session.token, session.user, score, abortController.signal)
+        await submitVote({ ...session, score }, abortController.signal)
     }
     async function reset() {
         setShowScores(false)
-        await requestReset(session.meetingId, session.token, session.user, abortController.signal)
+        await requestReset(session, abortController.signal)
     }
     async function show() {
-        setAggregate(await requestAggregate(session.meetingId, session.token, session.user, abortController.signal))
+        setAggregate(await requestAggregate(session, abortController.signal))
         setShowScores(true)
     }
     async function accept() {
-        await acceptScore(session.meetingId, session.token, session.user, abortController.signal)
+        await acceptScore(session, abortController.signal)
         setShowScores(true)
     }
 
@@ -73,48 +74,46 @@ export const AdminPanel: Component = () => {
     </>
 }
 
-async function submitVote(meetingId: string, token: string, user: { id: string, name: string }, score: number | string, signal: AbortSignal) {
-    const response = await fetch(`${apiUrl}/submit`, {
+async function submitVote(submissionRequest: SubmissionRequest, signal: AbortSignal) {
+    await fetch(`${apiUrl}/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ meetingId, token, user, score }),
+        body: JSON.stringify(submissionRequest),
         signal
     }).then(async httpResponse => {
         if (!httpResponse.ok) throw await httpResponse.text();
-        return httpResponse.json();
     });
-    return response;
 }
 
-async function requestReset(meetingId: string, token: string, user: { id: string, name: string }, signal: AbortSignal) {
+async function requestReset(resetRequest: StatusRequest, signal: AbortSignal) {
     await fetch(`${apiUrl}/reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ meetingId, token, user }),
+        body: JSON.stringify(resetRequest),
         signal
     }).then(async httpResponse => {
         if (!httpResponse.ok) throw await httpResponse.text();
     });
 }
 
-async function requestAggregate(meetingId: string, token: string, user: { id: string, name: string }, signal: AbortSignal) {
+async function requestAggregate(aggregateRequest: StatusRequest, signal: AbortSignal) {
     const response = await fetch(`${apiUrl}/aggregate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ meetingId, token, user }),
+        body: JSON.stringify(aggregateRequest),
         signal
     }).then(async httpResponse => {
         if (!httpResponse.ok) throw await httpResponse.text();
-        return httpResponse.json();
+        return httpResponse.json() as Promise<AggregateResponse>;
     });
-    return response.result.average;
+    return response.average;
 }
 
-async function acceptScore(meetingId: string, token: string, user: { id: string, name: string }, signal: AbortSignal) {
+async function acceptScore(acceptRequest: StatusRequest, signal: AbortSignal) {
     await fetch(`${apiUrl}/accept`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ meetingId, token, user }),
+        body: JSON.stringify(acceptRequest),
         signal
     }).then(async httpResponse => {
         if (!httpResponse.ok) throw await httpResponse.text();

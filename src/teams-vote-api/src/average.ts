@@ -1,14 +1,5 @@
-import { Deck, Submission } from "./state";
+import { Deck, decks, Submission } from "@teams-vote/data"
 
-const baseFibonacci = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
-const modifiedFibonacci = [0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100];
-const tShirtSizes: Record<string, number> = { XS: 1, S: 2, M: 3, L: 4, XL: 5 };
-const tShirtDeck = Object.values(tShirtSizes);
-const tShirtKeys = Array.from(tShirtDeck.keys());
-const tShirtLabels = Object.entries(tShirtSizes).reduce<Record<number, string>>((acc, [label, num]) => {
-    acc[num] = label;
-    return acc;
-}, {});
 
 function calculateAverageShirt(submissions: Submission<'t-shirt'>[]) {
 
@@ -19,7 +10,7 @@ function calculateAverageShirt(submissions: Submission<'t-shirt'>[]) {
 
         if (score === '?' || score === 'skip') continue;
 
-        const num = tShirtSizes[score];
+        const num = decks.tShirtSizes[score];
         if (num === undefined) continue;
 
         validScores.push(num);
@@ -28,9 +19,9 @@ function calculateAverageShirt(submissions: Submission<'t-shirt'>[]) {
     if (validScores.length === 0) return undefined;
 
     const average = validScores.reduce((sum, x) => sum + x, 0) / validScores.length;
-    const nearestCard = roundToNearestCard(average, tShirtDeck);
+    const nearestCard = roundToNearestCard(average, decks.tShirtDeck);
 
-    return tShirtLabels[nearestCard]
+    return decks.tShirtLabels[nearestCard]
 }
 
 function calculateAverageFibonacci(
@@ -76,8 +67,8 @@ function roundToNearestCard(average: number, deck: number[]) {
 export function calculateAverage(type: Deck, submissions: Submission<Deck>[]) {
     if (submissions.length === 0) return undefined
 
-    if (type === 'fibonacci') return calculateAverageFibonacci(submissions as Submission<'fibonacci'>[], baseFibonacci);
-    if (type === 'modified-fibonacci') return calculateAverageFibonacci(submissions as Submission<'fibonacci'>[], modifiedFibonacci);
+    if (type === 'fibonacci') return calculateAverageFibonacci(submissions as Submission<'fibonacci'>[], decks.baseFibonacci);
+    if (type === 'modified-fibonacci') return calculateAverageFibonacci(submissions as Submission<'fibonacci'>[], decks.modifiedFibonacci);
     if (type === 't-shirt') return calculateAverageShirt(submissions as Submission<'t-shirt'>[]);
 
     throw new Error('Unsupported deck')
@@ -91,9 +82,9 @@ export function validateScore(type: Deck, score: string | number) {
 }
 
 function getDeck(type: Deck) {
-    if (type === 'fibonacci') return baseFibonacci
-    if (type === 'modified-fibonacci') return modifiedFibonacci
-    if (type === 't-shirt') return tShirtKeys
+    if (type === 'fibonacci') return decks.baseFibonacci
+    if (type === 'modified-fibonacci') return decks.modifiedFibonacci
+    if (type === 't-shirt') return decks.tShirtKeys
 
     throw new Error('Unsupported deck')
 }

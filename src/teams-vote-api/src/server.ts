@@ -2,12 +2,12 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { v4 as uuid } from "uuid";
-import { Deck, SessionData, SessionRequest, sessions, Submission, User } from './state';
-import { Session } from "./state";
 import { Mutex } from "async-mutex";
-import { calculateAverage, validateScore } from "./average";
+import { calculateAverage, validateScore } from "./average.js";
+import { AggregateResponse, ServerSession, SessionResponse, StartRequest, StatusRequest, StatusResponse, SubmissionRequest } from "@teams-vote/data";
 
 const sessionLocks = new Map<string, Mutex>();
+const sessions = new Map<string, ServerSession>();
 
 const app = Fastify({ logger: true });
 app.register(cors, {
@@ -17,7 +17,7 @@ app.register(cors, {
 
 // Start a round
 app.post("/start", async (request, reply) => {
-  const body = request.body as { roundKey: string, meetingId: string, type: Deck, user: User };
+  const body = request.body as StartRequest;
   const { roundKey, meetingId, type, user } = body;
 
   if (!meetingId) return reply.status(400).send({ error: "meetingId required" });
@@ -27,7 +27,7 @@ app.post("/start", async (request, reply) => {
 
   const roundToken = uuid();
 
-  const session: Session = {
+  const session: ServerSession = {
     meetingId,
     roundKey,
     token: roundToken,
@@ -43,7 +43,7 @@ app.post("/start", async (request, reply) => {
 
   sessions.set(meetingId, session);
 
-  return session;
+  return session as SessionResponse;
 });
 
 function getMutex(meetingId: string) {
@@ -63,7 +63,7 @@ app.get("/health", async () => {
 });
 
 app.post("/submit", async (request, reply) => {
-  const body = request.body as SessionData & Submission<Deck>;
+  const body = request.body as SubmissionRequest;
   const { meetingId, token, user, score } = body;
 
   const mutex = getMutex(meetingId);
@@ -83,12 +83,12 @@ app.post("/submit", async (request, reply) => {
     session.submissions.set(user.id, { user, score });
     sessions.set(meetingId, session);
 
-    return { status: "ok" };
+    return undefined;
   });
 });
 
 app.post("/status", async (request, reply) => {
-  const body = request.body as SessionRequest;
+  const body = request.body as StatusRequest;
   const { meetingId, token, user } = body;
 
   const mutex = getMutex(meetingId);
@@ -108,19 +108,20 @@ app.post("/status", async (request, reply) => {
     const submissions = Array.from(session.submissions.values());
     const users = Array.from(session.users.values());
 
-    const result = {
+    console.log(currentUser)
+    const result: StatusResponse = {
       roundKey: session.roundKey,
-      admin: (currentUser ?? user).admin ?? false,
+      admin: (currentUser ?? user)?.admin ?? false,
       submissions,
       users
     }
 
-    return { result };
+    return result;
   });
 });
 
 app.post("/aggregate", async (request, reply) => {
-  const body = request.body as SessionRequest;
+  const body = request.body as StatusRequest;
   const { meetingId, token, user } = body;
 
   const session = sessions.get(meetingId);
@@ -139,16 +140,16 @@ app.post("/aggregate", async (request, reply) => {
   }
 
   const submissions = Array.from(session.submissions.values());
-  const result = {
+  const result: AggregateResponse = {
     submissions,
     average: calculateAverage(session.type, submissions)
   }
 
-  return { result };
+  return result;
 });
 
 app.post("/accept", async (request, reply) => {
-  const body = request.body as SessionRequest;
+  const body = request.body as StatusRequest;
   const { meetingId, token, user } = body;
 
   const session = sessions.get(meetingId);
@@ -173,7 +174,7 @@ app.post("/accept", async (request, reply) => {
 });
 
 app.post("/reset", async (request, reply) => {
-  const body = request.body as SessionRequest;
+  const body = request.body as StatusRequest;
   const { meetingId, token, user } = body;
 
   const session = sessions.get(meetingId);

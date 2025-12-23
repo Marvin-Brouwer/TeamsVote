@@ -1,4 +1,4 @@
-import { Component, createEffect, Show } from "solid-js";
+import { Component, Show } from "solid-js";
 import { parseKeyUrl } from "../helpers/url";
 import { useSession } from "../contexts/session-context";
 
