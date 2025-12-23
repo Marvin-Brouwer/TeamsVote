@@ -7,6 +7,8 @@ import { AppRoot } from './app';
 import { TeamsProvider } from './contexts/teams-context'
 import { SessionProvider } from './contexts/session-context';
 
+import './index.css'
+
 const TabView = namedLazy(() => import("./pages/tab").then(m => m.TabView));
 const VoterView = namedLazy(() => import("./pages/vote").then(m => m.VoterView));
 const NotSupportedPage = namedLazy(() => import("./pages/not-supported").then(m => m.NotSupportedPage));

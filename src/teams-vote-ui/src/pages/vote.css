@@ -1,0 +1,21 @@
+.floater {
+  position: fixed;
+  bottom: 0;
+  height: var(--card-height);
+  width: 100%;
+  max-width: calc(1280px - 4rem);
+  margin: 2rem;
+  box-sizing: border-box;
+}
+
+.vote-view {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr min-content;
+  gap: 1ex 0;
+  grid-template-areas:
+    "content"
+    "menu";
+  height: var(--vote-height, 100%);
+  box-sizing: border-box;
+}

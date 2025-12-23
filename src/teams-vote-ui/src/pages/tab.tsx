@@ -3,6 +3,7 @@ import { postCard, useTeams, type TeamsContext } from "../contexts/teams-context
 import { Button, ButtonAppearance, TextFieldAppearance } from "@fluentui/web-components";
 
 import "./tab.css"
+import { formatUrl } from "../helpers/url";
 
 const apiUrl = import.meta.env.VITE_API_URL as string;
 
@@ -125,7 +126,7 @@ function createJoinCard(pageUrl: string, roundKey: string, teamsContext: TeamsCo
             },
             {
                 "type": "TextBlock",
-                "text": `Vote on [${roundKey}](${roundKey})`,
+                "text": `Vote on ${formatUrl(roundKey)}`,
                 "wrap": true,
                 "separator": true
             },
@@ -136,7 +137,8 @@ function createJoinCard(pageUrl: string, roundKey: string, teamsContext: TeamsCo
                         "type": "Action.OpenUrl",
                         "title": "Vote",
                         "iconUrl": "icon:Vote",
-                        "url": deepLink
+                        "url": deepLink,
+                        "style": "positive"
                     }
                 ]
             }
@@ -145,4 +147,3 @@ function createJoinCard(pageUrl: string, roundKey: string, teamsContext: TeamsCo
 
     return card;
 }
-

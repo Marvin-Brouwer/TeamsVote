@@ -11,6 +11,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  height: 100%;
+  position: relative;
+  --card-height: min-content;
+  --card-width: unset;
 }
 fluent-badge[appearance="tint"] {
   outline: 2px dashed red !important;
@@ -27,10 +32,11 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
+  width: 100%;
   min-height: 100vh;
+  height: 100%;
+  display: relative;
 }
 
 h1 {

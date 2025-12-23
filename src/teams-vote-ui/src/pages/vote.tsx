@@ -1,26 +1,29 @@
-import { DataGrid } from "@fluentui/web-components";
 import { Show, type Component } from "solid-js";
 import { AdminPanel, VotePanel } from "../components/vote";
 import { useSession } from "../contexts/session-context";
 import { UserList } from "../components/user-list";
+import { KeyDisplay } from "../components/key-display";
+
+import "./vote.css";
 
 export const VoterView: Component = () => {
 
-    // TODO render link if roundKey is url
     const { session } = useSession();
 
-    return <>
-        <h2>{session.roundKey}</h2>
+    return <div class="vote-view" style={import.meta.env.DEV && session.meetingId === 'test-channel' ? '--vote-height: calc(100% - 70px);' : undefined}>
+        <div class="content">
+        <h2><KeyDisplay key={session.roundKey} /></h2>
         {/* TODO link preview? */}
         <fluent-divider />
         <UserList />
-        <p></p>
-        {/* TODO: Pin to bottom */}
-        <fluent-card>
-            <VotePanel />
-            <Show when={session.admin}>
-                <AdminPanel />
-            </Show>
-        </fluent-card>
-    </>
+        </div>
+        <div class="menu">
+            <fluent-card>
+                <VotePanel />
+                <Show when={session.admin}>
+                    <AdminPanel />
+                </Show>
+            </fluent-card>
+        </div>
+    </div>
 }

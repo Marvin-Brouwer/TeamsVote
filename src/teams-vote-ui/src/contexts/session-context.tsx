@@ -123,6 +123,19 @@ async function postStatus(meetingId: string, roundKey: string, token: string, us
 }
 
 
+// TODO make the copy work:
+// adaptiveCard.onExecuteAction = (action) => {
+//   const data = (action as any).data;
+//   if (data?.copyValue) {
+//     navigator.clipboard.writeText(data.copyValue)
+//       .then(() => console.log("Copied:", data.copyValue))
+//       .catch(console.error);
+//   }
+// };
+
+//adaptiveCard is your AdaptiveCard instance
+
+
 function createSummaryCard(roundKey: string, score: string | number | undefined) {
 
     const card = {
