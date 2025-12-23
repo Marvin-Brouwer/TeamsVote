@@ -8,13 +8,13 @@ const jiraRegex = new RegExp(
     "is"
 )
 
-export function parseKeyUrl(key: string) {
+export function parseKeyUrl(key: string): string | [undefined, URL] | [string,URL] {
     const urlOrString = parseUrl(key);
     if (typeof urlOrString === 'string') return key
     const jiraMatch = jiraRegex.exec(key)
-    if (jiraMatch && jiraMatch.groups?.jiraKey) return [jiraMatch.groups?.jiraKey, key]
+    if (jiraMatch && jiraMatch.groups?.jiraKey) return [jiraMatch.groups?.jiraKey, urlOrString]
 
-    return [key, key]
+    return [undefined, urlOrString]
 }
 
 export function formatUrl(key: string) {
@@ -22,6 +22,8 @@ export function formatUrl(key: string) {
     if (keyOrUrl.length === 1) return key;
 
     const [titleKey, keyUrl] = keyOrUrl
+    if(!titleKey) return `[${key}](${key})`
+
     return`[${titleKey}](${keyUrl})`
 
 }

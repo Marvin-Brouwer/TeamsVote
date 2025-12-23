@@ -1,4 +1,4 @@
-import { Component, Show } from "solid-js";
+import { Component, createEffect, Show } from "solid-js";
 import { parseKeyUrl } from "../helpers/url";
 import { useSession } from "../contexts/session-context";
 
@@ -11,12 +11,33 @@ export const KeyDisplay: Component = () => {
 			const keyOrUrl = parseKeyUrl(session.roundKey!);
 			if (typeof keyOrUrl === 'string') return <h2>{session.roundKey}</h2>
 			const [title, url] = keyOrUrl
-			if (!url) return <h2>{session.roundKey}</h2>
+			if (!title) return <h2>{session.roundKey}</h2>
 			return <h2>
-				<a href={url} target="_blank">
+				<a href={url.href} target="_blank">
 					{title}
 				</a>
+				<TitleDisplay url={url} key={title} />
 			</h2>
 		}}</>
 	</Show>
+}
+export const TitleDisplay: Component<{ url: URL, key: string }> = ({ url, key }) => {
+
+	createEffect(async () => {
+		console.log(await requestJiraSummary(url, key, undefined!))
+	})
+
+	return undefined
+}
+
+async function requestJiraSummary(baseUrl: URL, issueKey: string, signal: AbortSignal) {
+    const response = await fetch(new URL(`/rest/api/3/issue/${issueKey}?fields=summary`, baseUrl), {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        signal
+    }).then(httpResponse => {
+        return [httpResponse.json(), httpResponse.ok];
+    });
+
+    return response
 }
