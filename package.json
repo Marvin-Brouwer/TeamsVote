@@ -3,7 +3,9 @@
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.17.1",
   "scripts": {
-    "m365": "m365"
+    "m365": "m365",
+    "deploy:build": "pnpm run -r --sequential build",
+    "deploy:start": "pnpm run --filter @teams-vote/api start "
   },
   "devDependencies": {
     "@pnp/cli-microsoft365": "^11.3.1",
