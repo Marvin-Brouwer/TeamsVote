@@ -39,9 +39,14 @@
     "menu";
   height: var(--vote-height, 100%);
   box-sizing: border-box;
+  contain: none;
 }
 
+.menu {
+  overflow: visible;
+  contain: none;
+}
 .content {
-  overflow-x: hidden; 
-  overflow-y: auto; 
+  overflow-x: hidden;
+  overflow-y: auto;
 }

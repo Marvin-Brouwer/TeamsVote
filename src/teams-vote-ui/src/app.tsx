@@ -1,6 +1,6 @@
 import { RouteSectionProps } from '@solidjs/router'
 import { children, createEffect, createSignal, Show, type Component } from 'solid-js'
-import { DesignSystemProvider, fluentBadge, fluentButton, fluentCard, fluentDataGrid, fluentDataGridCell, fluentDataGridRow, fluentTextField, provideFluentDesignSystem } from '@fluentui/web-components'
+import { DesignSystemProvider, fluentAnchoredRegion, fluentBadge, fluentButton, fluentCard, fluentDataGrid, fluentDataGridCell, fluentDataGridRow, fluentOption, fluentSelect, fluentTextField, provideFluentDesignSystem } from '@fluentui/web-components'
 
 import './app.css'
 
@@ -19,6 +19,7 @@ export const AppRoot: Component<RouteSectionProps> = (props) => {
         provideFluentDesignSystem(themeRoot)
             .register(fluentButton())
             .register(fluentTextField())
+            .register(fluentSelect(), fluentOption())
             .register(fluentBadge())
             .register(fluentCard())
             .register(
@@ -26,6 +27,7 @@ export const AppRoot: Component<RouteSectionProps> = (props) => {
                 fluentDataGridRow(),
                 fluentDataGrid()
             )
+            .register(fluentAnchoredRegion())
             .withShadowRootMode('open')
             .withDesignTokenRoot(document);
 

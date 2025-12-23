@@ -4,6 +4,7 @@ import { Button, ButtonAppearance, TextFieldAppearance } from "@fluentui/web-com
 import { formatUrl } from "../helpers/url";
 
 import "./tab.css"
+import { Portal } from "solid-js/web";
 
 const apiUrl = import.meta.env.VITE_API_URL as string;
 
@@ -72,13 +73,38 @@ export const TabView: Component = () => {
                     </pre>
                     <p>&nbsp;</p>
                 </div>
-                <div class="menu">
-                    <fluent-card class="launcher">
-                        <fluent-text-field appearance={"filled" as TextFieldAppearance} placeholder="What are you estimating" onInput={(e) => {
-                            setRoundKey(e.currentTarget.value)
-                        }} value={roundKey()} /> {" "}
-                        <fluent-button ref={startButton} appearance={"accent" as ButtonAppearance} onClick={startEstimate} disabled={!running() || !roundKey()}>Estimate</fluent-button>
-                    </fluent-card>
+                <div class="menu overflow">
+                    <fluent-card class="launcher-fake" />
+                    <div class="launcher">
+                        <div>
+                            <fluent-text-field
+                                id="round-input"
+                                appearance={"filled" as TextFieldAppearance}
+                                placeholder="What are you estimating"
+                                onInput={(e) => {
+                                    setRoundKey(e.currentTarget.value)
+                                }} value={roundKey()}
+                            />
+                        </div>
+                        <div>
+                            <fluent-select
+                                id="type-select"
+                            >
+                                <fluent-option value="modified-fibonacci">Modified fibonacci</fluent-option>
+                                <fluent-option value="fibonacci">Fibonacci</fluent-option>
+                                <fluent-option value="t-shirt">T-Shirt sizes</fluent-option>
+                            </fluent-select>
+                            <fluent-button
+                                ref={startButton}
+                                appearance={"accent" as ButtonAppearance}
+                                onClick={startEstimate}
+                                disabled={!running() || !roundKey()}
+                                id="estimate-button"
+                            >
+                                Estimate
+                            </fluent-button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
