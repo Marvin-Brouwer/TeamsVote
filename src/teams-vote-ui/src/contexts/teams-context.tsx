@@ -97,10 +97,10 @@ export const TeamsProvider: ParentComponent = (props) => {
 
     return <teamsContext.Provider value={activeTeamsContext()}>
         <Show when={import.meta.env.DEV && !getTeamsContext()}>
-            <fluent-card>
+            <fluent-card style="margin-bottom: 1ex;">
                 <p>
                     DEV MODE: Fake session 
-                    <fluent-badge appearance="outline" color="red">{testTeamsContext.user?.displayName} ({testTeamsContext.user?.id})</fluent-badge>
+                    <fluent-badge appearance="neutral">{testTeamsContext.user?.displayName} ({testTeamsContext.user?.id})</fluent-badge>
                 </p>
             </fluent-card>
         </Show>

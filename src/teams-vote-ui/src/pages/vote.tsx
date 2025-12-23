@@ -10,7 +10,7 @@ export const VoterView: Component = () => {
 
     return <div class="view" style={import.meta.env.DEV && session.meetingId === 'test-channel' ? '--vote-height: calc(100% - 70px);' : undefined}>
         <div class="content">
-            <h2><KeyDisplay key={session.roundKey} /></h2>
+            <KeyDisplay />
             {/* TODO link preview? */}
             <fluent-divider />
             <UserList />
