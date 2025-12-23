@@ -21,15 +21,17 @@ export const KeyDisplay: Component = () => {
 		}}</>
 	</Show>
 }
-export const TitleDisplay: Component<{ url: URL, key: string }> = ({ url, key }) => {
+export const TitleDisplay: Component<{ url: URL, key: string }> = () => {
 
-	createEffect(async () => {
-		console.log(await requestJiraSummary(url, key, undefined!))
-	})
+	// createEffect(async () => {
+	// 	console.log(await requestJiraSummary(url, key, undefined!))
+	// })
 
 	return undefined
 }
 
+// TODO: Proxy through backend using OATH
+// For best UX, only the admin should have to be logged in, and it should be a choice
 async function requestJiraSummary(baseUrl: URL, issueKey: string, signal: AbortSignal) {
     const response = await fetch(new URL(`/rest/api/3/issue/${issueKey}?fields=summary`, baseUrl), {
         method: 'GET',
