@@ -3,6 +3,7 @@ packages:
 
 onlyBuiltDependencies:
   - '@swc/core'
+  - botbuilder
   - esbuild
   - protobufjs
 

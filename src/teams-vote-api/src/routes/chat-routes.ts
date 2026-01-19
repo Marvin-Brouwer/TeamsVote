@@ -1,19 +1,26 @@
 import { FastifyInstance } from "fastify";
-import { CloudAdapter, ConfigurationBotFrameworkAuthentication, ConfigurationServiceClientCredentialFactory, TurnContext } from "botbuilder";
+import { CloudAdapter, ConfigurationBotFrameworkAuthentication, ConfigurationServiceClientCredentialFactory, ConfigurationServiceClientCredentialFactoryOptions, createBotFrameworkAuthenticationFromConfiguration, TurnContext } from "botbuilder";
 import { ChatBot } from "../utilities/chatbot.js";
 
+const DEV = (import.meta as any).env.DEV;
 const TENANT = process.env.TEAMS_PLUGIN_TENANT_ID!;
 const APP_ID = process.env.TEAMS_CHATBOT_CLIENT_ID!;
 const APP_PASSWORD = process.env.TEAMS_CHATBOT_CLIENT_SECRET!;
 
 const bot = new ChatBot();
-const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
+const credentialOptions: ConfigurationServiceClientCredentialFactoryOptions = {
     MicrosoftAppTenantId: TENANT,
     MicrosoftAppId: APP_ID,
     MicrosoftAppPassword: APP_PASSWORD,
     MicrosoftAppType: 'chatbot'
-})
-const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication({ MicrosoftAppId: APP_ID, MicrosoftAppTenantId: TENANT }, credentialsFactory);
+}
+const credentialsFactory = new ConfigurationServiceClientCredentialFactory(DEV ? { } : credentialOptions)
+
+const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication({
+    MicrosoftAppId: APP_ID,
+    MicrosoftAppTenantId: TENANT
+}, credentialsFactory);
+
 
 const adapter = new CloudAdapter(botFrameworkAuthentication);
 adapter.onTurnError = async (context: TurnContext, error: Error) => {
@@ -22,21 +29,33 @@ adapter.onTurnError = async (context: TurnContext, error: Error) => {
 };
 
 export function applyChatHandler(app: FastifyInstance) {
-    app.post("/chatbot/messages", async (request, reply) => {
+
+    app.post('/chatbot/messages', async (request, reply) => {
         // Wrap Fastify's raw req/res to look like Express
-        const req = request.raw;   // IncomingMessage
+        const req = Object.assign(request.raw, {
+            body: request.body as any
+        });
         const res = {
             ...reply.raw,          // ServerResponse
             // Provide the minimal Express-style methods CloudAdapter expects
             status: (code: number) => { reply.code(code); return res; },
             send: (body?: any) => { reply.send(body); return res; },
-            setHeader: (name: string, value: string) => { reply.header(name, value); return res; }
-        } as any;
+            setHeader: (name: string, value: string) => { reply.header(name, value); return res; },
+            end: (...args: unknown[]) => {
+                for (const arg of args) reply.send(arg)
+                reply.raw.end()
+            },
+            header: reply.raw.getHeader
+        };
 
-        await adapter.process(req, res, async (context: TurnContext) => {
-            await bot.run(context);
-        });
-
-        reply.code(200).send();
+        try {
+            await adapter.process(req, res, async (context: TurnContext) => {
+                await bot.run(context);
+            });
+            reply.code(200).send();
+        } catch (err) {
+            console.error("Unexpected teams bot error:", err);
+            reply.code(500).send(JSON.stringify(err));
+        }
     });
 }

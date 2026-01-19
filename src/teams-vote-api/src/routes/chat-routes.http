@@ -1,0 +1,120 @@
+
+### Empty /vote
+# @name empty
+POST http://localhost:10000/chatbot/messages
+Content-Type: application/json
+
+{
+  "type": "invoke",
+  "name": "composeExtension/fetchTask",
+  "id": "f:bc319b1d-571a-194d-9ffb-11d7ab37c9ff",
+  "channelId": "msteams",
+  "serviceUrl": "https://smba.trafficmanager.net/emea/",
+  "from": { "id": "user-id" },
+  "recipient": { "id": "bot-id" },
+  "conversation": { "id": "conv-id" },
+  "from": {
+    "id": "29:1aBjVi5MwCFfhPIV03E5uDdfpBFXp_2Yz-sjrvVg12oavg96cqpE_DiMhOpmN9zHeZpYbJcuUEKuSDy2AYWPz1A",
+    "name": "Test User",
+    "aadObjectId": "b130c271-d2eb-45f9-83ab-9eb3fe3788bc"
+  },
+  "channelData": {
+    "tenant": {
+      "id": "0d9b645f-597b-41f0-a2a3-ef103fbd91bb"
+    },
+    "source": {
+      "name": "compose"
+    }
+  },
+  "value": {
+    "commandId": "vote",
+    "commandContext": "compose",
+    "requestId": "fe50f49e5c74440bb2ebf07f49e9553c",
+    "context": {
+      "theme": "default"
+    }
+  }
+}
+
+
+### /vote Some title
+# @name noTypeDefined
+POST http://localhost:10000/chatbot/messages
+Content-Type: application/json
+
+{
+  "type": "invoke",
+  "name": "composeExtension/fetchTask",
+  "id": "f:bc319b1d-571a-194d-9ffb-11d7ab37c9ff",
+  "channelId": "msteams",
+  "serviceUrl": "https://smba.trafficmanager.net/emea/",
+  "from": { "id": "user-id" },
+  "recipient": { "id": "bot-id" },
+  "conversation": { "id": "conv-id" },
+  "from": {
+    "id": "29:1aBjVi5MwCFfhPIV03E5uDdfpBFXp_2Yz-sjrvVg12oavg96cqpE_DiMhOpmN9zHeZpYbJcuUEKuSDy2AYWPz1A",
+    "name": "Test User",
+    "aadObjectId": "b130c271-d2eb-45f9-83ab-9eb3fe3788bc"
+  },
+  "channelData": {
+    "tenant": {
+      "id": "0d9b645f-597b-41f0-a2a3-ef103fbd91bb"
+    },
+    "source": {
+      "name": "compose"
+    }
+  },
+  "value": {
+    "commandId": "vote",
+    "parameters": [{
+      "name": "command",
+      "value": "The title to vote on"
+    }],
+    "commandContext": "compose",
+    "requestId": "fe50f49e5c74440bb2ebf07f49e9553c",
+    "context": {
+      "theme": "default"
+    }
+  }
+}
+
+### /vote --fibonacci Some title
+# @name withTypeDefined
+POST http://localhost:10000/chatbot/messages
+Content-Type: application/json
+
+{
+  "type": "invoke",
+  "name": "composeExtension/fetchTask",
+  "id": "f:bc319b1d-571a-194d-9ffb-11d7ab37c9ff",
+  "channelId": "msteams",
+  "serviceUrl": "https://smba.trafficmanager.net/emea/",
+  "from": { "id": "user-id" },
+  "recipient": { "id": "bot-id" },
+  "conversation": { "id": "conv-id" },
+  "from": {
+    "id": "29:1aBjVi5MwCFfhPIV03E5uDdfpBFXp_2Yz-sjrvVg12oavg96cqpE_DiMhOpmN9zHeZpYbJcuUEKuSDy2AYWPz1A",
+    "name": "Test User",
+    "aadObjectId": "b130c271-d2eb-45f9-83ab-9eb3fe3788bc"
+  },
+  "channelData": {
+    "tenant": {
+      "id": "0d9b645f-597b-41f0-a2a3-ef103fbd91bb"
+    },
+    "source": {
+      "name": "compose"
+    }
+  },
+  "value": {
+    "commandId": "vote",
+    "parameters": [{
+      "name": "command",
+      "value": "--fibonacci The title to vote on"
+    }],
+    "commandContext": "compose",
+    "requestId": "fe50f49e5c74440bb2ebf07f49e9553c",
+    "context": {
+      "theme": "default"
+    }
+  }
+}

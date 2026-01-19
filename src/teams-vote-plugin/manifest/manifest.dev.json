@@ -45,22 +45,22 @@
             "botId": "<TEAMS_CHATBOT_CLIENT_ID>",
             "scopes": [
                 "personal",
-                "team"
+                "team",
+                "groupchat"
             ],
             "supportsFiles": false,
-            "isNotificationOnly": false,
-            "commandLists": [
+            "isNotificationOnly": false
+        }
+    ],
+    "composeExtensions": [
+        {
+            "botId": "<TEAMS_CHATBOT_CLIENT_ID>",
+            "commands": [
                 {
-                    "scopes": [
-                        "personal",
-                        "team"
-                    ],
-                    "commands": [
-                        {
-                            "title": "vote",
-                            "description": "Start a new voting round"
-                        }
-                    ]
+                    "id": "vote",
+                    "type": "action",
+                    "title": "Vote",
+                    "description": "Start a new voting session"
                 }
             ]
         }
