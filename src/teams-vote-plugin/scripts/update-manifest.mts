@@ -9,7 +9,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const devManifestPath = path.join(__dirname, "../manifest/manifest.dev.json");
+const devManifestPath = path.join(__dirname, "../manifest/manifest.source.json");
 const outputManifestPath = path.join(__dirname, "../manifest.json");
 
 const appId = process.env.TEAMS_APP_ID;

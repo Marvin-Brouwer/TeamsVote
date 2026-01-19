@@ -15,7 +15,7 @@
     },
     "description": {
         "short": "Teams scrum voting, but simple",
-        "full": "Every scrum voting website or teams plugin does too much. \nJust request estimates from team members and collect the total."
+        "full": "Every scrum voting website or teams plugin does too much. \nThis app just requests estimates from team members and collects the total."
     },
     "accentColor": "#ffffff",
     "icons": {
