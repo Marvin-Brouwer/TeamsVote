@@ -13,7 +13,9 @@
     "@fastify/cors": "^11.2.0", 
     "uuid": "^13.0.0",
     "async-mutex": "^0.5.0",
-    "@teams-vote/data": "workspace:^"
+    "@teams-vote/data": "workspace:^",
+    "botbuilder": "^4.23.3",
+    "botbuilder-teams": "^0.2.9"
   },
   "devDependencies": {
     "@types/uuid": "^11.0.0", 

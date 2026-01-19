@@ -42,6 +42,7 @@ replaceEnv('TEAMS_APP_ID');
 replaceEnv('TEAMS_UI_URL');
 replaceEnv('TEAMS_APP_CLIENT_ID');
 replaceEnv('TEAMS_APP_CLIENT_ID_URL');
+replaceEnv('TEAMS_CHATBOT_CLIENT_ID');
 
 // Write updated manifest
 const manifestJson = JSON.parse(manifestContent);

@@ -1,0 +1,196 @@
+// src/server.ts
+import { FastifyInstance } from "fastify";
+import { v4 as uuid } from "uuid";
+import { Mutex } from "async-mutex";
+import { calculateAverage, validateScore } from "../utilities/average.js";
+import { AggregateResponse, ServerSession, SessionResponse, StartRequest, StatusRequest, StatusResponse, SubmissionRequest } from "@teams-vote/data";
+
+const sessionLocks = new Map<string, Mutex>();
+const sessions = new Map<string, ServerSession>();
+
+export function applySessionRoutes(app: FastifyInstance) {
+
+    app.post("/start", async (request, reply) => {
+        const body = request.body as StartRequest;
+        const { roundKey, meetingId, type, user } = body;
+
+        if (!meetingId) return reply.status(400).send({ error: "meetingId required" });
+        if (!roundKey) return reply.status(400).send({ error: "roundKey required" });
+        if (!type) return reply.status(400).send({ error: "type required" });
+        if (!user) return reply.status(400).send({ error: "user required" });
+
+        const roundToken = uuid();
+
+        const session: ServerSession = {
+            meetingId,
+            roundKey,
+            token: roundToken,
+            type,
+            users: new Map(),
+            submissions: new Map()
+        }
+
+        session.users.set(user.id, {
+            ...user,
+            admin: true
+        })
+
+        sessions.set(meetingId, session);
+
+        return session as SessionResponse;
+    });
+
+    function getMutex(meetingId: string) {
+        let mutex = sessionLocks.get(meetingId);
+        if (!mutex) {
+            mutex = new Mutex();
+            sessionLocks.set(meetingId, mutex);
+        }
+        return mutex;
+    }
+
+    app.get("/", async () => {
+        return { status: "healthy" };
+    });
+    app.get("/health", async () => {
+        return { status: "healthy" };
+    });
+
+    app.post("/submit", async (request, reply) => {
+        const body = request.body as SubmissionRequest;
+        const { meetingId, token, user, score } = body;
+
+        const mutex = getMutex(meetingId);
+
+        return mutex.runExclusive(() => {
+            const session = sessions.get(meetingId);
+            if (!session || session.token !== token) {
+                reply.status(404);
+                return { error: "Session not found" };
+            }
+
+            if (!validateScore(session.type, score)) {
+                reply.status(403);
+                return { error: "Incorrect score" };
+            }
+
+            session.submissions.set(user.id, { user, score });
+            sessions.set(meetingId, session);
+
+            return undefined;
+        });
+    });
+
+    app.post("/status", async (request, reply) => {
+        const body = request.body as StatusRequest;
+        const { meetingId, token, user } = body;
+
+        const mutex = getMutex(meetingId);
+
+        return mutex.runExclusive(() => {
+
+            const session = sessions.get(meetingId);
+            if (!session || session.token !== token) {
+                reply.status(404);
+                return { error: "Session not found" };
+            }
+            const currentUser = session.users.get(user.id)
+            if (!currentUser) {
+                session.users.set(user.id, user)
+            }
+
+            const submissions = Array.from(session.submissions.values());
+            const users = Array.from(session.users.values());
+
+            console.log(currentUser)
+            const result: StatusResponse = {
+                roundKey: session.roundKey,
+                admin: (currentUser ?? user)?.admin ?? false,
+                submissions,
+                users
+            }
+
+            return result;
+        });
+    });
+
+    app.post("/aggregate", async (request, reply) => {
+        const body = request.body as StatusRequest;
+        const { meetingId, token, user } = body;
+
+        const session = sessions.get(meetingId);
+        if (!session || session.token !== token) {
+            reply.status(404);
+            return { error: "Session not found" };
+        }
+        const currentUser = session.users.get(user.id)
+        if (!currentUser) {
+            reply.status(404);
+            return { error: "Session not found" };
+        }
+        if (!currentUser.admin) {
+            reply.status(403);
+            return { error: "User is no admin" };
+        }
+
+        const submissions = Array.from(session.submissions.values());
+        const result: AggregateResponse = {
+            submissions,
+            average: calculateAverage(session.type, submissions)
+        }
+
+        return result;
+    });
+
+    app.post("/accept", async (request, reply) => {
+        const body = request.body as StatusRequest;
+        const { meetingId, token, user } = body;
+
+        const session = sessions.get(meetingId);
+        if (!session || session.token !== token) {
+            reply.status(404);
+            return { error: "Session not found" };
+        }
+        const currentUser = session.users.get(user.id)
+        if (!currentUser) {
+            reply.status(404);
+            return { error: "Session not found" };
+        }
+        if (!currentUser.admin) {
+            reply.status(403);
+            return { error: "User is no admin" };
+        }
+
+        sessions.delete(meetingId);
+
+        reply.status(200)
+        return undefined;
+    });
+
+    app.post("/reset", async (request, reply) => {
+        const body = request.body as StatusRequest;
+        const { meetingId, token, user } = body;
+
+        const session = sessions.get(meetingId);
+        if (!session || session.token !== token) {
+            reply.status(404);
+            return { error: "Session not found" };
+        }
+        const currentUser = session.users.get(user.id)
+        if (!currentUser) {
+            reply.status(404);
+            return { error: "Session not found" };
+        }
+        if (!currentUser.admin) {
+            reply.status(403);
+            return { error: "User is no admin" };
+        }
+
+        session.submissions.clear();
+        sessions.set(meetingId, session);
+
+        reply.status(200)
+        return undefined;
+    });
+
+}

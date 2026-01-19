@@ -39,5 +39,30 @@
                 "personal"
             ]
         }
+    ],
+    "bots": [
+        {
+            "botId": "<TEAMS_CHATBOT_CLIENT_ID>",
+            "scopes": [
+                "personal",
+                "team"
+            ],
+            "supportsFiles": false,
+            "isNotificationOnly": false,
+            "commandLists": [
+                {
+                    "scopes": [
+                        "personal",
+                        "team"
+                    ],
+                    "commands": [
+                        {
+                            "title": "vote",
+                            "description": "Start a new voting round"
+                        }
+                    ]
+                }
+            ]
+        }
     ]
 }
