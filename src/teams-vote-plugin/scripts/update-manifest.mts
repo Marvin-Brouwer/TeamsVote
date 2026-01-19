@@ -36,7 +36,7 @@ function getEnv(key: string) {
 let manifestContent = fs.readFileSync(devManifestPath, "utf-8");
 
 function replaceEnv(key: string) {
-  manifestContent = manifestContent.replace(`<${key}>`, getEnv(key));
+  manifestContent = manifestContent.split(`<${key}>`).join(getEnv(key));
 }
 replaceEnv('TEAMS_APP_ID');
 replaceEnv('TEAMS_UI_URL');
