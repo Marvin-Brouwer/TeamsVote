@@ -68,8 +68,12 @@ jobs:
           TEAMS_CHATBOT_CLIENT_ID: ${{ secrets.TEAMS_CHATBOT_CLIENT_ID }}
         run: pnpm update-manifest
         working-directory: './src/teams-vote-plugin'
+        # Copy the images out of the ./images folder, the teams plugin doesn't seem to handle paths in the manifest very well
+      - name: Copy images to root
+        run: mv images/* .
+        working-directory: './src/teams-vote-plugin'
       - name: Zip Plugin
-        run: zip teams-vote.zip manifest.json images/color.png images/outline.png
+        run: zip teams-vote.zip manifest.json color.png outline.png
         working-directory: './src/teams-vote-plugin'
       - name: Update plugin
         # The publish command doesn't work without teams in your subscription
