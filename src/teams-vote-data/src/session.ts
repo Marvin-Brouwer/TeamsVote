@@ -6,7 +6,7 @@ export type SessionData = {
   meetingId: string,
   roundKey: string,
   token: string,
-  type: Deck
+  selectedDeck: Deck
 }
 
 export type ServerSession = SessionData & { 

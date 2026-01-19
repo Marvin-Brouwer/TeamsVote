@@ -2,7 +2,6 @@ import { FastifyInstance } from "fastify";
 import { CloudAdapter, ConfigurationBotFrameworkAuthentication, ConfigurationServiceClientCredentialFactory, ConfigurationServiceClientCredentialFactoryOptions, createBotFrameworkAuthenticationFromConfiguration, TurnContext } from "botbuilder";
 import { ChatBot } from "../utilities/chatbot.js";
 
-const DEV = (import.meta as any).env.DEV;
 const TENANT = process.env.TEAMS_PLUGIN_TENANT_ID!;
 const APP_ID = process.env.TEAMS_CHATBOT_CLIENT_ID!;
 const APP_PASSWORD = process.env.TEAMS_CHATBOT_CLIENT_SECRET!;
@@ -14,7 +13,7 @@ const credentialOptions: ConfigurationServiceClientCredentialFactoryOptions = {
     MicrosoftAppPassword: APP_PASSWORD,
     MicrosoftAppType: 'chatbot'
 }
-const credentialsFactory = new ConfigurationServiceClientCredentialFactory(DEV ? { } : credentialOptions)
+const credentialsFactory = new ConfigurationServiceClientCredentialFactory(import.meta.env.DEV ? { } : credentialOptions)
 
 const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication({
     MicrosoftAppId: APP_ID,
@@ -52,10 +51,9 @@ export function applyChatHandler(app: FastifyInstance) {
             await adapter.process(req, res, async (context: TurnContext) => {
                 await bot.run(context);
             });
-            reply.code(200).send();
         } catch (err) {
             console.error("Unexpected teams bot error:", err);
-            reply.code(500).send(JSON.stringify(err));
+            return reply.code(500).send(JSON.stringify(err));
         }
     });
 }

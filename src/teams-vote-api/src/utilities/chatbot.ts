@@ -1,5 +1,8 @@
+import { Deck, formatUrlPlain, tryParseDeck } from '@teams-vote/data';
 import { InvokeResponse, TeamsActivityHandler, TurnContext } from 'botbuilder';
 import { ITaskModuleResponseOfFetch, TaskModuleContinueResponse } from 'botbuilder-teams';
+
+const appUrl = import.meta.env.VITE_UI_APP_URL as string;
 
 // TODO TEST
 export class ChatBot extends TeamsActivityHandler {
@@ -43,34 +46,34 @@ export class ChatBot extends TeamsActivityHandler {
         if (!commandText.length) return this.helpResponse()
 
         const [typeOrName, ...rest] = commandText.split(" ");
-        const type = typeOrName.startsWith("--") ? typeOrName.slice(2) : "modified-fibonacci";
-        const name = typeOrName.startsWith("--") ? rest.join(" ") : commandText;
+
+        const selectedDeckArgument = typeOrName.startsWith("--") ? typeOrName.slice(2) : undefined;
+        const selectedDeck = tryParseDeck(selectedDeckArgument);
+        if (selectedDeck instanceof Error) return this.helpResponse();
+
+        const roundKey = typeOrName.startsWith("--") ? rest.join(" ") : commandText;
 
         // Return Task Module response
-        return this.startResponse(type, name)
+        return this.startResponse(selectedDeck, roundKey)
     };
 
     private helpResponse = (): InvokeResponse<string> => ({ status: 200, body: `TODO! this will trigger a help response later` });
-    private startResponse(type: string, name: string): InvokeResponse<ITaskModuleResponseOfFetch> {
+    private startResponse(selectedDeck: Deck, roundKey: string): InvokeResponse<ITaskModuleResponseOfFetch> {
 
         // Build modal URL with query params
-        const modalUrl = new URL("https://example.com/vote-modal");
-        modalUrl.searchParams.set("type", type);
-        modalUrl.searchParams.set("name", name);
+        const newSessionPath = `./TeamsVote/teams/new/${encodeURIComponent(roundKey)}`;
+        const modalUrl = new URL(newSessionPath, appUrl);
+        modalUrl.searchParams.set("selectedDeck", selectedDeck);
 
-        const temp = {
+        return {
             status: 200,
             body: TaskModuleContinueResponse
                 .createResponseOfFetch()
-                .title("Vote modal")
+                .title(`Vote on ${formatUrlPlain(roundKey)}`)
                 .url(modalUrl.toString())
-                .width('large')
+                .width('medium')
                 .height('large')
                 .toResponseOfFetch()
         };
-        
-        console.warn('temp', temp)
-
-        return temp;
     }
 }

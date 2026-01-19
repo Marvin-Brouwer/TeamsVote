@@ -1,6 +1,6 @@
-// src/custom-elements.d.ts
+import "solid-js"
 import { Badge, Button, Card, DataGrid, DataGridCell, DataGridRow, DesignSystemProvider, Divider, ProgressRing, Select, TextField } from "@fluentui/web-components";
-import { AnchoredRegion, ListboxOption } from "@microsoft/fast-foundation";
+import { AnchoredRegion, BaseProgress, ListboxOption } from "@microsoft/fast-foundation";
 
 // Extend JSX to include all custom elements
 declare module "solid-js" {
@@ -15,7 +15,7 @@ declare module "solid-js" {
         'fluent-anchored-region': HTMLAttributes<AnchoredRegion> | AnchoredRegion
         'fluent-design-system-provider': HTMLAttributes<DesignSystemProvider> | DesignSystemProvider
         'fluent-divider': HTMLAttributes<Divider> | Divider
-        'fluent-progress-ring': HTMLAttributes<ProgressRing> | ProgressRing
+        'fluent-progress-ring': HTMLAttributes<BaseProgress> | Partial<BaseProgress>
         'fluent-data-grid': HTMLAttributes<DataGrid> | DataGrid
         'fluent-data-grid-row': HTMLAttributes<DataGridRow> | DataGridRow
         'fluent-data-grid-cell': HTMLAttributes<DataGridCell> | DataGridCell

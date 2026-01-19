@@ -1,5 +1,5 @@
 import { Component, Show } from "solid-js";
-import { parseKeyUrl } from "../helpers/url";
+import { parseKeyUrl } from "@teams-vote/data";
 import { useSession } from "../contexts/session-context";
 
 export const KeyDisplay: Component = () => {
@@ -21,6 +21,7 @@ export const KeyDisplay: Component = () => {
 		}}</>
 	</Show>
 }
+
 export const TitleDisplay: Component<{ url: URL, key: string }> = () => {
 
 	// createEffect(async () => {

@@ -68,7 +68,7 @@ Content-Type: application/json
     "commandId": "vote",
     "parameters": [{
       "name": "command",
-      "value": "The title to vote on"
+      "value": "https://royalfloraholland.atlassian.net/browse/NX-3890"
     }],
     "commandContext": "compose",
     "requestId": "fe50f49e5c74440bb2ebf07f49e9553c",

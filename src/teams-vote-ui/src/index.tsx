@@ -10,6 +10,7 @@ import { SessionProvider } from './contexts/session-context';
 import './index.css'
 
 const TabView = namedLazy(() => import("./pages/tab").then(m => m.TabView));
+const NewVoteView = namedLazy(() => import("./pages/new-vote").then(m => m.NewVoteView));
 const VoterView = namedLazy(() => import("./pages/vote").then(m => m.VoterView));
 const NotSupportedPage = namedLazy(() => import("./pages/not-supported").then(m => m.NotSupportedPage));
 
@@ -17,6 +18,7 @@ export const routes = () => <Router base={routeBase()} root={AppRoot}>
     <PagesReRouter>
         <Route path="/teams/" component={TeamsProvider}>
             <Route path="/tab/" component={TabView} />
+            <Route path="/new/:roundKey"  component={NewVoteView} />
             <Route path="/vote/" component={SessionProvider}>
                 <Route path="/:teamsChannelId/:token" component={VoterView} />
             </Route>

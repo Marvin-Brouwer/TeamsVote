@@ -29,5 +29,5 @@
 
     "types": ["vite/client", "./types/custom-elements.d.ts"]
   },
-	"include": ["src"]
+	"include": ["src", "../teams-vote-data/src/helpers/url.ts"]
 }

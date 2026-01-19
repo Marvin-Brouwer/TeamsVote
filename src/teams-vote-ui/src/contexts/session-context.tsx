@@ -32,7 +32,7 @@ const defaultSession: SessionContext = {
     token: '',
     users: [],
     submissions: [],
-    type: 'modified-fibonacci'
+    selectedDeck: 'modified-fibonacci'
 }
 const sessionContext = createContext<UseSessionContext>({
     session: defaultSession,

@@ -1,8 +1,7 @@
 import { createResource, createSignal, onCleanup, Show, type Component } from "solid-js";
 import { postCard, useTeams, type TeamsContext } from "../contexts/teams-context";
 import { Button, ButtonAppearance, TextFieldAppearance } from "@fluentui/web-components";
-import { formatUrl } from "../helpers/url";
-import { Deck, defaultDeck, SessionResponse, StartRequest } from "@teams-vote/data";
+import { Deck, defaultDeck, SessionResponse, StartRequest, formatUrl } from "@teams-vote/data";
 
 import "./tab.css"
 
@@ -37,7 +36,7 @@ export const TabView: Component = () => {
         const startRequest: StartRequest = { 
             meetingId: teamsChannelId, 
             roundKey: roundKeyValue,
-            type: deck(),
+            selectedDeck: deck(),
             user
         }
 
@@ -50,7 +49,6 @@ export const TabView: Component = () => {
 
         if (import.meta.env.PROD) {
             await postCard(teamsContext()!.chat!.id, authToken, card)
-            // TODO open popup automatically
         }
         else {
             navigator.clipboard.writeText(JSON.stringify(card, null, 2))
@@ -67,7 +65,9 @@ export const TabView: Component = () => {
 
     return <>
         <Show when={!running()}>
-            <fluent-progress-ring />
+            <div class="view tab-spinner" style={import.meta.env.DEV && teamsChannelId === 'test-channel' ? '--vote-height: calc(100% - 70px);' : undefined}>
+                <fluent-progress-ring />
+            </div>
         </Show>
         <Show when={running()}>
             <div class="view" style={import.meta.env.DEV && teamsChannelId === 'test-channel' ? '--vote-height: calc(100% - 70px);' : undefined}>

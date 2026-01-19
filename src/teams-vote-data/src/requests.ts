@@ -6,9 +6,9 @@ import { User } from "./user";
 export type StartRequest = { 
     roundKey: string, 
     meetingId: string, 
-    type: Deck, 
+    selectedDeck: Deck, 
     user: User 
 }
 
-export type StatusRequest = SessionData & { user: User }
+export type StatusRequest = Omit<SessionData, 'selectedDeck'>  & { user: User }
 export type SubmissionRequest = SessionData & Submission<Deck>

@@ -11,6 +11,7 @@ const jiraRegex = new RegExp(
 export function parseKeyUrl(key: string): string | [undefined, URL] | [string,URL] {
     const urlOrString = parseUrl(key);
     if (typeof urlOrString === 'string') return key
+    
     const jiraMatch = jiraRegex.exec(key)
     if (jiraMatch && jiraMatch.groups?.jiraKey) return [jiraMatch.groups?.jiraKey, urlOrString]
 
@@ -19,13 +20,23 @@ export function parseKeyUrl(key: string): string | [undefined, URL] | [string,UR
 
 export function formatUrl(key: string) {
     const keyOrUrl = parseKeyUrl(key)
-    if (keyOrUrl.length === 1) return key;
+    if (typeof keyOrUrl === 'string') return keyOrUrl;
 
     const [titleKey, keyUrl] = keyOrUrl
-    if(!titleKey) return `[${key}](${key})`
+    if(!titleKey) return `[${keyUrl}](${keyUrl})`
 
-    return`[${titleKey}](${keyUrl})`
+    return `[${titleKey}](${keyUrl})`
 
+}
+
+export function formatUrlPlain(key: string) {
+    const keyOrUrl = parseKeyUrl(key)
+    if (typeof keyOrUrl === 'string') return `"${keyOrUrl}"`;
+
+    const [titleKey, url] = keyOrUrl
+    if(!titleKey) return url.href;
+
+    return titleKey;
 }
 
 function parseUrl(value: string): URL | string {

@@ -1,6 +1,5 @@
 import { Deck, decks, Submission } from "@teams-vote/data"
 
-
 function calculateAverageShirt(submissions: Submission<'t-shirt'>[]) {
 
     const validScores: number[] = [];
@@ -64,27 +63,27 @@ function roundToNearestCard(average: number, deck: number[]) {
     return nearest;
 }
 
-export function calculateAverage(type: Deck, submissions: Submission<Deck>[]) {
+export function calculateAverage(selectedDeck: Deck, submissions: Submission<Deck>[]) {
     if (submissions.length === 0) return undefined
 
-    if (type === 'fibonacci') return calculateAverageFibonacci(submissions as Submission<'fibonacci'>[], decks.baseFibonacci);
-    if (type === 'modified-fibonacci') return calculateAverageFibonacci(submissions as Submission<'fibonacci'>[], decks.modifiedFibonacci);
-    if (type === 't-shirt') return calculateAverageShirt(submissions as Submission<'t-shirt'>[]);
+    if (selectedDeck === 'fibonacci') return calculateAverageFibonacci(submissions as Submission<'fibonacci'>[], decks.baseFibonacci);
+    if (selectedDeck === 'modified-fibonacci') return calculateAverageFibonacci(submissions as Submission<'fibonacci'>[], decks.modifiedFibonacci);
+    if (selectedDeck === 't-shirt') return calculateAverageShirt(submissions as Submission<'t-shirt'>[]);
 
     throw new Error('Unsupported deck')
 }
 
-export function validateScore(type: Deck, score: string | number) {
+export function validateScore(selectedDeck: Deck, score: string | number) {
     if (score === '?' || score === 'skip') return true;
-    const deck = getDeck(type);
-    if (!deck.some(card => card === score)) return false;
+    const cardsInDeck = getDeck(selectedDeck);
+    if (!cardsInDeck.some(card => card === score)) return false;
     return true;
 }
 
-function getDeck(type: Deck) {
-    if (type === 'fibonacci') return decks.baseFibonacci
-    if (type === 'modified-fibonacci') return decks.modifiedFibonacci
-    if (type === 't-shirt') return decks.tShirtKeys
+function getDeck(selectedDeck: Deck) {
+    if (selectedDeck === 'fibonacci') return decks.baseFibonacci
+    if (selectedDeck === 'modified-fibonacci') return decks.modifiedFibonacci
+    if (selectedDeck === 't-shirt') return decks.tShirtKeys
 
     throw new Error('Unsupported deck')
 }

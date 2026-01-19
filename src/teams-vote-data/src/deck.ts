@@ -12,7 +12,6 @@ const tShirtLabels = Object.entries(tShirtSizes).reduce<Record<number, string>>(
     return acc;
 }, {});
 
-
 export const decks = {
     baseFibonacci,
     modifiedFibonacci,
@@ -20,4 +19,13 @@ export const decks = {
     tShirtDeck,
     tShirtKeys,
     tShirtLabels
+}
+
+export function tryParseDeck(deck?: Deck) {
+    if (!deck) return defaultDeck
+    if (deck === 'modified-fibonacci') return 'fibonacci'
+    if (deck === 'fibonacci') return 'fibonacci'
+    if (deck === 't-shirt') return 'fibonacci'
+    
+    return new Error(`invalid deck specified: ${deck}`)
 }

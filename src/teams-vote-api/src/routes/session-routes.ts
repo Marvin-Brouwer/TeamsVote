@@ -12,11 +12,11 @@ export function applySessionRoutes(app: FastifyInstance) {
 
     app.post("/start", async (request, reply) => {
         const body = request.body as StartRequest;
-        const { roundKey, meetingId, type, user } = body;
+        const { roundKey, meetingId, selectedDeck, user } = body;
 
         if (!meetingId) return reply.status(400).send({ error: "meetingId required" });
         if (!roundKey) return reply.status(400).send({ error: "roundKey required" });
-        if (!type) return reply.status(400).send({ error: "type required" });
+        if (!selectedDeck) return reply.status(400).send({ error: "selectedDeck required" });
         if (!user) return reply.status(400).send({ error: "user required" });
 
         const roundToken = uuid();
@@ -25,7 +25,7 @@ export function applySessionRoutes(app: FastifyInstance) {
             meetingId,
             roundKey,
             token: roundToken,
-            type,
+            selectedDeck,
             users: new Map(),
             submissions: new Map()
         }
@@ -69,7 +69,7 @@ export function applySessionRoutes(app: FastifyInstance) {
                 return { error: "Session not found" };
             }
 
-            if (!validateScore(session.type, score)) {
+            if (!validateScore(session.selectedDeck, score)) {
                 reply.status(403);
                 return { error: "Incorrect score" };
             }
@@ -136,7 +136,7 @@ export function applySessionRoutes(app: FastifyInstance) {
         const submissions = Array.from(session.submissions.values());
         const result: AggregateResponse = {
             submissions,
-            average: calculateAverage(session.type, submissions)
+            average: calculateAverage(session.selectedDeck, submissions)
         }
 
         return result;

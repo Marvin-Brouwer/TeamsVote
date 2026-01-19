@@ -11,7 +11,7 @@
     "outDir": "dist",                        // compiled JS output
     "rootDir": "src",                        // source files
     "sourceMap": true,
-    "types": ["node"]                        // include Node typings
+    "types": ["node", "./src/vite-env.d.ts"]                        // include Node typings
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
