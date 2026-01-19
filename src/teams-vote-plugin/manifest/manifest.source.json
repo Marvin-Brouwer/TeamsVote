@@ -17,7 +17,7 @@
         "short": "Teams scrum voting, but simple",
         "full": "Every scrum voting website or teams plugin does too much. \nThis app just requests estimates from team members and collects the total."
     },
-    "accentColor": "#ffffff",
+    "accentColor": "#1b8ce3",
     "icons": {
         "color": "color.png",
         "outline": "outline.png"
@@ -36,7 +36,8 @@
             "name": "Vote",
             "contentUrl": "<TEAMS_UI_URL>",
             "scopes": [
-                "personal"
+                "team",
+                "groupChat"
             ]
         }
     ],
@@ -44,10 +45,11 @@
         {
             "botId": "<TEAMS_CHATBOT_CLIENT_ID>",
             "scopes": [
-                "personal",
                 "team",
                 "groupChat"
             ],
+            "supportsCalling": false,
+            "supportsVideo": false,
             "supportsFiles": false,
             "isNotificationOnly": false
         }
