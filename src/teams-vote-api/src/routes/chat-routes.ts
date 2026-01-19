@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { CloudAdapter, ConfigurationBotFrameworkAuthentication, ConfigurationServiceClientCredentialFactory, TurnContext } from "botbuilder";
 import { ChatBot } from "../utilities/chatbot.js";
 
-const TENANT = process.env.TEAMS_TENANT_ID!;
+const TENANT = process.env.TEAMS_PLUGIN_TENANT_ID!;
 const APP_ID = process.env.TEAMS_CHATBOT_CLIENT_ID!;
 const APP_PASSWORD = process.env.TEAMS_CHATBOT_CLIENT_SECRET!;
 

@@ -65,6 +65,7 @@ jobs:
           TEAMS_UI_URL: ${{  vars.TEAMS_UI_URL }}
           TEAMS_APP_CLIENT_ID: ${{ secrets.TEAMS_PLUGIN_AZURE_CLIENT_ID }}
           TEAMS_APP_CLIENT_ID_URL: ${{ secrets.TEAMS_PLUGIN_AZURE_CLIENT_URL }}
+          TEAMS_CHATBOT_CLIENT_ID: ${{ secrets.TEAMS_CHATBOT_CLIENT_ID }}
         run: pnpm update-manifest
         working-directory: './src/teams-vote-plugin'
       - name: Zip Plugin
