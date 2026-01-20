@@ -1,17 +1,17 @@
 import { createResource, createSignal, onCleanup, Show, type Component } from "solid-js";
-import { postCard, useTeams, type TeamsContext } from "../contexts/teams-context";
+import { useTeams } from "../contexts/teams-context";
 import { Button, ButtonAppearance, TextFieldAppearance } from "@fluentui/web-components";
-import { Deck, defaultDeck, SessionResponse, StartRequest, formatUrl } from "@teams-vote/data";
+import { Deck, defaultDeck, StartRequest } from "@teams-vote/data";
+import { api } from "../helpers/api";
 
 import "./tab.css"
+import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-builder';
 
-const apiUrl = import.meta.env.VITE_API_URL as string;
-
-const [healthCheck] = createResource(() => true, checkHealth);
+const [healthCheck] = createResource(() => true, api.checkHealth);
 
 export const TabView: Component = () => {
 
-    const { teamsContext, getAuthToken } = useTeams()!;
+    const { teamsContext, getAuthToken, messages } = useTeams()!;
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
     let startButton!: Button & HTMLButtonElement;
@@ -40,15 +40,15 @@ export const TabView: Component = () => {
             user
         }
 
-        const session = await postStart(startRequest, abortController.signal);
+        const session = await api.requestSessionStart(startRequest, abortController.signal);
         const appOrigin = window.location.origin;
         const pageUrl = `${appOrigin}/TeamsVote/teams/vote/${teamsChannelId}/${session.token}`;
 
-        const card = createJoinCard(pageUrl, roundKeyValue, teamsContext()!);
+        const card = cardBuilder.createJoinCard(pageUrl, roundKeyValue, teamsContext()!.app.appId!.toString());
         const authToken = await getAuthToken();
 
         if (import.meta.env.PROD) {
-            await postCard(teamsContext()!.chat!.id, authToken, card)
+            await messages.postCard(teamsContext()!.chat!.id, authToken, card)
         }
         else {
             navigator.clipboard.writeText(JSON.stringify(card, null, 2))
@@ -119,71 +119,4 @@ export const TabView: Component = () => {
 
         </Show>
     </>
-}
-
-async function checkHealth() {
-    const response = await fetch(`${apiUrl}/health`, {
-        method: 'GET'
-    }).then(async httpResponse => {
-        if (!httpResponse.ok) {
-            alert(await httpResponse.text())
-        };
-        return true;
-    });
-
-    return response;
-}
-
-async function postStart(startRequest: StartRequest, signal: AbortSignal) {
-    const response = await fetch(`${apiUrl}/start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(startRequest),
-        signal
-    }).then(async httpResponse => {
-        if (!httpResponse.ok) throw await httpResponse.text();
-        return httpResponse.json() as Promise<SessionResponse>;
-    });
-
-    return response;
-}
-
-function createJoinCard(pageUrl: string, roundKey: string, teamsContext: TeamsContext) {
-
-    const deepLink = `https://teams.microsoft.com/l/task/${teamsContext.app.appId}?url=${encodeURIComponent(pageUrl)}&height=large&width=medium&title=Vote`;
-
-    const card = {
-        "type": "AdaptiveCard",
-        "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
-        "version": "1.5",
-        "body": [
-            {
-                "type": "TextBlock",
-                "text": "Teams Vote",
-                "wrap": true,
-                "style": "heading",
-                "size": "Large"
-            },
-            {
-                "type": "TextBlock",
-                "text": `Vote on ${formatUrl(roundKey)}`,
-                "wrap": true,
-                "separator": true
-            },
-            {
-                "type": "ActionSet",
-                "actions": [
-                    {
-                        "type": "Action.OpenUrl",
-                        "title": "Vote",
-                        "iconUrl": "icon:Vote",
-                        "url": deepLink,
-                        "style": "positive"
-                    }
-                ]
-            }
-        ]
-    }
-
-    return card;
 }

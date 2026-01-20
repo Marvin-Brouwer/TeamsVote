@@ -1,15 +1,15 @@
 import { onCleanup, onMount, type Component } from "solid-js";
-import { postCard, useTeams, type TeamsContext } from "../contexts/teams-context";
-import { Deck, defaultDeck, SessionResponse, StartRequest, formatUrl, tryParseDeck } from "@teams-vote/data";
+import { useTeams } from "../contexts/teams-context";
+import { Deck, defaultDeck, StartRequest, tryParseDeck } from "@teams-vote/data";
 import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
+import { api } from "../helpers/api";
 
 import "./new-vote.css"
-
-const apiUrl = import.meta.env.VITE_API_URL as string;
+import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-builder';
 
 export const NewVoteView: Component = () => {
 
-    const { teamsContext, getAuthToken } = useTeams()!;
+    const { teamsContext, getAuthToken, messages } = useTeams()!;
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const params = useParams();
@@ -34,21 +34,13 @@ export const NewVoteView: Component = () => {
             user
         }
 
-        const session = await postStart(startRequest, abortController.signal);
+        const session = await api.requestSessionStart(startRequest, abortController.signal);
         const appOrigin = window.location.origin;
         const pageUrl = `${appOrigin}/TeamsVote/teams/vote/${teamsChannelId}/${session.token}`;
 
-        const card = createJoinCard(pageUrl, roundKeyValue, teamsContext()!);
+        const card = cardBuilder.createJoinCard(pageUrl, roundKeyValue, teamsContext()!.app.appId!.toString());
         const authToken = await getAuthToken();
-
-        if (import.meta.env.PROD) {
-            await postCard(teamsContext()!.chat!.id, authToken, card)
-        }
-        else {
-            console.log(JSON.stringify(card, null, 2))
-            navigator.clipboard.writeText(JSON.stringify(card, null, 2))
-                .catch(err => console.error("Failed to copy:", err));
-        }
+        await messages.postCard(teamsContext()!.chat!.id, authToken, card)
 
         return pageUrl
     }
@@ -75,57 +67,3 @@ export const NewVoteView: Component = () => {
     </div>
 }
 
-
-async function postStart(startRequest: StartRequest, signal: AbortSignal) {
-    const response = await fetch(`${apiUrl}/start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(startRequest),
-        signal
-    }).then(async httpResponse => {
-        if (!httpResponse.ok) throw await httpResponse.text();
-        return httpResponse.json() as Promise<SessionResponse>;
-    });
-
-    return response;
-}
-
-function createJoinCard(pageUrl: string, roundKey: string, teamsContext: TeamsContext) {
-
-    const deepLink = `https://teams.microsoft.com/l/task/${teamsContext.app.appId}?url=${encodeURIComponent(pageUrl)}&height=large&width=medium&title=Vote`;
-
-    const card = {
-        "type": "AdaptiveCard",
-        "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
-        "version": "1.5",
-        "body": [
-            {
-                "type": "TextBlock",
-                "text": "Teams Vote",
-                "wrap": true,
-                "style": "heading",
-                "size": "Large"
-            },
-            {
-                "type": "TextBlock",
-                "text": `Vote on ${formatUrl(roundKey)}`,
-                "wrap": true,
-                "separator": true
-            },
-            {
-                "type": "ActionSet",
-                "actions": [
-                    {
-                        "type": "Action.OpenUrl",
-                        "title": "Vote",
-                        "iconUrl": "icon:Vote",
-                        "url": deepLink,
-                        "style": "positive"
-                    }
-                ]
-            }
-        ]
-    }
-
-    return card;
-}

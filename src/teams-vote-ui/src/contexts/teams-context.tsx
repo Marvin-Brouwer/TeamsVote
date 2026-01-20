@@ -2,12 +2,14 @@ import { type Accessor, children, createContext, createMemo, createSignal, onMou
 
 import * as microsoftTeams from "@microsoft/teams-js";
 import { createStore } from "solid-js/store";
+import { teamsMessages } from '../../../teams-vote-client-util/src/teams/messages';
 
 export type TeamsContext = microsoftTeams.app.Context
 export type UseTeamsContext = {
     teamsContext: Accessor<TeamsContext>
     teamsTasks: typeof microsoftTeams.tasks
-    getAuthToken(): Promise<string>
+    getAuthToken(): Promise<string>,
+    messages: typeof teamsMessages
 }
 
 const teamsContext = createContext<UseTeamsContext | undefined>(undefined)
@@ -21,7 +23,6 @@ async function getContext() {
         throw err;
     }
 }
-
 
 export const TeamsProvider: ParentComponent = (props) => {
 
@@ -50,7 +51,7 @@ export const TeamsProvider: ParentComponent = (props) => {
         },
         user: {
             id: new URL(window.location.href).searchParams.get('userId') ?? 'user-1',
-            displayName: new URL(window.location.href).searchParams.get('userName') ??'User one'
+            displayName: new URL(window.location.href).searchParams.get('userName') ?? 'User one'
         },
         dialogParameters: {}
     });
@@ -60,6 +61,13 @@ export const TeamsProvider: ParentComponent = (props) => {
         getAuthToken() {
             return Promise.resolve('fake-auth')
         },
+        messages: {
+            async postCard(_chatId: string, _accessToken: string, cardPayload: any) {
+                console.groupCollapsed("TEAMS CARD")
+                console.info(JSON.stringify(cardPayload, null, 2));
+                console.groupEnd();
+            }
+        }
     }
 
     onMount(async () => {
@@ -77,7 +85,12 @@ export const TeamsProvider: ParentComponent = (props) => {
         if (!getTeamsContext() && import.meta.env.DEV) {
             return useTestTeamsContext
         }
-        return { teamsContext: getTeamsContext as Accessor<TeamsContext>, teamsTasks: microsoftTeams.tasks, getAuthToken }
+        return {
+            teamsContext: getTeamsContext as Accessor<TeamsContext>,
+            teamsTasks: microsoftTeams.tasks,
+            getAuthToken,
+            messages: teamsMessages
+        }
     })
 
     if (import.meta.env.DEV) {
@@ -99,7 +112,7 @@ export const TeamsProvider: ParentComponent = (props) => {
         <Show when={import.meta.env.DEV && !getTeamsContext()}>
             <fluent-card style="margin-bottom: 1ex;">
                 <p>
-                    DEV MODE: Fake session 
+                    DEV MODE: Fake session
                     <fluent-badge appearance="neutral">{testTeamsContext.user?.displayName} ({testTeamsContext.user?.id})</fluent-badge>
                 </p>
             </fluent-card>
@@ -111,22 +124,3 @@ export const TeamsProvider: ParentComponent = (props) => {
 }
 
 export function useTeams() { return useContext(teamsContext); };
-
-
-
-export async function postCard(chatId: string, accessToken: string, cardPayload: any) {
-    const response = await fetch(`https://graph.microsoft.com/v1.0/chats/${chatId}/messages`, {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cardPayload),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to post card: ${await response.text()}`);
-    }
-
-    console.log("Card posted successfully!");
-}

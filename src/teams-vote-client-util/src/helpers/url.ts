@@ -20,7 +20,7 @@ export function parseKeyUrl(key: string): string | [undefined, URL] | [string,UR
 
 export function formatUrl(key: string) {
     const keyOrUrl = parseKeyUrl(key)
-    if (typeof keyOrUrl === 'string') return keyOrUrl;
+    if (typeof keyOrUrl === 'string') return `"${keyOrUrl}"`;
 
     const [titleKey, keyUrl] = keyOrUrl
     if(!titleKey) return `[${keyUrl}](${keyUrl})`
@@ -29,12 +29,12 @@ export function formatUrl(key: string) {
 
 }
 
-export function formatUrlPlain(key: string) {
+export function formatUrlForTitle(key: string) {
     const keyOrUrl = parseKeyUrl(key)
-    if (typeof keyOrUrl === 'string') return `"${keyOrUrl}"`;
+    if (typeof keyOrUrl === 'string') return keyOrUrl;
 
     const [titleKey, url] = keyOrUrl
-    if(!titleKey) return url.href;
+    if(!titleKey) return `${url.origin}/...`;
 
     return titleKey;
 }

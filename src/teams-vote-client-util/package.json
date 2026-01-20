@@ -1,0 +1,23 @@
+{
+  "name": "@teams-vote/client-util",
+  "description": "",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/_module.js",
+      "types": "./dist/_module.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "vite build --mode development --watch",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@teams-vote/data": "workspace:^"
+  },
+  "devDependencies": {
+    "vite": "^7.3.0",
+    "vite-plugin-dts": "^4.5.4"
+  },
+  "packageManager": "pnpm@10.17.1"
+}

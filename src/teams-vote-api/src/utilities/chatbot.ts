@@ -1,6 +1,8 @@
-import { Deck, formatUrlPlain, tryParseDeck } from '@teams-vote/data';
+import { Deck, tryParseDeck } from '@teams-vote/data';
+import { formatUrlForTitle } from '@teams-vote/client-util';
 import { InvokeResponse, TeamsActivityHandler, TurnContext } from 'botbuilder';
 import { ITaskModuleResponseOfFetch, TaskModuleContinueResponse } from 'botbuilder-teams';
+import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
 
 const appUrl = import.meta.env.VITE_UI_APP_URL as string;
 
@@ -69,7 +71,7 @@ export class ChatBot extends TeamsActivityHandler {
             status: 200,
             body: TaskModuleContinueResponse
                 .createResponseOfFetch()
-                .title(`Vote on ${formatUrlPlain(roundKey)}`)
+                .title(`Vote on ${formatUrlForTitle(roundKey)}`)
                 .url(modalUrl.toString())
                 .width('medium')
                 .height('large')

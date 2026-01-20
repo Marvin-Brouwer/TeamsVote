@@ -1,11 +1,9 @@
 import { Component, onCleanup, Show } from "solid-js";
 import { ButtonAppearance } from "@fluentui/web-components";
 import { useSession } from "../contexts/session-context";
+import { api } from "../helpers/api";
 
 import "./vote.css";
-import { AggregateResponse, StatusRequest, SubmissionRequest } from '@teams-vote/data';
-
-const apiUrl = import.meta.env.VITE_API_URL as string;
 
 export const VotePanel: Component = () => {
 
@@ -15,7 +13,7 @@ export const VotePanel: Component = () => {
     onCleanup(() => abortController.abort('onCleanup'))
 
     async function vote(score: number | string) {
-        await submitVote({ ...session, score }, abortController.signal)
+        await api.submitVote({ ...session, score }, abortController.signal)
     }
 
     const selectedAppearance: ButtonAppearance = "accent"
@@ -47,18 +45,18 @@ export const AdminPanel: Component = () => {
     onCleanup(() => abortController.abort('onCleanup'))
 
     async function vote(score: number | string) {
-        await submitVote({ ...session, score }, abortController.signal)
+        await api.submitVote({ ...session, score }, abortController.signal)
     }
     async function reset() {
         setShowScores(false)
-        await requestReset(session, abortController.signal)
+        await api.requestReset(session, abortController.signal)
     }
     async function show() {
-        setAggregate(await requestAggregate(session, abortController.signal))
+        setAggregate(await api.requestAggregate(session, abortController.signal))
         setShowScores(true)
     }
     async function accept() {
-        await acceptScore(session, abortController.signal)
+        await api.acceptScore(session, abortController.signal)
         setShowScores(true)
     }
 
@@ -72,50 +70,4 @@ export const AdminPanel: Component = () => {
             <fluent-button disabled={showScores() || session.ended}  appearance={appearance} onClick={() => vote('skip')}>Skip</fluent-button>
         </div>
     </>
-}
-
-async function submitVote(submissionRequest: SubmissionRequest, signal: AbortSignal) {
-    await fetch(`${apiUrl}/submit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submissionRequest),
-        signal
-    }).then(async httpResponse => {
-        if (!httpResponse.ok) throw await httpResponse.text();
-    });
-}
-
-async function requestReset(resetRequest: StatusRequest, signal: AbortSignal) {
-    await fetch(`${apiUrl}/reset`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(resetRequest),
-        signal
-    }).then(async httpResponse => {
-        if (!httpResponse.ok) throw await httpResponse.text();
-    });
-}
-
-async function requestAggregate(aggregateRequest: StatusRequest, signal: AbortSignal) {
-    const response = await fetch(`${apiUrl}/aggregate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(aggregateRequest),
-        signal
-    }).then(async httpResponse => {
-        if (!httpResponse.ok) throw await httpResponse.text();
-        return httpResponse.json() as Promise<AggregateResponse>;
-    });
-    return response.average;
-}
-
-async function acceptScore(acceptRequest: StatusRequest, signal: AbortSignal) {
-    await fetch(`${apiUrl}/accept`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(acceptRequest),
-        signal
-    }).then(async httpResponse => {
-        if (!httpResponse.ok) throw await httpResponse.text();
-    });
 }

@@ -7,10 +7,14 @@ import { type DesignSystem } from '@microsoft/fast-foundation';
 import "./theme.css";
 
 function registerComponents(system: DesignSystem): DesignSystem {
+
     return system
         .register(component.fluentButton())
         .register(component.fluentTextField())
-        .register(component.fluentSelect(), component.fluentOption())
+        .register(
+            component.fluentSelect(), 
+            component.fluentOption()
+        )
         .register(component.fluentBadge())
         .register(component.fluentCard())
         .register(
