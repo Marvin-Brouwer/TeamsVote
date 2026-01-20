@@ -2,7 +2,7 @@
 
 **Last Updated:** _2026-01-26_
 
-These Terms of Service (“Terms”) govern the use of **TeamsVote** (“Service”), a Microsoft Teams plugin made available at **https://github.com/Marvin-Brouwer/TeamsVote**, provided by the developer (“we”, “us”, “our”). By using the Service within Microsoft Teams, you (“you”, “user”) agree to be bound by these Terms.
+These Terms of Service (“Terms”) govern the use of **TeamsVote** (“Service”), a Microsoft Teams plugin made available at <https://github.com/Marvin-Brouwer/TeamsVote>, provided by the developer (“we”, “us”, “our”). By using the Service within Microsoft Teams, you (“you”, “user”) agree to be bound by these Terms.
 
 If you do not agree to these Terms, you may not use the Service.
 
@@ -121,4 +121,4 @@ We may update these Terms from time to time. Continued use of the Service after 
 ## 13. Contact
 
 If you have questions about these Terms, please refer to the project repository at:  
-**https://github.com/Marvin-Brouwer/TeamsVote/issues**
+<https://github.com/Marvin-Brouwer/TeamsVote/issues>

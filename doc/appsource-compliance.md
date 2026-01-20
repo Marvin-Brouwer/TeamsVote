@@ -13,7 +13,7 @@ TeamsVote is a Microsoft Teams plugin that:
 - runs entirely within Microsoft Teams
 - does not function as a standalone service
 - does not require separate user accounts
-- does not collect, transmit, or store personal data outside the Microsoft environment
+- processes minimal personal data only for ephemeral session functionality
 
 ---
 
@@ -29,34 +29,32 @@ TeamsVote relies exclusively on Microsoft’s identity platform for authenticati
 
 ## 3. Data Handling & Privacy
 
-TeamsVote processes only transient session data required for running a vote. To meet AppSource privacy expectations:
+TeamsVote transmits minimal personal data (username, user ID, and Teams meeting or group chat identifier) to an externally hosted backend for real-time voting functionality.  
 
-- **No personal data is stored**
-- **No data is written to disk**
-- **No data is transmitted to third-party services**
-- **No analytics, tracking, or telemetry is performed**
-- **No persistent logs containing user data are produced**
+No personal data is persisted or logged. All session data is processed **in-memory only** and discarded at the end of the voting session.  
 
-All data is processed **in-memory only** and discarded at the end of the session.
+Backend hosting:
+
+- Render, Frankfurt (EU Central)  
+- Ensures EU-only data jurisdiction and GDPR compliance
+
+No analytics, tracking, or third-party data sharing occurs.
 
 ---
 
 ## 4. GDPR & Regulatory Alignment
 
-TeamsVote aligns with applicable privacy regulations (including GDPR) through data minimization and non-storage practices. See the GDPR compliance section for detail.
+TeamsVote aligns with GDPR and other relevant privacy regulations. See GDPR.md for full details.
 
 ---
 
 ## 5. Security
 
-TeamsVote does not introduce new identity providers or network endpoints. All data remains within the Microsoft Teams infrastructure. The application does not:
+- All data is encrypted in transit via HTTPS/TLS  
+- No data is stored at rest  
+- No external tracking services are used  
 
-- expose external network services
-- perform outbound data transfers
-- rely on third-party service providers
-- require elevated permissions beyond normal Teams operation
-
-Security controls are inherited from Microsoft Teams and the organization’s Microsoft 365 tenant.
+Security and access control are governed by Microsoft Teams and the organization’s tenant.
 
 ---
 
@@ -64,30 +62,29 @@ Security controls are inherited from Microsoft Teams and the organization’s Mi
 
 TeamsVote:
 
-- is free to use
-- does not process payments
+- is free to use  
+- does not process payments  
 - does not handle financial information
 
 ---
 
 ## 7. Organizational Control & Admin Configuration
 
-No administrative configuration is required beyond installation within the Microsoft Teams environment. Admins retain full control through:
+Admins retain full control through:
 
-- Microsoft Teams deployment policies
-- Microsoft 365 compliance tools
+- Microsoft Teams deployment policies  
+- Microsoft 365 compliance tools  
 - Tenant-level access controls
 
 ---
 
 ## 8. Third-Party Dependencies
 
-TeamsVote does **not** depend on external third-party processing services for personal data. No third-party APIs, tracking libraries, or SaaS providers are used for data handling.
+TeamsVote does **not** depend on external third-party services for personal data processing beyond the EU-hosted backend.
 
 ---
 
 ## 9. Support & Contact
 
-For compliance questions, security inquiries, or AppSource-related support, users may refer to the project repository:
-
-**https://github.com/Marvin-Brouwer/TeamsVote/issues**
+For compliance or security questions, refer to:  
+<https://github.com/Marvin-Brouwer/TeamsVote/issues>

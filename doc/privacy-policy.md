@@ -2,71 +2,105 @@
 
 **Last Updated:** _2026-01-26_
 
-This Privacy Policy explains how **TeamsVote** (“Service”) handles personal information when used within Microsoft Teams. TeamsVote is available at **https://github.com/Marvin-Brouwer/TeamsVote** and operates solely as a Microsoft Teams plugin.
+This Privacy Policy explains how **TeamsVote** (“Service”) handles personal information when used within Microsoft Teams. TeamsVote is available at <https://github.com/Marvin-Brouwer/TeamsVote> and operates solely as a Microsoft Teams plugin.
 
 By using the Service, you acknowledge that you have read and understood this Privacy Policy.
 
 ---
 
-## 1. No Persistent Data Storage
+## 1. Information We Process
 
-TeamsVote is designed to operate without collecting, storing, or transmitting personal data outside the Microsoft Teams environment. Specifically:
+TeamsVote processes minimal personal data strictly for the purpose of enabling live voting functionality within Microsoft Teams. Specifically, TeamsVote may process the following data provided by Microsoft Teams:
 
-- No data is stored on external servers
-- No data is written to disk
-- No data is logged or retained after the voting session ends
+- Microsoft Teams username
+- Microsoft Teams user identifier
+- Microsoft Teams meeting or group chat identifier
 
-Session-related information is held temporarily **in-memory** for the duration of the active voting session and is automatically discarded once the session concludes.
-
----
-
-## 2. Use of Microsoft Teams Identity & User Information
-
-TeamsVote does not create or manage its own user accounts. Instead, the Service relies exclusively on identity and access provided by Microsoft Teams. User information such as display names, team memberships, and permissions are handled by Microsoft and not stored or replicated by TeamsVote.
+TeamsVote does **not** create separate user accounts and does not collect additional personal information.
 
 ---
 
-## 3. No Data Sharing
+## 2. Purpose of Processing
 
-We do not share, sell, transmit, or disclose personal data to third parties. Because TeamsVote does not store user data, no information is ever transferred outside the Microsoft Teams environment.
+The above data is processed solely to:
 
----
+- manage participation in a voting session
+- coordinate votes in real-time
+- ensure that votes are associated with the correct Teams meeting or group chat
 
-## 4. Security
-
-Data processed by TeamsVote remains within Microsoft’s infrastructure and is protected under Microsoft’s security and compliance standards. We take reasonable measures to ensure that the Service functions securely within the Teams ecosystem; however, security and access control are ultimately governed by:
-
-- Your Microsoft Teams administrator
-- Your organization’s policies
-- Microsoft’s security mechanisms
+This data is not used for analytics, behavioral profiling, tracking, or marketing.
 
 ---
 
-## 5. Payments & Financial Data
+## 3. Data Storage & Retention
 
-TeamsVote does not process payments and does not collect or handle any financial information.
+TeamsVote does **not** store personal data. Session-related data is held temporarily **in-memory only**, and discarded automatically once the voting session concludes.
 
----
+No data is:
 
-## 6. Children’s Privacy
-
-TeamsVote is not specifically targeted at children; however, access depends on Microsoft Teams account provisioning by an organization. We do not independently identify or track minors.
-
----
-
-## 7. Third-Party Services
-
-Aside from Microsoft Teams, TeamsVote does not rely on or integrate with any additional third-party services for data processing or storage.
+- written to disk
+- logged persistently
+- exported
+- made available to third parties
+- used for secondary purposes
 
 ---
 
-## 8. Changes to This Privacy Policy
+## 4. Backend Processing & Hosting Location
 
-We may update this Privacy Policy periodically. Continued use of the Service after changes become effective constitutes acceptance of the updated version.
+To enable real-time voting, TeamsVote communicates with an externally hosted backend. This backend:
+
+- is hosted in the **European Union (Frankfurt, Germany)**
+- processes session data **in-memory only**
+- does **not** persist or log personal data
+- does **not** transfer data outside the EU
+
+The backend is hosted on Render within the EU Central region, ensuring compliance with GDPR requirements.
 
 ---
 
-## 9. Contact
+## 5. Data Sharing & Disclosure
 
-If you have questions about this Privacy Policy, please refer to the project repository at:  
-**https://github.com/Marvin-Brouwer/TeamsVote/issues**
+TeamsVote does **not** sell, share, or otherwise disclose personal data to third parties. No third-party analytics or tracking services are used.
+
+Data remains contained within:
+
+1. Microsoft Teams, and  
+2. the TeamsVote backend processor located in the EU
+
+---
+
+## 6. Security Measures
+
+All communication between Microsoft Teams clients and the backend is encrypted in transit via HTTPS/TLS. Because no data is stored or logged, no data exists at rest.
+
+Security and access control are additionally governed by:
+
+- Microsoft Teams
+- your organization’s Microsoft 365 tenant
+- applicable organizational security policies
+
+---
+
+## 7. Children’s Privacy
+
+TeamsVote is not specifically targeted at children. Access requires a Microsoft Teams account provisioned by an organization. TeamsVote does not independently identify or track minors.
+
+---
+
+## 8. Third-Party Dependencies
+
+Aside from Microsoft Teams and the externally hosted backend processor located in the EU, no third-party services are used for personal data processing or storage.
+
+---
+
+## 9. Changes to This Privacy Policy
+
+We may update this Privacy Policy from time to time. Continued use of the Service after changes become effective constitutes acceptance of the updated version.
+
+---
+
+## 10. Contact
+
+For privacy or data protection inquiries, please refer to the project repository at:  
+<https://github.com/Marvin-Brouwer/TeamsVote/issues>
