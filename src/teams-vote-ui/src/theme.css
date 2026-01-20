@@ -1,0 +1,25 @@
+.card {
+  padding: 2em;
+}
+
+.view {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr min-content;
+  gap: 1ex 0;
+  grid-template-areas:
+    "content"
+    "menu";
+  height: var(--vote-height, 100%);
+  box-sizing: border-box;
+  contain: none;
+}
+
+.menu {
+  overflow: visible;
+  contain: none;
+}
+.content {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
