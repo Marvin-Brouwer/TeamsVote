@@ -10,11 +10,11 @@
         "termsOfUseUrl": "https://github.com/Marvin-Brouwer/TeamsVote/blob/main/doc/tos.md"
     },
     "name": {
-        "short": "Teams Vote",
-        "full": "Teams scrum voting, but simple"
+        "short": "TeamsVote",
+        "full": "Scrum voting, but simple"
     },
     "description": {
-        "short": "Teams scrum voting, but simple",
+        "short": "Scrum voting, but simple",
         "full": "Every scrum voting website or teams plugin does too much. \nThis app just requests estimates from team members and collects the total."
     },
     "accentColor": "#1b8ce3",
@@ -40,6 +40,9 @@
                 "groupChat"
             ]
         }
+    ],
+    "validDomains": [
+        "marvin-brouwer.github.io"
     ],
     "bots": [
         {
