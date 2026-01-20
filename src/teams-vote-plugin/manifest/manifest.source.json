@@ -19,8 +19,8 @@
     },
     "accentColor": "#1b8ce3",
     "icons": {
-        "color": "color.png",
-        "outline": "outline.png"
+        "color": "https://raw.githubusercontent.com/Marvin-Brouwer/TeamsVote/refs/heads/main/src/teams-vote-plugin/images/color.png",
+        "outline": "https://raw.githubusercontent.com/Marvin-Brouwer/TeamsVote/refs/heads/main/src/teams-vote-plugin/images/outline.png"
     },
     "permissions": [
         "identity",
