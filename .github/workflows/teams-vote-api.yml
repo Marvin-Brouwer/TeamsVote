@@ -54,7 +54,10 @@ jobs:
         working-directory: '.'
       - name: Build app
         env: 
-          VITE_API_URL: ${{  vars.VITE_API_URL }}
+          VITE_UI_APP_URL: ${{ vars.TEAMS_UI_URL }}
+          TEAMS_PLUGIN_TENANT_ID: ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
+          TEAMS_CHATBOT_CLIENT_ID: ${{ secrets.TEAMS_CHATBOT_CLIENT_ID }}
+          TEAMS_CHATBOT_CLIENT_SECRET: ${{ secrets.TEAMS_CHATBOT_CLIENT_SECRET }}
         run: pnpm build
         working-directory: './src/teams-vote-api'
         # TODO run tests
@@ -66,4 +69,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render Deploy
-        run: curl "$RENDER_DEPLOY_HOOK"
+        run: curl "${{ secrets.RENDER_DEPLOY_HOOK }}"
