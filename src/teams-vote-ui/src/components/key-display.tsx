@@ -1,5 +1,5 @@
 import { Component, Show } from "solid-js";
-import { parseKeyUrl } from "@teams-vote/data";
+import { parseKeyUrl } from "@teams-vote/client-util";
 import { useSession } from "../contexts/session-context";
 
 export const KeyDisplay: Component = () => {
