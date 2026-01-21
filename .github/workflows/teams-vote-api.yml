@@ -59,7 +59,7 @@ jobs:
         working-directory: './src/teams-vote-api'
         # TODO run tests
   deploy:
-    needs: test
+    needs: build
     environment:
       name: render-api
       url: https://teamsvote.onrender.com
