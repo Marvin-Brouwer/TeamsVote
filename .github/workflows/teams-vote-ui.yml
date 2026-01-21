@@ -49,9 +49,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
         working-directory: '.'
-      - name: Build data
-        run: pnpm build
-        working-directory: './src/teams-vote-data'
+      - name: Build dependencies
+        run: pnpm deploy:build
+        working-directory: '.'
       - name: Build app
         env: 
           VITE_API_URL: ${{  vars.VITE_API_URL }}
