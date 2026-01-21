@@ -74,13 +74,16 @@ jobs:
           DEPLOY=$(curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Accept: application/json" \
-            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys)
+            https://api.render.com/v1/services/${{ vars.RENDER_SERVICE_ID }}/deploys)
+
+          echo "Render returned:"
+          echo "$DEPLOY"
 
           DEPLOY_ID=$(echo "$DEPLOY" | jq -r '.id')
           echo "deploy_id=$DEPLOY_ID" >> $GITHUB_OUTPUT
           
           # Echo link for visibility
-          echo "View on render: https://dashboard.render.com/web/${{ secrets.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID"
+          echo "View on render: https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID"
       - name: Wait For Deploy
         run: |
           DEPLOY_ID=${{ steps.trigger.outputs.deploy_id }}
@@ -115,6 +118,6 @@ jobs:
         run: |
           DEPLOY_ID=${{ steps.trigger.outputs.deploy_id }}
           echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
-          echo "- [Deploy details](https://dashboard.render.com/web/${{ secrets.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Deploy details](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
 
 
