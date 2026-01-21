@@ -4,7 +4,7 @@ import { Button, ButtonAppearance, TextFieldAppearance } from '@fluentui/web-com
 import { Deck, defaultDeck, StartRequest } from "@teams-vote/data";
 import { api } from "../helpers/api";
 import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-builder';
-import { ListboxOption } from "@microsoft/fast-foundation";
+import { DeckSelector } from "../components/deck-selector";
 
 import "./tab.css"
 
@@ -95,20 +95,7 @@ export const TabView: Component = () => {
                             />
                         </div>
                         <div>
-                            <fluent-select
-                                id="type-select" 
-                                ref={(el) =>{
-                                    if (!el) return;
-                                    el.value = deck();
-                                    const option = el.querySelector<ListboxOption>(`[value="${deck()}"]`);
-                                    if (option) el.selectedOptions = [option]
-                                }}
-                                onChange={e => changeDeck(e.currentTarget.value as Deck)}
-                            >
-                                <fluent-option value="modified-fibonacci">Modified fibonacci</fluent-option>
-                                <fluent-option value="fibonacci">Fibonacci</fluent-option>
-                                <fluent-option value="t-shirt">T-Shirt sizes</fluent-option>
-                            </fluent-select>
+                            <DeckSelector deck={deck} changeDeck={changeDeck} />
                             <fluent-button
                                 ref={startButton}
                                 appearance={"accent" as ButtonAppearance}

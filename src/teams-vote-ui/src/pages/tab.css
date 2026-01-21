@@ -41,11 +41,6 @@
 #estimate-button {
     width: 14ex;
 }
-#type-select {
-    width: 22ex;
-    min-width: unset;
-    height: 4ex;
-}
 
 .tab-spinner {
   display: flex;
