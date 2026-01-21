@@ -110,6 +110,9 @@ importers:
       '@fluentui/web-components':
         specifier: ^2.6.1
         version: 2.6.1
+      '@microsoft/fast-colors':
+        specifier: ^5.3.1
+        version: 5.3.1
       '@microsoft/fast-foundation':
         specifier: ^2.50.0
         version: 2.50.0

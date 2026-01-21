@@ -1,11 +1,12 @@
 import { createResource, createSignal, onCleanup, Show, type Component } from "solid-js";
 import { useTeams } from "../contexts/teams-context";
-import { Button, ButtonAppearance, TextFieldAppearance } from "@fluentui/web-components";
+import { Button, ButtonAppearance, TextFieldAppearance } from '@fluentui/web-components';
 import { Deck, defaultDeck, StartRequest } from "@teams-vote/data";
 import { api } from "../helpers/api";
+import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-builder';
+import { ListboxOption } from "@microsoft/fast-foundation";
 
 import "./tab.css"
-import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-builder';
 
 const [healthCheck] = createResource(() => true, api.checkHealth);
 
@@ -33,8 +34,8 @@ export const TabView: Component = () => {
         if (!roundKeyValue) return;
 
         startButton.disabled = true;
-        const startRequest: StartRequest = { 
-            meetingId: teamsChannelId, 
+        const startRequest: StartRequest = {
+            meetingId: teamsChannelId,
             roundKey: roundKeyValue,
             selectedDeck: deck(),
             user
@@ -95,8 +96,13 @@ export const TabView: Component = () => {
                         </div>
                         <div>
                             <fluent-select
-                                id="type-select"
-                                value={deck()}
+                                id="type-select" 
+                                ref={(el) =>{
+                                    if (!el) return;
+                                    el.value = deck();
+                                    const option = el.querySelector<ListboxOption>(`[value="${deck()}"]`);
+                                    if (option) el.selectedOptions = [option]
+                                }}
                                 onChange={e => changeDeck(e.currentTarget.value as Deck)}
                             >
                                 <fluent-option value="modified-fibonacci">Modified fibonacci</fluent-option>
@@ -116,7 +122,6 @@ export const TabView: Component = () => {
                     </div>
                 </div>
             </div>
-
         </Show>
     </>
 }

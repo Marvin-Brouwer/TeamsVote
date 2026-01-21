@@ -14,7 +14,8 @@ export type UseTeamsContext = {
 
 const teamsContext = createContext<UseTeamsContext | undefined>(undefined)
 
-async function getContext() {
+export async function getContext() {
+    if (window.location === window.parent.location) return undefined;
     try {
         await microsoftTeams.app.initialize();
         return await microsoftTeams.app.getContext();

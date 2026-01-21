@@ -17,7 +17,7 @@
         "short": "Scrum voting, but simple",
         "full": "Every scrum voting website or teams plugin does too much. \nThis app just requests estimates from team members and collects the total."
     },
-    "accentColor": "#1b8ce3",
+    "accentColor": "#6466af",
     "icons": {
         "color": "https://raw.githubusercontent.com/Marvin-Brouwer/TeamsVote/refs/heads/main/src/teams-vote-plugin/images/color.png",
         "outline": "https://raw.githubusercontent.com/Marvin-Brouwer/TeamsVote/refs/heads/main/src/teams-vote-plugin/images/outline.png"

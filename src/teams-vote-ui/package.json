@@ -17,6 +17,7 @@
     "@fluentui/web-components": "^2.6.1",
     "@fluentui/tokens": "^1.0.0-alpha.22",
     "@microsoft/fast-foundation": "^2.50.0",
+    "@microsoft/fast-colors": "^5.3.1",
     "@teams-vote/client-util": "workspace:^",
     "@teams-vote/data": "workspace:^"
   },
