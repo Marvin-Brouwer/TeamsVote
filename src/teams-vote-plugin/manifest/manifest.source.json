@@ -19,8 +19,8 @@
     },
     "accentColor": "#6466af",
     "icons": {
-        "color": "./color.png",
-        "outline": "./outline.png"
+        "color": "color.png",
+        "outline": "outline.png"
     },
     "permissions": [
         "identity",
