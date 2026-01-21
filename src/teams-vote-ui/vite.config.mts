@@ -8,7 +8,8 @@ import packageJson from './package.json' with { type: 'json' }
 export default gitHubSpaConfig(packageJson, {
   plugins: [
     solid(),
-    analyzer()
+    // always analyze, this seems to keep the bundle down
+    analyzer({ analyzerMode: process.argv.includes('--analyze-bundle') ? 'server' : "json" })
   ],
   build: {
     rollupOptions: {

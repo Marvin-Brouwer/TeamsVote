@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "analyze-bundle": "vite build --debug",
+    "analyze-bundle": "vite build -- --analyze-bundle",
     "preview": "vite preview"
   },
   "dependencies": {
