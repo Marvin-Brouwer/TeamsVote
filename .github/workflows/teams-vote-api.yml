@@ -68,6 +68,27 @@ jobs:
       url: https://teamsvote.onrender.com
     runs-on: ubuntu-latest
     steps:
+      - name: Cancel queued/running deploys
+        run: |
+          SERVICE_ID=${{ vars.RENDER_SERVICE_ID }}
+          API_KEY=${{ secrets.RENDER_API_KEY }}
+
+          echo "Checking for queued/running deploys..."
+          deploys=$(curl -s -H "Authorization: Bearer $API_KEY" \
+                        -H "Accept: application/json" \
+                        https://api.render.com/v1/services/$SERVICE_ID/deploys)
+
+          deploy_id=$(echo "$deploys" | jq -r '.[] | select(.status=="queued" or .status=="deploying") | .id' | head -n1)
+
+          if [ -n "$deploy_id" ]; then
+            echo "Canceling deploy $deploy_id"
+            curl -X POST -H "Authorization: Bearer $API_KEY" \
+                 -H "Accept: application/json" \
+                 https://api.render.com/v1/deploys/$deploy_id/cancel
+          else
+            echo "No queued or running deploys found"
+          fi
+
       - name: Start Render Deploy
         id: trigger
         run: |
@@ -89,6 +110,7 @@ jobs:
           
           # Echo link for visibility
           echo "View on render: https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID"
+
       - name: Wait For Deploy
         run: |
           DEPLOY_ID=${{ steps.trigger.outputs.deploy_id }}
@@ -118,11 +140,10 @@ jobs:
 
           echo "Timeout waiting for deploy: $URL"
           exit 1
+
       - name: Deployment Summary
         if: always()
         run: |
           DEPLOY_ID=${{ steps.trigger.outputs.deploy_id }}
           echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
           echo "- [Deploy details](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
-
-
