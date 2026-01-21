@@ -76,6 +76,9 @@ jobs:
             -H "Accept: application/json" \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys)
 
+          echo "Render returned:"
+          echo "$DEPLOY"
+
           echo "deploy_id=$(echo "$DEPLOY" | jq -r '.id')" >> $GITHUB_OUTPUT
           
           # Echo link for visibility
@@ -106,4 +109,11 @@ jobs:
 
           echo "Timeout waiting for deploy"
           exit 1
+      - name: Deployment Summary
+        if: always()
+        run: |
+          DEPLOY_ID=${{ steps.trigger.outputs.deploy_id }}
+          echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "- [Deploy details](https://dashboard.render.com/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
+
 
