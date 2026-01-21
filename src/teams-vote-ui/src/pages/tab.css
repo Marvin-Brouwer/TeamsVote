@@ -1,11 +1,12 @@
-.launcher {
+@media (max-width: 699px) {
+  .launcher {
     height: 12ex;
-}
-.launcher-fake {
+  }
+  .launcher-fake {
     height: 16ex;
     margin-bottom: -14ex;
-}
-.launcher > div {
+  }
+  .launcher > div {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -14,32 +15,49 @@
     align-items: center;
     gap: 1ex;
     padding: 1ex;
-    overflow:visible;
+    overflow: visible;
+  }
+
+  #deck-select {
+    width: calc(100% - 18.5ex);
+  }
+  #round-input {
+    width: calc(100% - 6ex);
+  }
 }
+@media (min-width: 700px) {
+  .launcher {
+    height: 6ex;
+    display: flex;
+    gap: 1ex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .launcher-fake {
+    height: 10ex;
+    margin-bottom: -8ex;
+  }
+  .launcher > div {
+    display: contents;
+  }
+  #deck-select {
+    width: 22ex;
+  }
+  #round-input {
+    width: calc(100% - 50ex);
+  }
+}
+
 .overflow {
-    overflow:visible;
-    contain: none !important;
+  overflow: visible;
+  contain: none !important;
 }
 
-.select-fill {
-    height: 4ex;
-}
-.select-wrapper {
-    overflow:visible;
-    contain: none;
-    position: relative;
-    margin-top: -6ex;
-}
-.select-wrapper fluent-card {
-    contain: none !important;
-    overflow: visible !important;
-}
-
-#round-input {
-    width: 40ex;
-}
 #estimate-button {
-    width: 14ex;
+  width: 14ex;
 }
 
 .tab-spinner {
