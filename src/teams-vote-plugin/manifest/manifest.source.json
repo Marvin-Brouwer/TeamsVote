@@ -30,14 +30,16 @@
         "id": "<TEAMS_APP_CLIENT_ID>",
         "resource": "<TEAMS_APP_CLIENT_ID_URL>"
     },
-    "staticTabs": [
+    "configurableTabs": [
         {
-            "entityId": "teamsVoteTab",
-            "name": "Vote",
-            "contentUrl": "<TEAMS_UI_URL>",
+            "configurationUrl": "<TEAMS_UI_URL>/teams/tab",
+            "canUpdateConfiguration": false,
             "scopes": [
-                "team",
                 "groupChat"
+            ],
+            "context": [
+                "meetingChatTab",
+                "meetingDetailsTab"
             ]
         }
     ],
@@ -48,13 +50,12 @@
         {
             "botId": "<TEAMS_CHATBOT_CLIENT_ID>",
             "scopes": [
-                "team",
                 "groupChat"
             ],
             "supportsCalling": false,
             "supportsVideo": false,
             "supportsFiles": false,
-            "isNotificationOnly": false
+            "isNotificationOnly": true
         }
     ],
     "composeExtensions": [
@@ -69,5 +70,39 @@
                 }
             ]
         }
-    ]
+    ],
+    "authorization": {
+        "permissions": {
+            "resourceSpecific": [
+                {
+                    "name": "ChatSettings.ReadWrite.Chat",
+                    "type": "Application"
+                },
+                {
+                    "name": "ChatSettings.Read.Chat",
+                    "type": "Application"
+                },
+                {
+                    "name": "ChatMessage.Read.Chat",
+                    "type": "Application"
+                },
+                {
+                    "name": "ChatMessage.Send.Chat",
+                    "type": "Application"
+                },
+                {
+                    "name": "ChatMember.Read.Chat",
+                    "type": "Application"
+                },
+                {
+                    "name": "Chat.Manage.Chat",
+                    "type": "Application"
+                },
+                {
+                    "name": "TeamsActivity.Send.Chat",
+                    "type": "Application"
+                }
+            ]
+        }
+    }
 }
