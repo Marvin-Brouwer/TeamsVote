@@ -68,5 +68,42 @@ jobs:
       url: https://teamsvote.onrender.com
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Render Deploy
-        run: curl "${{ secrets.RENDER_DEPLOY_HOOK }}"
+      - name: Start Render Deploy
+        id: trigger
+        run: |
+          DEPLOY=$(curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Accept: application/json" \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys)
+
+          echo "deploy_id=$(echo "$DEPLOY" | jq -r '.id')" >> $GITHUB_OUTPUT
+          
+          # Echo link for visibility
+          echo "View on render: https://dashboard.render.com/deploys/$DEPLOY_ID"
+      - name: Wait For Deploy
+        run: |
+          for i in {1..60}; do
+            STATUS=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Accept: application/json" \
+              https://api.render.com/v1/deploys/${{ steps.trigger.outputs.deploy_id }} \
+              | jq -r '.status')
+
+            echo "Deploy status: $STATUS"
+
+            if [ "$STATUS" = "live" ]; then
+              echo "Deployment succeeded"
+              exit 0
+            fi
+
+            if [ "$STATUS" = "failed" ]; then
+              echo "Deployment failed"
+              exit 1
+            fi
+
+            sleep 5
+          done
+
+          echo "Timeout waiting for deploy"
+          exit 1
+
