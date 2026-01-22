@@ -4,10 +4,11 @@ import { Router, Route } from '@solidjs/router'
 import { routeBase, PagesReRouter, namedLazy } from '@quick-vite/gh-pages-spa/solidjs'
 
 import { AppRoot } from './app';
-import { TeamsProvider } from './contexts/teams-context'
-import { SessionProvider } from './contexts/session-context';
 
 import './index.css'
+
+const TeamsRoot = namedLazy(() => import("./app").then(m => m.TeamsRoot));
+const SessionRoot = namedLazy(() => import("./app").then(m => m.SessionRoot));
 
 const TabView = namedLazy(() => import("./pages/tab").then(m => m.TabView));
 const NewVoteView = namedLazy(() => import("./pages/new-vote").then(m => m.NewVoteView));
@@ -16,10 +17,10 @@ const NotSupportedPage = namedLazy(() => import("./pages/not-supported").then(m 
 
 export const routes = () => <Router base={routeBase()} root={AppRoot}>
     <PagesReRouter>
-        <Route path="/teams/" component={TeamsProvider}>
+        <Route path="/teams/" component={TeamsRoot}>
             <Route path="/tab/" component={TabView} />
             <Route path="/new/:roundKey/"  component={NewVoteView} />
-            <Route path="/vote/" component={SessionProvider}>
+            <Route path="/vote/" component={SessionRoot}>
                 <Route path="/:teamsChannelId/:token/" component={VoterView} />
             </Route>
         </Route>

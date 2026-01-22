@@ -1,4 +1,4 @@
-import { type Accessor, children, createContext, createMemo, createSignal, createUniqueId, onMount, type ParentComponent, Show, useContext } from "solid-js";
+import { type Accessor, createContext, createMemo, createSignal, createUniqueId, onMount, type ParentComponent, Show, useContext } from "solid-js";
 
 import * as microsoftTeams from "@microsoft/teams-js";
 import { createStore } from "solid-js/store";
@@ -70,6 +70,7 @@ export const TeamsProvider: ParentComponent = (props) => {
     });
 
     onMount(async () => {
+    console.log('teamscontext mounted')
         const windowTeamsContext = await globalTeamsContext();
         setTeamsContext(windowTeamsContext);
         if (!windowTeamsContext) return;

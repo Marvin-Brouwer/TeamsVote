@@ -45,6 +45,7 @@ export const ThemeProvider: ParentComponent = (props) => {
   onMount(() => {
     const themeRoot = themeRef();
     if (!themeRoot) return;
+    console.log('theme mounted')
 
     registerComponents(provideFluentDesignSystem(themeRoot))
       .withShadowRootMode("open")
