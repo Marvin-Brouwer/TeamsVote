@@ -37,9 +37,11 @@ export function useTheme(): UseThemeContext {
 export const ThemeProvider: ParentComponent = (props) => {
   const [themeRef, setThemeRef] = createSignal<DesignSystemProvider>();
   const [themeLoaded, setThemeLoaded] = createSignal(false);
+  const [getTheme, setTheme] = createSignal<string>('light');
 
   function applyTheme(theme: string) {
-    applyTeamsTheme(theme);
+    if (theme === getTheme()) return;
+    applyTeamsTheme(setTheme(theme));
   }
 
   onMount(() => {
