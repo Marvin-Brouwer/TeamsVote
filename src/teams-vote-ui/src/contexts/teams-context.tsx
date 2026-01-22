@@ -118,9 +118,10 @@ export const TeamsProvider: ParentComponent = (props) => {
                 </p>
             </fluent-card>
         </Show>
-        <Show when={!!getTeamsContext() || import.meta.env.DEV}>
+        {/* <Show when={!!getTeamsContext() || import.meta.env.DEV}>
             {children(() => props.children)()}
-        </Show>
+        </Show> */}
+        {children(() => props.children)()}
     </teamsContext.Provider>
 }
 

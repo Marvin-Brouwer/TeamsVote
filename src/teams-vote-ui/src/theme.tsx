@@ -42,6 +42,7 @@ export const Theme: ParentComponent = (props) => {
         ref={setThemeRef}
         design-system={teamsLightTheme}
     >
-        <Show when={themeLoaded()}>{children(() => props.children)()}</Show>
+        {/* <Show when={themeLoaded()}>{children(() => props.children)()}</Show> */}
+        {children(() => props.children)()}
     </fluent-design-system-provider>
 }
