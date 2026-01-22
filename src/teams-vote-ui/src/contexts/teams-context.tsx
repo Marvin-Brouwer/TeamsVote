@@ -1,15 +1,18 @@
-import { type Accessor, children, createContext, createMemo, createSignal, onMount, type ParentComponent, Show, useContext } from "solid-js";
+import { type Accessor, children, createContext, createMemo, createSignal, createUniqueId, onMount, type ParentComponent, Show, useContext } from "solid-js";
 
 import * as microsoftTeams from "@microsoft/teams-js";
 import { createStore } from "solid-js/store";
 import { teamsMessages } from '../../../teams-vote-client-util/src/teams/messages';
+import { User } from "@teams-vote/data";
 
 export type TeamsContext = microsoftTeams.app.Context
 export type UseTeamsContext = {
     teamsContext: Accessor<TeamsContext>
     teamsTasks: typeof microsoftTeams.tasks
     getAuthToken(): Promise<string>,
-    messages: typeof teamsMessages
+    messages: typeof teamsMessages,
+    getUser(): User | undefined
+    getMeetingId(): string | undefined
 }
 
 const teamsContext = createContext<UseTeamsContext | undefined>(undefined)
@@ -44,6 +47,9 @@ export const TeamsProvider: ParentComponent = (props) => {
             id: 'test-page',
             frameContext: microsoftTeams.FrameContexts.content
         },
+        meeting: {
+            id: 'test-meeting'
+        },
         chat: {
             id: 'test-chat'
         },
@@ -68,7 +74,9 @@ export const TeamsProvider: ParentComponent = (props) => {
                 console.info(JSON.stringify(cardPayload, null, 2));
                 console.groupEnd();
             }
-        }
+        },
+        getUser,
+        getMeetingId
     }
 
     onMount(async () => {
@@ -90,7 +98,9 @@ export const TeamsProvider: ParentComponent = (props) => {
             teamsContext: getTeamsContext as Accessor<TeamsContext>,
             teamsTasks: microsoftTeams.tasks,
             getAuthToken,
-            messages: teamsMessages
+            messages: teamsMessages,
+            getUser,
+            getMeetingId
         }
     })
 
@@ -107,6 +117,39 @@ export const TeamsProvider: ParentComponent = (props) => {
             url.searchParams.set('userId', id);
             window.open(url, '_blank');
         }
+    }
+
+    function getUser(): User | undefined {
+        const user = activeTeamsContext()?.teamsContext()?.user;
+        if (!user) return undefined
+
+        if(user.displayName) return {
+            id: user.id,
+            name: user.displayName
+        }
+
+        if (user.userPrincipalName) return {
+            id: user.id,
+            name: user.userPrincipalName.includes('@')
+                ? user.userPrincipalName.split('@')[0]
+                : user.userPrincipalName
+        }
+
+        var uuid = createUniqueId();
+        return {
+            id: `unknown-${uuid}`,
+            name: `Unknown user ${uuid}`
+        }
+    }
+
+    function getMeetingId(): string | undefined {
+        const activeContext = activeTeamsContext()?.teamsContext();
+        if (!activeContext) return undefined
+
+        const id = activeContext.meeting?.id ?? activeContext.chat?.id ?? activeContext.channel?.id 
+        if (id) return id;
+        console.warn('no meeting id available');
+        return undefined;
     }
 
     return <teamsContext.Provider value={activeTeamsContext()}>

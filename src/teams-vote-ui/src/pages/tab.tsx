@@ -12,7 +12,7 @@ const [healthCheck] = createResource(() => true, api.checkHealth);
 
 export const TabView: Component = () => {
 
-    const { teamsContext, getAuthToken, messages } = useTeams()!;
+    const { teamsContext, getAuthToken, messages, getUser, getMeetingId } = useTeams()!;
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
     let startButton!: Button & HTMLButtonElement;
@@ -21,21 +21,19 @@ export const TabView: Component = () => {
     onCleanup(() => abortController.abort('onCleanup'))
     const running = () => healthCheck() === true;
 
-    const teamsChannelId = teamsContext()?.channel?.id;
-    const user = !teamsContext()?.user ? undefined : {
-        id: teamsContext().user!.id,
-        name: teamsContext().user!.displayName!
-    }
+    const teamsMeetingId = getMeetingId()
+    const user = getUser();
 
     async function startEstimate() {
-        if (!teamsChannelId) return;
-        if (!user) return;
+        if (!teamsMeetingId) return console.warn('no-teamsChannelId');
+        if (!user) return console.warn('no-user');
+
         const roundKeyValue = roundKey();
-        if (!roundKeyValue) return;
+        if (!roundKeyValue) return console.warn('no-roundKey');
 
         startButton.disabled = true;
         const startRequest: StartRequest = {
-            meetingId: teamsChannelId,
+            meetingId: teamsMeetingId,
             roundKey: roundKeyValue,
             selectedDeck: deck(),
             user
@@ -43,30 +41,22 @@ export const TabView: Component = () => {
 
         const session = await api.requestSessionStart(startRequest, abortController.signal);
         const appOrigin = window.location.origin;
-        const pageUrl = `${appOrigin}/TeamsVote/teams/vote/${teamsChannelId}/${session.token}`;
+        const pageUrl = `${appOrigin}/TeamsVote/teams/vote/${teamsMeetingId}/${session.token}`;
 
         const card = cardBuilder.createJoinCard(pageUrl, roundKeyValue, teamsContext()!.app.appId!.toString());
         const authToken = await getAuthToken();
 
-        if (import.meta.env.PROD) {
+        try {
             await messages.postCard(teamsContext()!.chat!.id, authToken, card)
+        } finally {
+            startButton.disabled = false;
+            setRoundKey('')
         }
-        else {
-            navigator.clipboard.writeText(JSON.stringify(card, null, 2))
-                .then(() => {
-                    alert(JSON.stringify(card, null, 2))
-                    window.open(pageUrl, '_blank')
-                })
-                .catch(err => console.error("Failed to copy:", err));
-        }
-
-        startButton.disabled = false;
-        setRoundKey('')
     }
 
     return <>
         <Show when={!running()}>
-            <div class="view tab-spinner" style={import.meta.env.DEV && teamsChannelId === 'test-channel' ? '--vote-height: calc(100% - 70px);' : undefined}>
+            <div class="view tab-spinner" style={import.meta.env.DEV && teamsMeetingId === 'test-meeting' ? '--vote-height: calc(100% - 70px);' : undefined}>
                 <fluent-progress-ring />
             </div>
         </Show>
