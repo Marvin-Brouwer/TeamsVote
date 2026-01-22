@@ -153,6 +153,7 @@ export const TeamsProvider: ParentComponent = (props) => {
         console.warn('no meeting id available');
         return undefined;
     }
+    const isVisible = createMemo(() => import.meta.env.DEV || getTeamsContext())
 
     return <teamsContext.Provider value={activeTeamsContext()}>
         <Show when={import.meta.env.DEV && !getTeamsContext()}>
@@ -163,11 +164,11 @@ export const TeamsProvider: ParentComponent = (props) => {
                 </p>
             </fluent-card>
         </Show>
-        <Show when={!!getTeamsContext() || import.meta.env.DEV}>
+        <Show when={isVisible()}>
             {children(() => props.children)()}
         </Show>
-        <Show when={!getTeamsContext() && import.meta.env.PROD}>
-            No teamsContext!
+        <Show when={!isVisible()}>
+            No teamsContext! TODO, REDIRECT after attempt
         </Show>
     </teamsContext.Provider>
 }
