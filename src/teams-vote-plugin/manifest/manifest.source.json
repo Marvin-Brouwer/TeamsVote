@@ -34,7 +34,7 @@
         {
             "entityId": "teamsVoteTab",
             "name": "Vote",
-            "contentUrl": "<TEAMS_UI_URL>/teams/tab",
+            "contentUrl": "<TEAMS_UI_URL>/teams/tab/",
             "scopes": [
                 "groupChat"
             ]
