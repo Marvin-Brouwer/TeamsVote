@@ -21,8 +21,8 @@ export const TabView: Component = () => {
     onCleanup(() => abortController.abort('onCleanup'))
     const running = () => healthCheck() === true;
 
-    const teamsChannelId = teamsContext().channel?.id;
-    const user = !teamsContext().user ? undefined : {
+    const teamsChannelId = teamsContext()?.channel?.id;
+    const user = !teamsContext()?.user ? undefined : {
         id: teamsContext().user!.id,
         name: teamsContext().user!.displayName!
     }
