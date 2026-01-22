@@ -1,7 +1,7 @@
 {
     "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.23/MicrosoftTeams.schema.json",
     "manifestVersion": "1.23",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "id": "<TEAMS_APP_ID>",
     "developer": {
         "name": "Marvin Brouwer",
@@ -26,10 +26,6 @@
         "identity",
         "messageTeamMembers"
     ],
-    "webApplicationInfo": {
-        "id": "<TEAMS_APP_CLIENT_ID>",
-        "resource": "<TEAMS_APP_CLIENT_ID_URL>"
-    },
     "staticTabs": [
         {
             "entityId": "teamsVoteTab",
