@@ -86,7 +86,9 @@ export const TeamsProvider: ParentComponent = (props) => {
 
     async function getAuthToken() {
         return await microsoftTeams.authentication.getAuthToken({
-            resources: ["https://graph.microsoft.com"],
+            // resources: ["https://graph.microsoft.com"],
+            resources: [location.origin],
+            silent: true
         });
     };
 
@@ -161,10 +163,12 @@ export const TeamsProvider: ParentComponent = (props) => {
                 </p>
             </fluent-card>
         </Show>
-        {/* <Show when={!!getTeamsContext() || import.meta.env.DEV}>
+        <Show when={!!getTeamsContext() || import.meta.env.DEV}>
             {children(() => props.children)()}
-        </Show> */}
-        {children(() => props.children)()}
+        </Show>
+        <Show when={!getTeamsContext() && import.meta.env.PROD}>
+            No teamsContext!
+        </Show>
     </teamsContext.Provider>
 }
 
