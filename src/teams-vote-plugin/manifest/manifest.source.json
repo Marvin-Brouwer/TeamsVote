@@ -63,39 +63,5 @@
                 }
             ]
         }
-    ],
-    "authorization": {
-        "permissions": {
-            "resourceSpecific": [
-                {
-                    "name": "ChatSettings.ReadWrite.Chat",
-                    "type": "Application"
-                },
-                {
-                    "name": "ChatSettings.Read.Chat",
-                    "type": "Application"
-                },
-                {
-                    "name": "ChatMessage.Read.Chat",
-                    "type": "Application"
-                },
-                {
-                    "name": "ChatMessage.Send.Chat",
-                    "type": "Application"
-                },
-                {
-                    "name": "ChatMember.Read.Chat",
-                    "type": "Application"
-                },
-                {
-                    "name": "Chat.Manage.Chat",
-                    "type": "Application"
-                },
-                {
-                    "name": "TeamsActivity.Send.Chat",
-                    "type": "Application"
-                }
-            ]
-        }
-    }
+    ]
 }
