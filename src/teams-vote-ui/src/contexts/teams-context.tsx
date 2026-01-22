@@ -4,7 +4,6 @@ import * as microsoftTeams from "@microsoft/teams-js";
 import { createStore } from "solid-js/store";
 import { teamsMessages } from '../../../teams-vote-client-util/src/teams/messages';
 import { User } from "@teams-vote/data";
-import { globalTeamsContext } from "../helpers/teams";
 import { useTheme } from "../theme";
 
 export type TeamsContext = microsoftTeams.app.Context
@@ -15,6 +14,20 @@ export type UseTeamsContext = {
     messages: typeof teamsMessages,
     getUser(): User | undefined
     getMeetingId(): string | undefined
+}
+
+export async function globalTeamsContext() {
+    console.log('TEAMSVOTE', 'globalTeamsContext')
+    if (import.meta.env.DEV && location.host.startsWith('localhost')) return undefined;
+
+    try {
+        console.log('TEAMSVOTE', 'initializing teamsContext')
+        await microsoftTeams.app.initialize();
+        return await microsoftTeams.app.getContext();
+    } catch (err) {
+        if ((err as Error).message === "Initialization Failed. No Parent window found.") return undefined;
+        throw err;
+    }
 }
 
 const teamsContext = createContext<UseTeamsContext | undefined>(undefined)
@@ -75,24 +88,27 @@ export const TeamsProvider: ParentComponent = (props) => {
         setTeamsContext(windowTeamsContext);
         if (!windowTeamsContext) return;
 
-        applyTheme(windowTeamsContext.app.theme ?? 'light');
-        if (teamsContext) microsoftTeams.app.registerOnThemeChangeHandler((theme) => {
-            applyTheme(theme);
+        queueMicrotask(() => {
+            applyTheme(windowTeamsContext.app.theme ?? 'light');
+            if (teamsContext) microsoftTeams.app.registerOnThemeChangeHandler((theme) => {
+                applyTheme(theme);
+            });
         });
     });
 
+    const ctx = {
+        teamsContext: internalTeamsContext as Accessor<TeamsContext>,
+        teamsTasks: microsoftTeams.tasks,
+        teamsDialog: microsoftTeams.dialog,
+        messages: teamsMessages,
+        getUser,
+        getMeetingId
+    }
     const activeTeamsContext = createMemo(() => {
         if (!internalTeamsContext() && import.meta.env.DEV) {
             return useTestTeamsContext
         }
-        return {
-            teamsContext: internalTeamsContext as Accessor<TeamsContext>,
-            teamsTasks: microsoftTeams.tasks,
-            teamsDialog: microsoftTeams.dialog,
-            messages: teamsMessages,
-            getUser,
-            getMeetingId
-        }
+        return ctx
     })
 
     if (import.meta.env.DEV) {
@@ -114,7 +130,7 @@ export const TeamsProvider: ParentComponent = (props) => {
         const user = activeTeamsContext()?.teamsContext()?.user;
         if (!user) return undefined
 
-        if(user.displayName) return {
+        if (user.displayName) return {
             id: user.id,
             name: user.displayName
         }
@@ -137,7 +153,7 @@ export const TeamsProvider: ParentComponent = (props) => {
         const activeContext = activeTeamsContext()?.teamsContext();
         if (!activeContext) return undefined
 
-        const id = activeContext.meeting?.id ?? activeContext.chat?.id ?? activeContext.channel?.id 
+        const id = activeContext.meeting?.id ?? activeContext.chat?.id ?? activeContext.channel?.id
         if (id) return id;
         console.warn('no meeting id available');
         return undefined;

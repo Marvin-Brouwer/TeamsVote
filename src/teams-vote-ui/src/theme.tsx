@@ -3,7 +3,6 @@ import {
   createContext,
   createSignal,
   onMount,
-  Show,
   useContext,
   type ParentComponent
 } from "solid-js";
@@ -36,25 +35,23 @@ export function useTheme(): UseThemeContext {
 
 export const ThemeProvider: ParentComponent = (props) => {
   const [themeRef, setThemeRef] = createSignal<DesignSystemProvider>();
-  const [themeLoaded, setThemeLoaded] = createSignal(false);
   const [getTheme, setTheme] = createSignal<string>('light');
 
   function applyTheme(theme: string) {
     if (theme === getTheme()) return;
-    applyTeamsTheme(setTheme(theme));
+    setTheme(theme)
+    applyTeamsTheme(theme);
   }
 
   onMount(() => {
     const themeRoot = themeRef();
     if (!themeRoot) return;
 
-    applyTheme("light");
-
     registerComponents(provideFluentDesignSystem(themeRoot))
       .withShadowRootMode("open")
       .withDesignTokenRoot(document);
 
-    setThemeLoaded(true);
+      applyTeamsTheme('light')
   });
 
   return (
@@ -63,9 +60,7 @@ export const ThemeProvider: ParentComponent = (props) => {
         ref={setThemeRef}
         design-system={teamsLightTheme}
       >
-        <Show when={themeLoaded()}>
-          {children(() => props.children)()}
-        </Show>
+        {children(() => props.children)()}
       </fluent-design-system-provider>
     </ThemeContext.Provider>
   );
