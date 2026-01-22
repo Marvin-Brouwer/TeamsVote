@@ -68,20 +68,6 @@ export const TeamsProvider: ParentComponent = (props) => {
         },
         dialogParameters: {}
     });
-    const useTestTeamsContext = import.meta.env.PROD ? undefined : {
-        teamsContext: () => testTeamsContext,
-        teamsTasks: microsoftTeams.tasks,
-        teamsDialog: microsoftTeams.dialog,
-        messages: {
-            async postCard(_chatId: string, _accessToken: string, cardPayload: any) {
-                console.groupCollapsed("TEAMS CARD")
-                console.info(JSON.stringify(cardPayload, null, 2));
-                console.groupEnd();
-            }
-        },
-        getUser,
-        getMeetingId
-    }
 
     onMount(async () => {
         const windowTeamsContext = await globalTeamsContext();
@@ -96,20 +82,12 @@ export const TeamsProvider: ParentComponent = (props) => {
         });
     });
 
-    const ctx = {
-        teamsContext: internalTeamsContext as Accessor<TeamsContext>,
-        teamsTasks: microsoftTeams.tasks,
-        teamsDialog: microsoftTeams.dialog,
-        messages: teamsMessages,
-        getUser,
-        getMeetingId
-    }
     const activeTeamsContext = createMemo(() => {
-        if (!internalTeamsContext() && import.meta.env.DEV) {
-            return useTestTeamsContext
+        if (import.meta.env.DEV && !internalTeamsContext()) {
+            return testTeamsContext;
         }
-        return ctx
-    })
+        return internalTeamsContext();
+    });
 
     if (import.meta.env.DEV) {
         (window as any).updateTestUser = (id: string, name: string) => {
@@ -127,7 +105,7 @@ export const TeamsProvider: ParentComponent = (props) => {
     }
 
     function getUser(): User | undefined {
-        const user = activeTeamsContext()?.teamsContext()?.user;
+        const user = activeTeamsContext()?.user;
         if (!user) return undefined
 
         if (user.displayName) return {
@@ -150,7 +128,7 @@ export const TeamsProvider: ParentComponent = (props) => {
     }
 
     function getMeetingId(): string | undefined {
-        const activeContext = activeTeamsContext()?.teamsContext();
+        const activeContext = activeTeamsContext();
         if (!activeContext) return undefined
 
         const id = activeContext.meeting?.id ?? activeContext.chat?.id ?? activeContext.channel?.id
@@ -160,7 +138,14 @@ export const TeamsProvider: ParentComponent = (props) => {
     }
     const isVisible = createMemo(() => import.meta.env.DEV || internalTeamsContext())
 
-    return <teamsContext.Provider value={activeTeamsContext()}>
+    return <teamsContext.Provider value={{
+        teamsContext: internalTeamsContext as Accessor<TeamsContext>,
+        teamsTasks: microsoftTeams.tasks,
+        teamsDialog: microsoftTeams.dialog,
+        messages: teamsMessages,
+        getUser,
+        getMeetingId
+    }}>
         <Show when={import.meta.env.DEV && !internalTeamsContext()}>
             <fluent-card style="margin-bottom: 1ex;">
                 <p>
@@ -169,11 +154,8 @@ export const TeamsProvider: ParentComponent = (props) => {
                 </p>
             </fluent-card>
         </Show>
-        <Show when={isVisible()}>
-            {children(() => props.children)()}
-        </Show>
-        <Show when={!isVisible()}>
-            No teamsContext! TODO, REDIRECT after attempt
+        <Show when={isVisible()} fallback={"No teamsContext!"}>
+            {props.children}
         </Show>
     </teamsContext.Provider>
 }

@@ -1,5 +1,4 @@
 import {
-  children,
   createContext,
   createSignal,
   onMount,
@@ -60,7 +59,7 @@ export const ThemeProvider: ParentComponent = (props) => {
         ref={setThemeRef}
         design-system={teamsLightTheme}
       >
-        {children(() => props.children)()}
+        {props.children}
       </fluent-design-system-provider>
     </ThemeContext.Provider>
   );
