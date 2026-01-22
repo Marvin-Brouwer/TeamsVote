@@ -5,6 +5,7 @@ import { createStore } from "solid-js/store";
 import { teamsMessages } from '../../../teams-vote-client-util/src/teams/messages';
 import { User } from "@teams-vote/data";
 import { globalTeamsContext } from "../helpers/teams";
+import { useTheme } from "../theme";
 
 export type TeamsContext = microsoftTeams.app.Context
 export type UseTeamsContext = {
@@ -20,12 +21,14 @@ const teamsContext = createContext<UseTeamsContext | undefined>(undefined)
 
 export const TeamsProvider: ParentComponent = (props) => {
 
+    const { applyTheme } = useTheme();
+
     const [internalTeamsContext, setTeamsContext] = createSignal<TeamsContext | undefined>(undefined)
     const [testTeamsContext, setTestTeamsContext] = createStore<TeamsContext>({
         app: {
             appId: new microsoftTeams.AppId('local-test'),
             locale: 'en',
-            theme: 'default',
+            theme: 'light',
             sessionId: 'fake-session',
             host: {
                 name: microsoftTeams.HostName.teamsModern,
@@ -68,8 +71,14 @@ export const TeamsProvider: ParentComponent = (props) => {
     }
 
     onMount(async () => {
-        const ctx = globalTeamsContext();
-        setTeamsContext(ctx);
+        const windowTeamsContext = await globalTeamsContext();
+        setTeamsContext(windowTeamsContext);
+        if (!windowTeamsContext) return;
+
+        applyTheme(windowTeamsContext.app.theme ?? 'light');
+        if (teamsContext) microsoftTeams.app.registerOnThemeChangeHandler((theme) => {
+            applyTheme(theme);
+        });
     });
 
     const activeTeamsContext = createMemo(() => {

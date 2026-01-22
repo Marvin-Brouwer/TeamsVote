@@ -2,7 +2,7 @@ import * as microsoftTeams from '@microsoft/teams-js';
 
 let teamsContext: microsoftTeams.app.Context | undefined = undefined;
 
-async function getTeamsContextInternal() {
+export async function globalTeamsContext() {
     console.log('TEAMSVOTE', 'calling getTeamsContextInternal')
     if (import.meta.env.DEV && location.host.startsWith('localhost')) return undefined;
     if (!!teamsContext) {
@@ -20,6 +20,3 @@ async function getTeamsContextInternal() {
         throw err;
     }
 }
-if (!teamsContext) await getTeamsContextInternal();
-
-export const globalTeamsContext = () => teamsContext;

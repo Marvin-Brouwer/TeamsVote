@@ -1,11 +1,11 @@
 import { RouteSectionProps } from '@solidjs/router'
 import { children, type Component } from 'solid-js'
-import { Theme } from './theme'
+import { ThemeProvider } from './theme'
 
 import './app.css'
 
 export const AppRoot: Component<RouteSectionProps> = (props) => {
-    return <Theme>
+    return <ThemeProvider>
         {children(() => props.children)()}
-    </Theme>
+    </ThemeProvider>
 }
