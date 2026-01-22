@@ -51,7 +51,7 @@ export const SessionProvider: ParentComponent = (props) => {
     const abortController = new AbortController();
     onCleanup(() => abortController.abort('onCleanup'))
 
-    const { teamsContext, getAuthToken, messages } = useTeams()!;
+    const { teamsContext, messages } = useTeams()!;
     const teamsChannelId = teamsContext().channel?.id
     const user = !teamsContext().user ? undefined : {
         id: teamsContext().user!.id,
@@ -80,8 +80,9 @@ export const SessionProvider: ParentComponent = (props) => {
                 setSession(s => ({ ...s, ended: true }))
                 clearInterval(interval);
                 const summaryCard = cardBuilder.createSummaryCard(session().roundKey, aggregate());
-                const authToken = await getAuthToken()
-                await messages.postCard(teamsContext()!.chat!.id, authToken, summaryCard)
+                // await messages.postCard(teamsContext()!.chat!.id, authToken, summaryCard)
+                console.log('Here used to be a postCard', summaryCard)
+
                 if (import.meta.env.DEV) debugger;
                 // TODO see if this works in teams
                 window.close();

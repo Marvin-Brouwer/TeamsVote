@@ -12,7 +12,7 @@ const [healthCheck] = createResource(() => true, api.checkHealth);
 
 export const TabView: Component = () => {
 
-    const { teamsContext, getAuthToken, messages, getUser, getMeetingId } = useTeams()!;
+    const { teamsContext, messages, getUser, getMeetingId } = useTeams()!;
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
     let startButton!: Button;
@@ -45,10 +45,10 @@ export const TabView: Component = () => {
         const pageUrl = `${appOrigin}/TeamsVote/teams/vote/${teamsMeetingId}/${session.token}`;
 
         const card = cardBuilder.createJoinCard(pageUrl, roundKeyValue, teamsContext()!.app.appId!.toString());
-        const authToken = await getAuthToken();
 
         try {
-            await messages.postCard(teamsContext()!.chat!.id, authToken, card)
+            // await messages.postCard(teamsContext()!.chat!.id, authToken, card)
+            console.log('Here used to be a postCard', card)
         } finally {
             keyField.disabled = false;
             startButton.disabled = false;

@@ -9,7 +9,7 @@ import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-buil
 
 export const NewVoteView: Component = () => {
 
-    const { teamsContext, getAuthToken, messages } = useTeams()!;
+    const { teamsContext, messages } = useTeams()!;
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const params = useParams();
@@ -39,8 +39,8 @@ export const NewVoteView: Component = () => {
         const pageUrl = `${appOrigin}/TeamsVote/teams/vote/${teamsChannelId}/${session.token}`;
 
         const card = cardBuilder.createJoinCard(pageUrl, roundKeyValue, teamsContext()!.app.appId!.toString());
-        const authToken = await getAuthToken();
-        await messages.postCard(teamsContext()!.chat!.id, authToken, card)
+        // await messages.postCard(teamsContext()!.chat!.id, authToken, card)
+        console.log('Here used to be a postCard', card)
 
         return pageUrl
     }

@@ -9,7 +9,6 @@ export type TeamsContext = microsoftTeams.app.Context
 export type UseTeamsContext = {
     teamsContext: Accessor<TeamsContext>
     teamsTasks: typeof microsoftTeams.tasks
-    getAuthToken(): Promise<string>,
     messages: typeof teamsMessages,
     getUser(): User | undefined
     getMeetingId(): string | undefined
@@ -65,9 +64,6 @@ export const TeamsProvider: ParentComponent = (props) => {
     const useTestTeamsContext = import.meta.env.PROD ? undefined : {
         teamsContext: () => testTeamsContext,
         teamsTasks: microsoftTeams.tasks,
-        getAuthToken() {
-            return Promise.resolve('fake-auth')
-        },
         messages: {
             async postCard(_chatId: string, _accessToken: string, cardPayload: any) {
                 console.groupCollapsed("TEAMS CARD")
@@ -84,12 +80,6 @@ export const TeamsProvider: ParentComponent = (props) => {
         setTeamsContext(windowTeamsContext);
     });
 
-    async function getAuthToken() {
-        return await microsoftTeams.authentication.getAuthToken({
-            silent: false
-        });
-    };
-
     const activeTeamsContext = createMemo(() => {
         if (!getTeamsContext() && import.meta.env.DEV) {
             return useTestTeamsContext
@@ -97,7 +87,6 @@ export const TeamsProvider: ParentComponent = (props) => {
         return {
             teamsContext: getTeamsContext as Accessor<TeamsContext>,
             teamsTasks: microsoftTeams.tasks,
-            getAuthToken,
             messages: teamsMessages,
             getUser,
             getMeetingId
