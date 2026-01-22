@@ -20,6 +20,6 @@ async function getTeamsContextInternal() {
         throw err;
     }
 }
-await getTeamsContextInternal();
+if (!teamsContext) await getTeamsContextInternal();
 
 export const globalTeamsContext = () => teamsContext;

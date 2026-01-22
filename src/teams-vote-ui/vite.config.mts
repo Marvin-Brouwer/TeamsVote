@@ -29,6 +29,8 @@ export default gitHubSpaConfig(packageJson, {
       }
     },
     target: 'esnext',
-    sourcemap: 'inline'
-  }
+    sourcemap: 'inline',
+    // TODO Temp remote debugging fix
+    minify: false
+  },
 })
