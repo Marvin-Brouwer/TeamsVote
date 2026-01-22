@@ -71,7 +71,7 @@ export const TabView: Component = () => {
             </div>
         </Show>
         <Show when={running()}>
-            <div class="view" style={import.meta.env.DEV && teamsChannelId === 'test-channel' ? '--vote-height: calc(100% - 70px);' : undefined}>
+            <div class="view">
                 <div class="content">
                     <p>TODO: Maybe history will be shown here</p>
                     <p>If that's not possible, we'll add a basic readme</p>

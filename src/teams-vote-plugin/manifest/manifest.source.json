@@ -1,7 +1,7 @@
 {
     "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.23/MicrosoftTeams.schema.json",
     "manifestVersion": "1.23",
-    "version": "1.0.0",
+    "version": "1.0.0-alpha.1",
     "id": "<TEAMS_APP_ID>",
     "developer": {
         "name": "Marvin Brouwer",
@@ -30,16 +30,13 @@
         "id": "<TEAMS_APP_CLIENT_ID>",
         "resource": "<TEAMS_APP_CLIENT_ID_URL>"
     },
-    "configurableTabs": [
+    "staticTabs": [
         {
-            "configurationUrl": "<TEAMS_UI_URL>/teams/tab",
-            "canUpdateConfiguration": false,
+            "entityId": "teamsVoteTab",
+            "name": "Vote",
+            "contentUrl": "<TEAMS_UI_URL>/teams/tab",
             "scopes": [
                 "groupChat"
-            ],
-            "context": [
-                "meetingChatTab",
-                "meetingDetailsTab"
             ]
         }
     ],
