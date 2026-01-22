@@ -8,7 +8,8 @@ import { User } from "@teams-vote/data";
 export type TeamsContext = microsoftTeams.app.Context
 export type UseTeamsContext = {
     teamsContext: Accessor<TeamsContext>
-    teamsTasks: typeof microsoftTeams.tasks
+    teamsTasks: typeof microsoftTeams.tasks,
+    teamsDialog: typeof microsoftTeams.dialog,
     messages: typeof teamsMessages,
     getUser(): User | undefined
     getMeetingId(): string | undefined
@@ -64,6 +65,7 @@ export const TeamsProvider: ParentComponent = (props) => {
     const useTestTeamsContext = import.meta.env.PROD ? undefined : {
         teamsContext: () => testTeamsContext,
         teamsTasks: microsoftTeams.tasks,
+        teamsDialog: microsoftTeams.dialog,
         messages: {
             async postCard(_chatId: string, _accessToken: string, cardPayload: any) {
                 console.groupCollapsed("TEAMS CARD")
@@ -87,6 +89,7 @@ export const TeamsProvider: ParentComponent = (props) => {
         return {
             teamsContext: getTeamsContext as Accessor<TeamsContext>,
             teamsTasks: microsoftTeams.tasks,
+            teamsDialog: microsoftTeams.dialog,
             messages: teamsMessages,
             getUser,
             getMeetingId

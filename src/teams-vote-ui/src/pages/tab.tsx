@@ -7,12 +7,14 @@ import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-buil
 import { DeckSelector } from "../components/deck-selector";
 
 import "./tab.css"
+import { formatUrlForTitle } from "@teams-vote/client-util";
+import { DialogDimension } from "@microsoft/teams-js";
 
 const [healthCheck] = createResource(() => true, api.checkHealth);
 
 export const TabView: Component = () => {
 
-    const { teamsContext, messages, getUser, getMeetingId } = useTeams()!;
+    const { teamsContext, getUser, getMeetingId, teamsDialog } = useTeams()!;
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
     let startButton!: Button;
@@ -49,6 +51,16 @@ export const TabView: Component = () => {
         try {
             // await messages.postCard(teamsContext()!.chat!.id, authToken, card)
             console.log('Here used to be a postCard', card)
+
+            // immediately open the task module for initiator
+            teamsDialog.url.open({
+                title: `TeamsVote ${formatUrlForTitle(roundKeyValue)}`,
+                url: pageUrl,
+                size: {
+                    height: DialogDimension.Large,
+                    width: DialogDimension.Medium
+                }
+            });
         } finally {
             keyField.disabled = false;
             startButton.disabled = false;
