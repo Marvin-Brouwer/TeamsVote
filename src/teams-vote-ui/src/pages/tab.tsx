@@ -1,6 +1,6 @@
 import { createResource, createSignal, onCleanup, Show, type Component } from "solid-js";
 import { useTeams } from "../contexts/teams-context";
-import { Button, ButtonAppearance, TextFieldAppearance } from '@fluentui/web-components';
+import { Button, ButtonAppearance, TextField, TextFieldAppearance } from '@fluentui/web-components';
 import { Deck, defaultDeck, StartRequest } from "@teams-vote/data";
 import { api } from "../helpers/api";
 import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-builder';
@@ -15,22 +15,23 @@ export const TabView: Component = () => {
     const { teamsContext, getAuthToken, messages, getUser, getMeetingId } = useTeams()!;
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
-    let startButton!: Button & HTMLButtonElement;
+    let startButton!: Button;
+    let keyField!: TextField;
 
     const abortController = new AbortController();
     onCleanup(() => abortController.abort('onCleanup'))
     const running = () => healthCheck() === true;
 
-    const teamsMeetingId = getMeetingId()
-    const user = getUser();
-
     async function startEstimate() {
+        const teamsMeetingId = getMeetingId()
         if (!teamsMeetingId) return console.warn('no-teamsChannelId');
+        const user = getUser();
         if (!user) return console.warn('no-user');
 
         const roundKeyValue = roundKey();
         if (!roundKeyValue) return console.warn('no-roundKey');
 
+        keyField.disabled = true;
         startButton.disabled = true;
         const startRequest: StartRequest = {
             meetingId: teamsMeetingId,
@@ -49,6 +50,7 @@ export const TabView: Component = () => {
         try {
             await messages.postCard(teamsContext()!.chat!.id, authToken, card)
         } finally {
+            keyField.disabled = false;
             startButton.disabled = false;
             setRoundKey('')
         }
@@ -56,7 +58,7 @@ export const TabView: Component = () => {
 
     return <>
         <Show when={!running()}>
-            <div class="view tab-spinner" style={import.meta.env.DEV && teamsMeetingId === 'test-meeting' ? '--vote-height: calc(100% - 70px);' : undefined}>
+            <div class="view tab-spinner" style={import.meta.env.DEV && getMeetingId() === 'test-meeting' ? '--vote-height: calc(100% - 70px);' : undefined}>
                 <fluent-progress-ring />
             </div>
         </Show>
@@ -77,6 +79,7 @@ export const TabView: Component = () => {
                         <div>
                             <fluent-text-field
                                 id="round-input"
+                                ref={keyField}
                                 appearance={"filled" as TextFieldAppearance}
                                 placeholder="What are you estimating"
                                 onInput={(e) => {
@@ -90,7 +93,7 @@ export const TabView: Component = () => {
                                 ref={startButton}
                                 appearance={"accent" as ButtonAppearance}
                                 onClick={startEstimate}
-                                disabled={!running() || !roundKey()}
+                                disabled={!running() || !roundKey() || !getMeetingId() || !getUser()}
                                 id="estimate-button"
                             >
                                 Estimate
