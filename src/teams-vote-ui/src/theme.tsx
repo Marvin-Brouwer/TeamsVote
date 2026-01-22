@@ -2,15 +2,11 @@ import { children, createEffect, createSignal, Show, type ParentComponent } from
 import { DesignSystemProvider, provideFluentDesignSystem } from '@fluentui/web-components'
 import { teamsLightTheme} from '@fluentui/tokens';
 import { app } from '@microsoft/teams-js';
-import { getContext } from './contexts/teams-context';
 import { registerComponents } from './theme.components';
 import { applyTeamsTheme } from './theme.color-palette';
+import { getTeamsContext } from './helpers/teams';
 
 import "./theme.css";
-
-let teamsContext = await getContext();
-if (teamsContext) applyTeamsTheme(teamsContext.app.theme);
-else applyTeamsTheme('light');
 
 export const Theme: ParentComponent = (props) => {
 
@@ -21,13 +17,11 @@ export const Theme: ParentComponent = (props) => {
         const themeRoot = themeRef();
         if (!themeRoot) return;
 
-        if (!teamsContext) await getContext();
-        if (teamsContext) {
-            applyTeamsTheme(teamsContext.app.theme);
-            app.registerOnThemeChangeHandler((theme) => {
-                applyTeamsTheme(theme);
-            });
-        }
+        const teamsContext = await getTeamsContext();
+        applyTeamsTheme(teamsContext?.app.theme ?? 'light');
+        if (teamsContext) app.registerOnThemeChangeHandler((theme) => {
+            applyTeamsTheme(theme);
+        });
 
         registerComponents(provideFluentDesignSystem(themeRoot))
             .withShadowRootMode('open')

@@ -4,6 +4,7 @@ import * as microsoftTeams from "@microsoft/teams-js";
 import { createStore } from "solid-js/store";
 import { teamsMessages } from '../../../teams-vote-client-util/src/teams/messages';
 import { User } from "@teams-vote/data";
+import { getTeamsContext } from "../helpers/teams";
 
 export type TeamsContext = microsoftTeams.app.Context
 export type UseTeamsContext = {
@@ -17,20 +18,9 @@ export type UseTeamsContext = {
 
 const teamsContext = createContext<UseTeamsContext | undefined>(undefined)
 
-export async function getContext() {
-    if (import.meta.env.DEV) return undefined;
-    try {
-        await microsoftTeams.app.initialize();
-        return await microsoftTeams.app.getContext();
-    } catch (err) {
-        if ((err as Error).message === "Initialization Failed. No Parent window found.") return undefined;
-        throw err;
-    }
-}
-
 export const TeamsProvider: ParentComponent = (props) => {
 
-    const [getTeamsContext, setTeamsContext] = createSignal<TeamsContext | undefined>(undefined)
+    const [internalTeamsContext, setTeamsContext] = createSignal<TeamsContext | undefined>(undefined)
     const [testTeamsContext, setTestTeamsContext] = createStore<TeamsContext>({
         app: {
             appId: new microsoftTeams.AppId('local-test'),
@@ -78,16 +68,16 @@ export const TeamsProvider: ParentComponent = (props) => {
     }
 
     onMount(async () => {
-        const windowTeamsContext = await getContext();
+        const windowTeamsContext = await getTeamsContext();
         setTeamsContext(windowTeamsContext);
     });
 
     const activeTeamsContext = createMemo(() => {
-        if (!getTeamsContext() && import.meta.env.DEV) {
+        if (!internalTeamsContext() && import.meta.env.DEV) {
             return useTestTeamsContext
         }
         return {
-            teamsContext: getTeamsContext as Accessor<TeamsContext>,
+            teamsContext: internalTeamsContext as Accessor<TeamsContext>,
             teamsTasks: microsoftTeams.tasks,
             teamsDialog: microsoftTeams.dialog,
             messages: teamsMessages,
@@ -143,10 +133,10 @@ export const TeamsProvider: ParentComponent = (props) => {
         console.warn('no meeting id available');
         return undefined;
     }
-    const isVisible = createMemo(() => import.meta.env.DEV || getTeamsContext())
+    const isVisible = createMemo(() => import.meta.env.DEV || internalTeamsContext())
 
     return <teamsContext.Provider value={activeTeamsContext()}>
-        <Show when={import.meta.env.DEV && !getTeamsContext()}>
+        <Show when={import.meta.env.DEV && !internalTeamsContext()}>
             <fluent-card style="margin-bottom: 1ex;">
                 <p>
                     DEV MODE: Fake session
