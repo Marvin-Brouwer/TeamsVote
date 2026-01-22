@@ -86,7 +86,6 @@ export const TeamsProvider: ParentComponent = (props) => {
 
     async function getAuthToken() {
         return await microsoftTeams.authentication.getAuthToken({
-            resources: ["https://graph.microsoft.com", location.origin],
             silent: false
         });
     };
