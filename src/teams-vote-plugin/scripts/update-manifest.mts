@@ -1,5 +1,5 @@
-import fs from "node:fs";
-import path from "node:path";
+import fs, { mkdir } from "node:fs";
+import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
 
@@ -10,7 +10,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const devManifestPath = path.join(__dirname, "../manifest/manifest.source.json");
-const outputManifestPath = path.join(__dirname, "../manifest.json");
+const outputManifestPath = path.join(__dirname, "../package/manifest.json");
+mkdir(dirname(outputManifestPath), { recursive: true }, (err) => {
+  if (err) throw err;
+});
+
 
 const appId = process.env.TEAMS_APP_ID;
 const appUrl = process.env.TEAMS_UI_URL;
@@ -48,4 +52,10 @@ replaceEnv('TEAMS_CHATBOT_CLIENT_ID');
 const manifestJson = JSON.parse(manifestContent);
 fs.writeFileSync(outputManifestPath, JSON.stringify(manifestJson, null, 2));
 
-console.log(`✅ Manifest updated`);
+console.log(`Manifest updated`);
+console.log(`  MANIFEST_VERSION=${manifestJson.version}`);
+
+if (process.env.GITHUB_ENV) fs.appendFileSync(
+  process.env.GITHUB_ENV,
+  `MANIFEST_VERSION=${manifestJson.version}\n`
+);

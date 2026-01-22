@@ -70,10 +70,13 @@ jobs:
         working-directory: './src/teams-vote-plugin'
         # Copy the images out of the ./images folder, the teams plugin doesn't seem to handle paths in the manifest very well
       - name: Copy images to root
-        run: mv images/* .
+        run: mv images/* ./package
         working-directory: './src/teams-vote-plugin'
       - name: Zip Plugin
-        run: zip teams-vote.zip manifest.json color.png outline.png
+        # The publish command doesn't work without teams in your subscription
+        # For now, just generate a zip and replace
+        if: false
+        run: zip teams-vote-${{ env.MANIFEST_VERSION }}.zip ./package/*
         working-directory: './src/teams-vote-plugin'
       - name: Update plugin
         # The publish command doesn't work without teams in your subscription
@@ -87,5 +90,5 @@ jobs:
       - name: Upload Teams app artifact
         uses: actions/upload-artifact@v4
         with:
-          name: teams-vote-app
-          path: ./src/teams-vote-plugin/teams-vote.zip
+          name: teams-vote-${{ env.MANIFEST_VERSION }}
+          path: ./src/teams-vote-plugin/package
