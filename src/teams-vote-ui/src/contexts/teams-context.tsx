@@ -4,7 +4,7 @@ import * as microsoftTeams from "@microsoft/teams-js";
 import { createStore } from "solid-js/store";
 import { teamsMessages } from '../../../teams-vote-client-util/src/teams/messages';
 import { User } from "@teams-vote/data";
-import { getTeamsContext } from "../helpers/teams";
+import { globalTeamsContext } from "../helpers/teams";
 
 export type TeamsContext = microsoftTeams.app.Context
 export type UseTeamsContext = {
@@ -68,8 +68,8 @@ export const TeamsProvider: ParentComponent = (props) => {
     }
 
     onMount(async () => {
-        const windowTeamsContext = await getTeamsContext();
-        setTeamsContext(windowTeamsContext);
+        const ctx = globalTeamsContext();
+        setTeamsContext(ctx);
     });
 
     const activeTeamsContext = createMemo(() => {

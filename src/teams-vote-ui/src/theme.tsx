@@ -4,7 +4,7 @@ import { teamsLightTheme } from '@fluentui/tokens';
 import { app } from '@microsoft/teams-js';
 import { registerComponents } from './theme.components';
 import { applyTeamsTheme } from './theme.color-palette';
-import { getTeamsContext } from './helpers/teams';
+import { globalTeamsContext } from './helpers/teams';
 
 import "./theme.css";
 
@@ -19,7 +19,7 @@ export const Theme: ParentComponent = (props) => {
         console.log('TEAMSVOTE', 'applying theme')
 
         try {
-            const teamsContext = await getTeamsContext();
+            const teamsContext = globalTeamsContext();
             applyTeamsTheme(teamsContext?.app.theme ?? 'light');
             if (teamsContext) app.registerOnThemeChangeHandler((theme) => {
                 applyTeamsTheme(theme);
