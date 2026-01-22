@@ -1,6 +1,6 @@
-import { children, createEffect, createSignal, Show, type ParentComponent } from 'solid-js'
+import { children, createSignal, onMount, Show, type ParentComponent } from 'solid-js'
 import { DesignSystemProvider, provideFluentDesignSystem } from '@fluentui/web-components'
-import { teamsLightTheme} from '@fluentui/tokens';
+import { teamsLightTheme } from '@fluentui/tokens';
 import { app } from '@microsoft/teams-js';
 import { registerComponents } from './theme.components';
 import { applyTeamsTheme } from './theme.color-palette';
@@ -13,15 +13,21 @@ export const Theme: ParentComponent = (props) => {
     const [themeRef, setThemeRef] = createSignal<DesignSystemProvider>();
     const [themeLoaded, setThemeLoaded] = createSignal(false);
 
-    createEffect(async () => {
+    onMount(async () => {
         const themeRoot = themeRef();
         if (!themeRoot) return;
+        console.log('TEAMSVOTE', 'applying theme')
 
-        const teamsContext = await getTeamsContext();
-        applyTeamsTheme(teamsContext?.app.theme ?? 'light');
-        if (teamsContext) app.registerOnThemeChangeHandler((theme) => {
-            applyTeamsTheme(theme);
-        });
+        try {
+            const teamsContext = await getTeamsContext();
+            applyTeamsTheme(teamsContext?.app.theme ?? 'light');
+            if (teamsContext) app.registerOnThemeChangeHandler((theme) => {
+                applyTeamsTheme(theme);
+            });
+        } catch (e) {
+            console.log(e);
+            applyTeamsTheme('light');
+        }
 
         registerComponents(provideFluentDesignSystem(themeRoot))
             .withShadowRootMode('open')
