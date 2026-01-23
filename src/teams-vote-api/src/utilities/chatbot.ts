@@ -47,13 +47,19 @@ export class ChatBot extends TeamsActivityHandler {
         console.log()
         console.log("COMMAND", context.activity)
         console.log()
+        console.log(appUrl + "/TeamsVote/teams/tab/")
+
+        return {
+            status: 200,
+            body: appUrl + "/TeamsVote/teams/tab/"
+        }
 
         return {
             status: 200,
             body: TaskModuleContinueResponse
                 .createResponseOfFetch()
                 .title(formatUrlForTitle("test"))
-                .url(appUrl + "/TeamsVote/teams/tab")
+                .url(appUrl + "/TeamsVote/teams/tab/")
                 .width('medium')
                 .height('large')
                 .toResponseOfFetch()
