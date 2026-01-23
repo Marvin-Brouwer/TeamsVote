@@ -150,11 +150,13 @@ jobs:
             echo "Deploy status: $STATUS"
 
             if [ "$STATUS" = "live" ]; then
+              echo "Deployment succeeded" >> $GITHUB_STEP_SUMMARY
               echo "Deployment succeeded"
               exit 0
             fi
 
             if [ "$STATUS" = "failed" ]; then
+              echo "Deployment failed" >> $GITHUB_STEP_SUMMARY
               echo "Deployment failed"
               exit 1
             fi
