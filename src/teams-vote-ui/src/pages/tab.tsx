@@ -61,11 +61,11 @@ export const TabView: Component = () => {
             console.log('Here used to be a postCard', card)
 
             teamsDialog.url.open({
-                url: `${appOrigin}/TeamsVote/teams/spinner/`, // your UI
+                url: `${appOrigin}/TeamsVote/teams/new/${roundKeyValue}/`, // your UI
                 title: formatUrlForTitle(roundKeyValue),
                 size: {
-                    height: 20,
-                    width: 20
+                    height: 50,
+                    width: 50
                 }
             },(r) => console.log('r',r), pm => console.log('pm', pm));
 

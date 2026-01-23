@@ -9,7 +9,7 @@ import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-buil
 
 export const NewVoteView: Component = () => {
 
-    const { teamsContext } = useTeams()!;
+    const { teamsContext, teamsDialog } = useTeams()!;
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const params = useParams();
@@ -41,6 +41,11 @@ export const NewVoteView: Component = () => {
         const card = cardBuilder.createJoinCard(pageUrl, roundKeyValue, teamsContext()!.app.appId!.toString());
         // await messages.postCard(teamsContext()!.chat!.id, authToken, card)
         console.log('Here used to be a postCard', card)
+
+        console.log('sending bot command')
+        teamsDialog.url.submit({
+            command: "startVote2"
+        });
 
         return pageUrl
     }
