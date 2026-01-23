@@ -48,57 +48,7 @@
             "supportsCalling": false,
             "supportsVideo": false,
             "supportsFiles": false,
-            "isNotificationOnly": false
-        }
-    ],
-    "composeExtensions": [
-        {
-            "botId": "<TEAMS_CHATBOT_CLIENT_ID>",
-            "composeExtensionType": "botBased",
-            "commands": [
-                {
-                    "id": "vote",
-                    "type": "action",
-                    "title": "Vote",
-                    "description": "Start a new voting session",
-                    "initialRun": false,
-                    "fetchTask": true,
-                    "context": [
-                        "compose"
-                    ],
-                    "parameters": [
-                        {
-                            "name": "subject",
-                            "description": "Subject of the voting session, URLs are recommended",
-                            "title": "Subject",
-                            "isRequired": true,
-                            "inputType": "text"
-                        },
-                        {
-                            "name": "deck",
-                            "description": "Select a card deck, defaults to modified Fibonacci",
-                            "title": "Card deck",
-                            "isRequired": false,
-                            "inputType": "choiceset",
-                            "value": "modified-fibonacci",
-                            "choices": [
-                                {
-                                    "title": "Modified Fibonacci",
-                                    "value": "modified-fibonacci"
-                                },
-                                {
-                                    "title": "Fibonacci",
-                                    "value": "fibonacci"
-                                },
-                                {
-                                    "title": "T-shirt sizes",
-                                    "value": "t-shirt"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
+            "isNotificationOnly": true
         }
     ]
 }

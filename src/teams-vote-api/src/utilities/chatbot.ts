@@ -1,7 +1,7 @@
 import { formatUrlForTitle } from '@teams-vote/client-util';
-import { Deck, tryParseDeck } from '@teams-vote/data';
+import { Deck } from '@teams-vote/data';
 // import { formatUrlForTitle } from '@teams-vote/client-util';
-import { CardFactory, InvokeResponse, MessagingExtensionAction, MessagingExtensionActionResponse, TeamsActivityHandler, TurnContext } from 'botbuilder';
+import { InvokeResponse, TeamsActivityHandler } from 'botbuilder';
 import { ITaskModuleResponseOfFetch, TaskModuleContinueResponse } from 'botbuilder-teams';
 // import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
 
@@ -39,18 +39,18 @@ export class ChatBot extends TeamsActivityHandler {
         // });
     }
 
-    protected async handleTeamsMessagingExtensionFetchTask(context: TurnContext, action: MessagingExtensionAction): Promise<MessagingExtensionActionResponse> {
+    // protected async handleTeamsMessagingExtensionFetchTask(context: TurnContext, action: MessagingExtensionAction): Promise<MessagingExtensionActionResponse> {
 
-        console.log("ACTION", action)
+    //     console.log("ACTION", action)
 
-        return TaskModuleContinueResponse
-            .createResponseOfFetch()
-            .title(formatUrlForTitle("test"))
-            .url(appUrl + "/teams/tab/")
-            .width('medium')
-            .height('large')
-            .toResponseOfFetch();
-    }
+    //     return TaskModuleContinueResponse
+    //         .createResponseOfFetch()
+    //         .title(formatUrlForTitle("test"))
+    //         .url(appUrl + "/teams/tab/")
+    //         .width('medium')
+    //         .height('large')
+    //         .toResponseOfFetch();
+    // }
 
     // public async onInvokeActivity(context: TurnContext) {
     //     if (context.activity.name !== "composeExtension/fetchTask") {
