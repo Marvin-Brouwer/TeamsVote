@@ -51,7 +51,7 @@ export const SessionProvider: ParentComponent = (props) => {
     const abortController = new AbortController();
     onCleanup(() => abortController.abort('onCleanup'))
 
-    const { getMeetingId, getUser } = useTeams()!;
+    const { getMeetingId, getUser, teamsDialog } = useTeams()!;
     const meetingId = getMeetingId()
     const user = getUser()
 
@@ -82,8 +82,7 @@ export const SessionProvider: ParentComponent = (props) => {
                 console.log('Here used to be a postCard', summaryCard)
 
                 if (import.meta.env.DEV) debugger;
-                // TODO see if this works in teams
-                window.close();
+                teamsDialog.url.submit();
             }
         }, 200);
     })

@@ -10,7 +10,8 @@ export const api = {
             method: 'GET'
         }).then(async httpResponse => {
             if (!httpResponse.ok) {
-                alert(await httpResponse.text())
+                if (import.meta.env.DEV) alert(await httpResponse.text())
+                return false;
             };
             return true;
         });

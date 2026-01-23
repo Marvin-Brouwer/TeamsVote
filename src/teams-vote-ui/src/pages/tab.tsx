@@ -15,6 +15,7 @@ const [healthCheck] = createResource(() => true, api.checkHealth);
 export const TabView: Component = () => {
 
     const { teamsContext, getUser, getMeetingId, teamsDialog } = useTeams()!;
+    const [running, setRunningState] = createSignal(false)
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
     let startButton!: Button;
@@ -22,7 +23,16 @@ export const TabView: Component = () => {
 
     const abortController = new AbortController();
     onCleanup(() => abortController.abort('onCleanup'))
-    const running = () => healthCheck() === true;
+
+    // Don't use interval, because the first check may take a while when the server falls asleep
+    let timer = checkHealth();
+    function checkHealth() {
+        return setTimeout(() => {
+            setRunningState(healthCheck() ?? false)
+            timer = checkHealth();
+        }, 2000)
+    }
+    abortController.signal.addEventListener('abort', () => clearTimeout(timer))
 
     async function startEstimate() {
         const teamsMeetingId = getMeetingId()
