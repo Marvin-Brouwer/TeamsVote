@@ -1,8 +1,8 @@
 import { Deck, tryParseDeck } from '@teams-vote/data';
-import { formatUrlForTitle } from '@teams-vote/client-util';
+// import { formatUrlForTitle } from '@teams-vote/client-util';
 import { InvokeResponse, TeamsActivityHandler, TurnContext } from 'botbuilder';
 import { ITaskModuleResponseOfFetch, TaskModuleContinueResponse } from 'botbuilder-teams';
-import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
+// import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
 
 const appUrl = import.meta.env.VITE_UI_APP_URL as string;
 
@@ -43,20 +43,35 @@ export class ChatBot extends TeamsActivityHandler {
             return await super.onInvokeActivity(context);
         }
 
-        // Grab the command text (if any)
-        const commandText = context.activity.value?.parameters?.[0]?.value || "";
-        if (!commandText.length) return this.helpResponse()
+        console.log()
+        console.log("COMMAND", context.activity)
+        console.log()
 
-        const [typeOrName, ...rest] = commandText.split(" ");
+        return {
+            status: 200,
+            body: TaskModuleContinueResponse
+                .createResponseOfFetch()
+                .title(formatUrlForTitle("test"))
+                .url(appUrl + "/TeamsVote/teams/tab")
+                .width('medium')
+                .height('large')
+                .toResponseOfFetch()
+        };
 
-        const selectedDeckArgument = typeOrName.startsWith("--") ? typeOrName.slice(2) : undefined;
-        const selectedDeck = tryParseDeck(selectedDeckArgument);
-        if (selectedDeck instanceof Error) return this.helpResponse();
+        // // Grab the command text (if any)
+        // const commandText = context.activity.value?.parameters?.[0]?.value || "";
+        // if (!commandText.length) return this.helpResponse()
 
-        const roundKey = typeOrName.startsWith("--") ? rest.join(" ") : commandText;
+        // const [typeOrName, ...rest] = commandText.split(" ");
 
-        // Return Task Module response
-        return this.startResponse(selectedDeck, roundKey)
+        // const selectedDeckArgument = typeOrName.startsWith("--") ? typeOrName.slice(2) : undefined;
+        // const selectedDeck = tryParseDeck(selectedDeckArgument);
+        // if (selectedDeck instanceof Error) return this.helpResponse();
+
+        // const roundKey = typeOrName.startsWith("--") ? rest.join(" ") : commandText;
+
+        // // Return Task Module response
+        // return this.startResponse(selectedDeck, roundKey)
     };
 
     private helpResponse = (): InvokeResponse<string> => ({ status: 200, body: `TODO! this will trigger a help response later` });

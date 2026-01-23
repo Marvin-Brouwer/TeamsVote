@@ -48,17 +48,54 @@
             "supportsCalling": false,
             "supportsVideo": false,
             "supportsFiles": false,
-            "isNotificationOnly": false,
-            "commandLists": [{
-                "commands": [{
-                    "title": "vote",
-                    "description": "Start a new voting session"
-                    
-                }],
-                "scopes": [
-                    "groupChat"
-                ]
-            }]
+            "isNotificationOnly": false
+        }
+    ],
+    "composeExtensions": [
+        {
+            "botId": "<TEAMS_CHATBOT_CLIENT_ID>",
+            "composeExtensionType": "botBased",
+            "commands": [
+                {
+                    "id": "vote",
+                    "type": "action",
+                    "title": "Vote",
+                    "description": "Start a new voting session",
+                    "initialRun": true,
+                    "fetchTask": true,
+                    "context": [
+                        "commandBox",
+                        "compose",
+                        "message"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "type",
+                            "description": "Voting type",
+                            "title": "Type",
+                            "choices": [
+                                {
+                                    "title": "modified-fibonacci",
+                                    "value": "modified-fibonacci"
+                                },
+                                {
+                                    "title": "t-shirt",
+                                    "value": "t-shirt"
+                                },
+                                {
+                                    "title": "numbers",
+                                    "value": "numbers"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "title",
+                            "description": "Title of the session",
+                            "title": "Session Title"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
