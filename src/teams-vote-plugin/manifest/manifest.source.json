@@ -58,7 +58,7 @@
             "commands": [
                 {
                     "id": "vote",
-                    "type": "query",
+                    "type": "action",
                     "title": "Vote",
                     "description": "Start a new voting session",
                     "initialRun": false,
@@ -68,9 +68,16 @@
                     ],
                     "parameters": [
                         {
+                            "name": "subject",
+                            "description": "Subject of the voting session, URLs are recommended",
+                            "title": "Subject",
+                            "isRequired": true,
+                            "inputType": "text"
+                        },
+                        {
                             "name": "deck",
-                            "description": "Card deck",
-                            "title": "Type",
+                            "description": "Select a card deck, defaults to modified Fibonacci",
+                            "title": "Card deck",
                             "isRequired": false,
                             "inputType": "choiceset",
                             "value": "modified-fibonacci",
@@ -88,13 +95,6 @@
                                     "value": "t-shirt"
                                 }
                             ]
-                        },
-                        {
-                            "name": "subject",
-                            "description": "Subject of the voting session, URLs are recommended",
-                            "title": "Subject",
-                            "isRequired": true,
-                            "inputType": "text"
                         }
                     ]
                 }
