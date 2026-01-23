@@ -1,7 +1,7 @@
 import { formatUrlForTitle } from '@teams-vote/client-util';
 import { Deck } from '@teams-vote/data';
 // import { formatUrlForTitle } from '@teams-vote/client-util';
-import { InvokeResponse, TeamsActivityHandler } from 'botbuilder';
+import { InvokeResponse, TaskModuleRequest, TeamsActivityHandler, TurnContext, TaskModuleResponse, CardFactory, MessagingExtensionActionResponse, TaskModuleTaskInfo } from 'botbuilder';
 import { ITaskModuleResponseOfFetch, TaskModuleContinueResponse } from 'botbuilder-teams';
 // import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
 
@@ -38,7 +38,37 @@ export class ChatBot extends TeamsActivityHandler {
         //     await next();
         // });
     }
+    protected async handleTeamsTaskModuleFetch(context: TurnContext, taskModuleRequest: TaskModuleRequest): Promise<TaskModuleResponse> {
+        const card = {
+            type: "AdaptiveCard",
+            $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+            version: "1.4",
+            body: [{ type: "TextBlock", text: "Vote started!" }]
+        };
 
+        console.log('taskModuleRequest', taskModuleRequest)
+
+        // Post directly to the chat or meeting
+        const attachment = CardFactory.adaptiveCard(card);
+        await context.sendActivity({ attachments: [attachment] });
+        
+        const test: MessagingExtensionActionResponse = {
+            task: {
+                type: "continue",
+                value: taskModuleRequest.data as TaskModuleTaskInfo
+            }
+        };
+
+        console.log('test', test)
+
+        return TaskModuleContinueResponse
+            .createResponseOfFetch()
+            .title(formatUrlForTitle("test"))
+            .url(appUrl + "/teams/tab/")
+            .width('medium')
+            .height('large')
+            .toResponseOfFetch();
+    }
     // protected async handleTeamsMessagingExtensionFetchTask(context: TurnContext, action: MessagingExtensionAction): Promise<MessagingExtensionActionResponse> {
 
     //     console.log("ACTION", action)

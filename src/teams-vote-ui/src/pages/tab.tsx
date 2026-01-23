@@ -62,14 +62,14 @@ export const TabView: Component = () => {
             console.log('Here used to be a postCard', card)
 
             teamsDialog.url.bot.open({
-    url: pageUrl, // your UI
-    title: "Test",
-    completionBotId: import.meta.env.VITE_BOT_ID,
-    size: {
+                url: pageUrl, // your UI
+                title: "Test",
+                completionBotId: import.meta.env.VITE_BOT_ID,
+                size: {
                     height: DialogDimension.Large,
                     width: DialogDimension.Medium
                 }
-});
+            });
             // teamsTasks.
 
             // console.log('a')

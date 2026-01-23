@@ -1,31 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { CloudAdapter, ConfigurationBotFrameworkAuthentication, ConfigurationServiceClientCredentialFactory, ConfigurationServiceClientCredentialFactoryOptions, createBotFrameworkAuthenticationFromConfiguration, TurnContext } from "botbuilder";
+import { TurnContext } from "botbuilder";
 import { ChatBot } from "../utilities/chatbot.js";
-
-const TENANT = process.env.TEAMS_PLUGIN_TENANT_ID!;
-const APP_ID = process.env.TEAMS_CHATBOT_CLIENT_ID!;
-const APP_PASSWORD = process.env.TEAMS_CHATBOT_CLIENT_SECRET!;
-
+import { teamsAdapter } from "../utilities/teams-adapter.js";
 const bot = new ChatBot();
-const credentialOptions: ConfigurationServiceClientCredentialFactoryOptions = {
-    MicrosoftAppTenantId: TENANT,
-    MicrosoftAppId: APP_ID,
-    MicrosoftAppPassword: APP_PASSWORD,
-    MicrosoftAppType: 'chatbot'
-}
-const credentialsFactory = new ConfigurationServiceClientCredentialFactory(import.meta.env.DEV ? {} : credentialOptions)
-
-const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication({
-    MicrosoftAppId: APP_ID,
-    MicrosoftAppTenantId: TENANT
-}, credentialsFactory);
-
-
-const adapter = new CloudAdapter(botFrameworkAuthentication);
-adapter.onTurnError = async (context: TurnContext, error: Error) => {
-    console.error("Bot error:", error);
-    await context.sendActivity("Oops, something went wrong!");
-};
 
 export function applyChatHandler(app: FastifyInstance) {
 
@@ -49,7 +26,7 @@ export function applyChatHandler(app: FastifyInstance) {
 
         try {
             app.log.info(`Incoming request ${JSON.stringify(req.body)}`)
-            await adapter.process(req, res, async (context: TurnContext) => {
+            await teamsAdapter.process(req, res, async (context: TurnContext) => {
                 app.log.info(`TurnContext activity ${JSON.stringify(context.activity)}`);
                 context.onSendActivities(async (_c, a, n) => {
                     app.log.info(`onSendActivities ${JSON.stringify(a)}`);
