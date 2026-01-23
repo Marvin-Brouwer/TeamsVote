@@ -64,7 +64,7 @@ export const TabView: Component = () => {
 
             // immediately open the task module for initiator
             teamsDialog.url.open({
-                title: `TeamsVote ${formatUrlForTitle(roundKeyValue)}`,
+                title: formatUrlForTitle(roundKeyValue),
                 url: pageUrl,
                 size: {
                     height: DialogDimension.Large,

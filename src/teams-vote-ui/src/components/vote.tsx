@@ -5,6 +5,9 @@ import { api } from "../helpers/api";
 
 import "./vote.css";
 
+// TODO make responsive
+// TODO multiple card decks
+
 export const VotePanel: Component = () => {
 
     const { session, showScores } = useSession()!;
