@@ -1,7 +1,7 @@
 import { formatUrlForTitle } from '@teams-vote/client-util';
 import { Deck, tryParseDeck } from '@teams-vote/data';
 // import { formatUrlForTitle } from '@teams-vote/client-util';
-import { InvokeResponse, TeamsActivityHandler, TeamsInfo, TurnContext } from 'botbuilder';
+import { InvokeResponse, TeamsActivityHandler, TurnContext } from 'botbuilder';
 import { ITaskModuleResponseOfFetch, TaskModuleContinueResponse } from 'botbuilder-teams';
 // import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
 
@@ -48,7 +48,15 @@ export class ChatBot extends TeamsActivityHandler {
         console.log("COMMAND", context.activity)
         console.log()
 
-        await context.sendActivity("TEST");
+        if (context.activity.channelData?.type === "teams") {
+            await context.sendActivity("TEST");
+        }
+        else {
+            const reference = TurnContext.getConversationReference(context.activity);
+            await context.adapter.continueConversation(reference, async (proactiveContext) => {
+                await proactiveContext.sendActivity("TEST");
+            });
+        }
 
         return {
             status: 200,
