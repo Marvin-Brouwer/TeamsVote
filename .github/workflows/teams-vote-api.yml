@@ -79,26 +79,42 @@ jobs:
       url: https://teamsvote.onrender.com
     runs-on: ubuntu-latest
     steps:
-      - name: Cancel queued/running deploys
+      - name: Cancel older queued/running deploys
         run: |
           SERVICE_ID=${{ vars.RENDER_SERVICE_ID }}
           API_KEY=${{ secrets.RENDER_API_KEY }}
 
-          echo "Checking for queued/running deploys..."
-          deploys=$(curl -s -H "Authorization: Bearer $API_KEY" \
-                        -H "Accept: application/json" \
-                        https://api.render.com/v1/services/$SERVICE_ID/deploys)
+          deploys=$(curl -s \
+            -H "Authorization: Bearer $API_KEY" \
+            -H "Accept: application/json" \
+            "https://api.render.com/v1/services/$SERVICE_ID/deploys?limit=30")
 
-          deploy_id=$(echo "$deploys" | jq -r '.[] | select(.status=="queued" or .status=="deploying" or .status=="build_in_progress" or .status=="update_in_progress" or .status=="pre_deploy_in_progress") | .id' | head -n1)
+          # Sort newest → oldest, keep only active ones, drop the newest
+          deploy_ids=$(echo "$deploys" | jq -r '
+            sort_by(.createdAt) | reverse
+            | map(select(
+                .status=="created" or
+                .status=="queued" or
+                .status=="build_in_progress" or
+                .status=="deploying" or
+                .status=="update_in_progress" or
+                .status=="pre_deploy_in_progress"
+              ))
+            | .[1:][]?.id
+          ')
 
-          if [ -n "$deploy_id" ]; then
-            echo "Canceling deploy $deploy_id"
-            curl -X POST -H "Authorization: Bearer $API_KEY" \
-                 -H "Accept: application/json" \
-                 https://api.render.com/v1/deploys/$deploy_id/cancel
-          else
-            echo "No queued or running deploys found"
+          if [ -z "$deploy_ids" ]; then
+            echo "No older deploys to cancel"
+            exit 0
           fi
+
+          for deploy_id in $deploy_ids; do
+            echo "Canceling deploy $deploy_id"
+            curl -s -X POST \
+              -H "Authorization: Bearer $API_KEY" \
+              -H "Accept: application/json" \
+              "https://api.render.com/v1/deploys/$deploy_id/cancel"
+          done
 
       - name: Start Render Deploy
         id: trigger
@@ -131,8 +147,6 @@ jobs:
 
       - name: Wait For Deploy
         run: |
-          echo "Waiting for pipeline checkout + build"
-          sleep 9m
           echo "Polling status"
           DEPLOY_ID=${{ steps.trigger.outputs.deploy_id }}
 
