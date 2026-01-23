@@ -13,7 +13,7 @@ const credentialOptions: ConfigurationServiceClientCredentialFactoryOptions = {
     MicrosoftAppPassword: APP_PASSWORD,
     MicrosoftAppType: 'chatbot'
 }
-const credentialsFactory = new ConfigurationServiceClientCredentialFactory(import.meta.env.DEV ? { } : credentialOptions)
+const credentialsFactory = new ConfigurationServiceClientCredentialFactory(import.meta.env.DEV ? {} : credentialOptions)
 
 const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication({
     MicrosoftAppId: APP_ID,
@@ -48,7 +48,13 @@ export function applyChatHandler(app: FastifyInstance) {
         };
 
         try {
+            app.log.info(`Incoming request ${JSON.stringify(req.body)}`)
             await adapter.process(req, res, async (context: TurnContext) => {
+                app.log.info(`TurnContext activity ${JSON.stringify(context.activity)}`);
+                context.onSendActivities(async (_c, a, n) => {
+                    app.log.info(`onSendActivities ${JSON.stringify(a)}`);
+                    return await n();
+                })
                 await bot.run(context);
             });
         } catch (err) {
