@@ -64,7 +64,6 @@
                     "initialRun": false,
                     "fetchTask": true,
                     "context": [
-                        "commandBox",
                         "compose"
                     ],
                     "parameters": [
@@ -91,9 +90,9 @@
                             ]
                         },
                         {
-                            "name": "title",
-                            "description": "Title of the session",
-                            "title": "Session Title",
+                            "name": "subject",
+                            "description": "Subject of the voting session, URLs are recommended",
+                            "title": "Subject",
                             "isRequired": true,
                             "inputType": "text"
                         }
