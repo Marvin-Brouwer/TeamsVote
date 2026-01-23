@@ -8,11 +8,11 @@ export const Spinner: Component = () => {
     onMount(() => {
 
         window.setTimeout(() => {
-            console.log('sending bot command', teamsContext())
+            console.log('sending bot command', JSON.stringify(teamsContext()))
             try {
                 teamsDialog.url.submit({
                     command: 'test2'
-                }, import.meta.env.VITE_BOT_ID)
+                })
             } catch (e) {
                 console.error('submittask', e)
             }
