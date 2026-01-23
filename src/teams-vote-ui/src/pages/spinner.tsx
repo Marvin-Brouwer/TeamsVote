@@ -1,27 +1,22 @@
 import { onMount, type Component } from "solid-js";
-import * as microsoftTeams from '@microsoft/teams-js';
+import { useTeams } from "../contexts/teams-context";
 
 export const Spinner: Component = () => {
 
+    const { teamsDialog, teamsContext } = useTeams()!;
 
     onMount(() => {
-        console.log('sending bot command')
 
-        try {
-            microsoftTeams.meeting.getMeetingDetails((e, d) => console.log(e, d))
-        }
-        catch (e) {
-            console.error('too bad', e)
-        }
-
-
-        try {
-            microsoftTeams.dialog.url.submit({
-                command: 'test2'
-            }, import.meta.env.VITE_BOT_ID)
-        } catch (e) {
-            console.error('submittask', e)
-        }
+        window.setTimeout(() => {
+            console.log('sending bot command', teamsContext())
+            try {
+                teamsDialog.url.submit({
+                    command: 'test2'
+                }, import.meta.env.VITE_BOT_ID)
+            } catch (e) {
+                console.error('submittask', e)
+            }
+        }, 1000)
     })
 
     return <div class="view tab-spinner">
