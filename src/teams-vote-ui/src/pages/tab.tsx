@@ -14,7 +14,7 @@ const [healthCheck] = createResource(() => true, api.checkHealth);
 
 export const TabView: Component = () => {
 
-    const { teamsContext, getUser, getMeetingId, teamsDialog } = useTeams()!;
+    const { teamsContext, getUser, getMeetingId, teamsDialog, authentication, messages } = useTeams()!;
     const [running, setRunningState] = createSignal(false)
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
@@ -59,8 +59,11 @@ export const TabView: Component = () => {
         const card = cardBuilder.createJoinCard(pageUrl, roundKeyValue, teamsContext()!.app.appId!.toString());
 
         try {
-            // await messages.postCard(teamsContext()!.chat!.id, authToken, card)
             console.log('Here used to be a postCard', card)
+            const authToken = await authentication.getAuthToken({
+                resources: ["https://graph.microsoft.com"] // request Graph token
+            });
+            await messages.postCard(teamsContext()!.chat!.id, authToken, card)
 
             // immediately open the task module for initiator
             teamsDialog.url.open({

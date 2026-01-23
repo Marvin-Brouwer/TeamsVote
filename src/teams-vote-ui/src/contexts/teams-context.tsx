@@ -13,7 +13,8 @@ export type UseTeamsContext = {
     teamsDialog: typeof microsoftTeams.dialog,
     messages: typeof teamsMessages,
     getUser(): User | undefined
-    getMeetingId(): string | undefined
+    getMeetingId(): string | undefined,
+    authentication: typeof microsoftTeams.authentication
 }
 
 export async function globalTeamsContext() {
@@ -144,7 +145,8 @@ export const TeamsProvider: ParentComponent = (props) => {
         teamsDialog: microsoftTeams.dialog,
         messages: teamsMessages,
         getUser,
-        getMeetingId
+        getMeetingId,
+        authentication: microsoftTeams.authentication
     }}>
         <Show when={import.meta.env.DEV && !internalTeamsContext()}>
             <fluent-card style="margin-bottom: 1ex;">
