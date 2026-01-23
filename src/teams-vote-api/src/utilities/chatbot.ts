@@ -42,26 +42,14 @@ export class ChatBot extends TeamsActivityHandler {
     protected async handleTeamsMessagingExtensionFetchTask(context: TurnContext, action: MessagingExtensionAction): Promise<MessagingExtensionActionResponse> {
 
         console.log("ACTION", action)
-        
-        // 1️⃣ Send a card to chat
-        const card = CardFactory.heroCard(
-            "Voting started!",
-            "A new vote has been created by " + context.activity.from.name
-        );
-        await context.sendActivity({ attachments: [card] });
 
-        // 2️⃣ Return a task module for the invoking user
-        return {
-            task: {
-                type: "continue",
-                value: {
-                    title: "Vote Details",
-                    width: 400,
-                    height: 300,
-                    url: "https://your-app.com/TeamsVote/teams/tab/"
-                }
-            }
-        };
+        return TaskModuleContinueResponse
+            .createResponseOfFetch()
+            .title(formatUrlForTitle("test"))
+            .url(appUrl + "/TeamsVote/teams/tab/")
+            .width('medium')
+            .height('large')
+            .toResponseOfFetch();
     }
 
     // public async onInvokeActivity(context: TurnContext) {
