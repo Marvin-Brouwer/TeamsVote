@@ -58,7 +58,7 @@
             "commands": [
                 {
                     "id": "vote",
-                    "type": "action",
+                    "type": "query",
                     "title": "Vote",
                     "description": "Start a new voting session",
                     "initialRun": false,
