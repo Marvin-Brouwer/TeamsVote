@@ -158,7 +158,7 @@ jobs:
 
             if [ "$STATUS" = "live" ]; then
               echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
-              echo "- **STATUS**: `live`" >> $GITHUB_STEP_SUMMARY
+              echo "- **STATUS**: \`live\`" >> $GITHUB_STEP_SUMMARY
               echo "- [Application logs](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/logs?r=live)" >> $GITHUB_STEP_SUMMARY
               echo "- [Deployment logs](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
 
@@ -168,7 +168,7 @@ jobs:
 
             if [ "$STATUS" = "failed" ]; then
               echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
-              echo "- **STATUS**: `failed`" >> $GITHUB_STEP_SUMMARY
+              echo "- **STATUS**: \`failed\`" >> $GITHUB_STEP_SUMMARY
               echo "- [Deployment logs](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
 
               echo "Deployment failed"
@@ -177,7 +177,7 @@ jobs:
 
             if [ "$STATUS" = "canceled" ]; then
               echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
-              echo "- **STATUS**: `canceled`" >> $GITHUB_STEP_SUMMARY
+              echo "- **STATUS**: \`canceled\`" >> $GITHUB_STEP_SUMMARY
               echo "- [Deployment logs](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
 
               echo "Deployment canceled"
