@@ -1,5 +1,4 @@
 import { onMount, type Component } from "solid-js";
-import { useSession } from "../contexts/session-context";
 import { useTeams } from "../contexts/teams-context";
 
 export const Spinner: Component = () => {

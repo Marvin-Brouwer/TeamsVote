@@ -54,10 +54,14 @@ export const NewVoteView: Component = () => {
         let deck = defaultDeck;
         if (searchParams.selectedDeck) {
             const selectedDeck = tryParseDeck(searchParams.selectedDeck as Deck)
-            if (selectedDeck instanceof Error) return navigate("/error?reason=invalid-deck", { replace: true });
+            if (selectedDeck instanceof Error) {
+                console.error('invalid-deck')
+                return navigate("/error?reason=invalid-deck", { replace: true });
+            }
             deck = selectedDeck
         }
         if (!params.roundKey) {
+            console.error('no-round-key')
             return navigate("/error?reason=no-round-key", { replace: true });
         }
 
