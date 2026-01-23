@@ -1,7 +1,7 @@
 import { formatUrlForTitle } from '@teams-vote/client-util';
 import { Deck, tryParseDeck } from '@teams-vote/data';
 // import { formatUrlForTitle } from '@teams-vote/client-util';
-import { InvokeResponse, TeamsActivityHandler, TurnContext } from 'botbuilder';
+import { CardFactory, InvokeResponse, MessagingExtensionAction, MessagingExtensionActionResponse, TeamsActivityHandler, TurnContext } from 'botbuilder';
 import { ITaskModuleResponseOfFetch, TaskModuleContinueResponse } from 'botbuilder-teams';
 // import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
 
@@ -39,51 +39,85 @@ export class ChatBot extends TeamsActivityHandler {
         // });
     }
 
-    public async onInvokeActivity(context: TurnContext) {
-        if (context.activity.name !== "composeExtension/fetchTask") {
-            return await super.onInvokeActivity(context);
-        }
+    protected async handleTeamsMessagingExtensionFetchTask(context: TurnContext, action: MessagingExtensionAction): Promise<MessagingExtensionActionResponse> {
 
-        console.log()
-        console.log("COMMAND", context.activity)
-        console.log()
+        console.log("ACTION", action)
+        
+        // 1️⃣ Send a card to chat
+        const card = CardFactory.heroCard(
+            "Voting started!",
+            "A new vote has been created by " + context.activity.from.name
+        );
+        await context.sendActivity({ attachments: [card] });
 
-        if (context.activity.channelData?.type === "teams") {
-            await context.sendActivity("TEST");
-        }
-        else {
-            const reference = TurnContext.getConversationReference(context.activity);
-            await context.adapter.continueConversation(reference, async (proactiveContext) => {
-                await proactiveContext.sendActivity("TEST");
-            });
-        }
-
+        // 2️⃣ Return a task module for the invoking user
         return {
-            status: 200,
-            body: TaskModuleContinueResponse
-                .createResponseOfFetch()
-                .title(formatUrlForTitle("test"))
-                .url(appUrl + "/TeamsVote/teams/tab/")
-                .width('medium')
-                .height('large')
-                .toResponseOfFetch()
+            task: {
+                type: "continue",
+                value: {
+                    title: "Vote Details",
+                    width: 400,
+                    height: 300,
+                    url: "https://your-app.com/TeamsVote/teams/tab/"
+                }
+            }
         };
+    }
 
-        // // Grab the command text (if any)
-        // const commandText = context.activity.value?.parameters?.[0]?.value || "";
-        // if (!commandText.length) return this.helpResponse()
+    // public async onInvokeActivity(context: TurnContext) {
+    //     if (context.activity.name !== "composeExtension/fetchTask") {
+    //         return await super.onInvokeActivity(context);
+    //     }
 
-        // const [typeOrName, ...rest] = commandText.split(" ");
+    //     console.log()
+    //     console.log("COMMAND", context.activity)
+    //     console.log()
 
-        // const selectedDeckArgument = typeOrName.startsWith("--") ? typeOrName.slice(2) : undefined;
-        // const selectedDeck = tryParseDeck(selectedDeckArgument);
-        // if (selectedDeck instanceof Error) return this.helpResponse();
+    //     const card = CardFactory.heroCard(
+    //         "Voting started!",
+    //         "A new vote has been created by " + context.activity.from.name
+    //     );
+    //     await context.sendActivity({ attachments: [card] });
 
-        // const roundKey = typeOrName.startsWith("--") ? rest.join(" ") : commandText;
+    //     // 2️⃣ Return a popup (task module) for the invoking user
+    //     return {
+    //         task: {
+    //             type: "continue",
+    //             value: {
+    //                 title: "Vote Details",
+    //                 width: 400,
+    //                 height: 300,
+    //                 url: `https://your-app.com/TeamsVote/teams/tab/` // popup only visible to user
+    //             }
+    //         }
+    //     };
 
-        // // Return Task Module response
-        // return this.startResponse(selectedDeck, roundKey)
-    };
+    //     return {
+    //         status: 200,
+    //         body: TaskModuleContinueResponse
+    //             .createResponseOfFetch()
+    //             .title(formatUrlForTitle("test"))
+    //             .url(appUrl + "/TeamsVote/teams/tab/")
+    //             .width('medium')
+    //             .height('large')
+    //             .toResponseOfFetch()
+    //     };
+
+    //     // // Grab the command text (if any)
+    //     // const commandText = context.activity.value?.parameters?.[0]?.value || "";
+    //     // if (!commandText.length) return this.helpResponse()
+
+    //     // const [typeOrName, ...rest] = commandText.split(" ");
+
+    //     // const selectedDeckArgument = typeOrName.startsWith("--") ? typeOrName.slice(2) : undefined;
+    //     // const selectedDeck = tryParseDeck(selectedDeckArgument);
+    //     // if (selectedDeck instanceof Error) return this.helpResponse();
+
+    //     // const roundKey = typeOrName.startsWith("--") ? rest.join(" ") : commandText;
+
+    //     // // Return Task Module response
+    //     // return this.startResponse(selectedDeck, roundKey)
+    // };
 
     private helpResponse = (): InvokeResponse<string> => ({ status: 200, body: `TODO! this will trigger a help response later` });
     private startResponse(selectedDeck: Deck, roundKey: string): InvokeResponse<ITaskModuleResponseOfFetch> {
