@@ -9,6 +9,7 @@ import { formatUrlForTitle } from "@teams-vote/client-util";
 
 import "./tab.css"
 import { DialogDimension } from "@microsoft/teams-js";
+import * as microsoftTeams from '@microsoft/teams-js';
 
 const [healthCheck] = createResource(() => true, api.checkHealth);
 
@@ -60,6 +61,13 @@ export const TabView: Component = () => {
 
         try {
             console.log('Here used to be a postCard', card)
+
+            try{
+                microsoftTeams.meeting.getMeetingDetails((e, d) => console.log(e, d))
+            }
+            catch(e) {
+                console.error('too bad', e)
+            }
 
             teamsDialog.url.bot.open({
                 url: `${appOrigin}/TeamsVote/teams/spinner/`, // your UI
