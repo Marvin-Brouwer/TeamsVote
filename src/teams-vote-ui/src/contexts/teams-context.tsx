@@ -80,6 +80,13 @@ export const TeamsProvider: ParentComponent = (props) => {
             if (teamsContext) microsoftTeams.app.registerOnThemeChangeHandler((theme) => {
                 applyTheme(theme);
             });
+
+            try {
+                console.log('conversation', microsoftTeams.conversations.isSupported());
+            } finally { }
+            try {
+                console.log('meetingRoom', microsoftTeams.meetingRoom.getPairedMeetingRoomInfo());
+            } finally { }
         });
     });
 
@@ -139,12 +146,6 @@ export const TeamsProvider: ParentComponent = (props) => {
     }
     const isVisible = createMemo(() => import.meta.env.DEV || internalTeamsContext())
 
-    try {
-        console.log('conversation', microsoftTeams.conversations.isSupported());
-    } finally { }
-    try {
-        console.log('meetingRoom', microsoftTeams.meetingRoom.getPairedMeetingRoomInfo());
-    } finally { }
     return <teamsContext.Provider value={{
         teamsContext: internalTeamsContext as Accessor<TeamsContext>,
         teamsTasks: microsoftTeams.tasks,
