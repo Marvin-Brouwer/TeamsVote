@@ -69,7 +69,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: teams-vote-${{ env.MANIFEST_VERSION }}
+          name: teams-vote-api
           path: ./src/teams-vote-api/dist
         # TODO run tests
   deploy:
@@ -128,7 +128,7 @@ jobs:
           URL="https://dashboard.render.com/deploys/$DEPLOY_ID"
           echo "Following deploy: $URL"
 
-          for i in {1..60}; do
+          for i in {1..80}; do
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Accept: application/json" \
@@ -151,7 +151,7 @@ jobs:
               exit 1
             fi
 
-            sleep 5
+            sleep 20s
           done
 
           echo "Timeout waiting for deploy: $URL"
