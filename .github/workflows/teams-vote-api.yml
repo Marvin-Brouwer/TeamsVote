@@ -138,17 +138,18 @@ jobs:
           # Echo link for visibility
           echo "View on render: https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID"
 
-      - name: Deployment Summary
-        if: always()
-        run: |
-          DEPLOY_ID=${{ steps.trigger.outputs.deploy_id }}
-          echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
-          echo "- [Deploy details](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
-
       - name: Wait For Deploy
         run: |
+          
+          # Echo link for visibility
+          echo "View on render: https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID"
+          echo ""
+
           echo "Polling status"
           DEPLOY_ID=${{ steps.trigger.outputs.deploy_id }}
+          
+          echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "- [Deploy details](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
 
           for i in {1..80}; do
           RESPONSE=$(curl -s -w "\n%{http_code}" -X GET \
@@ -164,13 +165,13 @@ jobs:
             echo "Deploy status: $STATUS"
 
             if [ "$STATUS" = "live" ]; then
-              echo "Deployment succeeded" >> $GITHUB_STEP_SUMMARY
+              echo "- **STATUS**: `live`" >> $GITHUB_STEP_SUMMARY
               echo "Deployment succeeded"
               exit 0
             fi
 
             if [ "$STATUS" = "failed" ]; then
-              echo "Deployment failed" >> $GITHUB_STEP_SUMMARY
+              echo "- **STATUS**: `failed`" >> $GITHUB_STEP_SUMMARY
               echo "Deployment failed"
               exit 1
             fi
