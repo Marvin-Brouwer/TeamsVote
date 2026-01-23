@@ -141,9 +141,6 @@ jobs:
           echo "View on render: https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID"
           echo ""
           
-          echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
-          echo "- [Deploy details](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
-
           echo "Polling status"
 
           for i in {1..80}; do
@@ -160,14 +157,30 @@ jobs:
             echo "Deploy status: $STATUS"
 
             if [ "$STATUS" = "live" ]; then
+              echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
               echo "- **STATUS**: `live`" >> $GITHUB_STEP_SUMMARY
+              echo "- [Application logs](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/logs?r=live)" >> $GITHUB_STEP_SUMMARY
+              echo "- [Deployment logs](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
+
               echo "Deployment succeeded"
               exit 0
             fi
 
             if [ "$STATUS" = "failed" ]; then
+              echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
               echo "- **STATUS**: `failed`" >> $GITHUB_STEP_SUMMARY
+              echo "- [Deployment logs](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
+
               echo "Deployment failed"
+              exit 1
+            fi
+
+            if [ "$STATUS" = "canceled" ]; then
+              echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
+              echo "- **STATUS**: `canceled`" >> $GITHUB_STEP_SUMMARY
+              echo "- [Deployment logs](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
+
+              echo "Deployment canceled"
               exit 1
             fi
 
