@@ -63,10 +63,11 @@ export const TabView: Component = () => {
             console.log('Here used to be a postCard', card)
 
             try{
-                microsoftTeams.meeting.getMeetingDetails((e, d) => console.log(e, d))
-            }
-            catch(e) {
-                console.error('too bad', e)
+                microsoftTeams.tasks.submitTask({
+                    command: 'test1'
+                }, import.meta.env.VITE_BOT_ID)
+            }catch(e){
+                console.error('submittask', e)
             }
 
             teamsDialog.url.bot.open({
