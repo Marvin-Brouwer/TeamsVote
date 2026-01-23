@@ -3,10 +3,20 @@ import { AdminPanel, VotePanel } from "../components/vote";
 import { useSession } from "../contexts/session-context";
 import { UserList } from "../components/user-list";
 import { KeyDisplay } from "../components/key-display";
+import { useTeams } from "../contexts/teams-context";
 
 export const VoterView: Component = () => {
 
     const { session } = useSession();
+    const { teamsDialog } = useTeams()!;
+
+    onMount(() => {
+        if (!session.admin) return;
+        console.log('sending bot command')
+        teamsDialog.url.submit({
+            command: "startVote2"
+        });
+    })
 
     return <div class="view" style={import.meta.env.DEV && session.meetingId === 'test-channel' ? '--vote-height: calc(100% - 70px);' : undefined}>
         <div class="content">
