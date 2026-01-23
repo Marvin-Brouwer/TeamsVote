@@ -8,6 +8,7 @@ import { DeckSelector } from "../components/deck-selector";
 import { formatUrlForTitle } from "@teams-vote/client-util";
 
 import "./tab.css"
+import { DialogDimension } from "@microsoft/teams-js";
 
 const [healthCheck] = createResource(() => true, api.checkHealth);
 
@@ -61,17 +62,17 @@ export const TabView: Component = () => {
             console.log('Here used to be a postCard', card)
 
             teamsDialog.url.open({
-                url: `${appOrigin}/TeamsVote/teams/new/${roundKeyValue}/`, // your UI
+                url: `${appOrigin}/TeamsVote/teams/spinner/`, // your UI
                 title: formatUrlForTitle(roundKeyValue),
                 size: {
-                    height: 50,
-                    width: 50
+                    height: DialogDimension.Large,
+                    width: DialogDimension.Large
                 }
             },(r) => console.log('r',r), pm => console.log('pm', pm));
 
-            teamsDialog.url.submit({
-                command: "startVote"
-            });
+            // teamsDialog.url.submit({
+            //     command: "startVote"
+            // });
             // teamsTasks.
 
             // console.log('a')
