@@ -24,7 +24,9 @@ export async function globalTeamsContext() {
     try {
         console.log('TEAMSVOTE', 'initializing teamsContext')
         await microsoftTeams.app.initialize();
-        return await microsoftTeams.app.getContext();
+        const ctx = await microsoftTeams.app.getContext();
+        console.log('TEAMSVOTE', 'initialized teamsContext', ctx)
+        return ctx;
     } catch (err) {
         if ((err as Error).message === "Initialization Failed. No Parent window found.") return undefined;
         throw err;
@@ -80,11 +82,11 @@ export const TeamsProvider: ParentComponent = (props) => {
             if (teamsContext) microsoftTeams.app.registerOnThemeChangeHandler((theme) => {
                 applyTheme(theme);
             });
-
-            try {
-                console.log('conversation', microsoftTeams.conversations.getChatMembers());
-            } finally { }
         });
+
+        try {
+            console.log('conversation', await microsoftTeams.conversations.getChatMembers());
+        } finally { }
     });
 
     const activeTeamsContext = createMemo(() => {
