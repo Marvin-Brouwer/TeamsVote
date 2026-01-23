@@ -61,7 +61,7 @@
                     "type": "action",
                     "title": "Vote",
                     "description": "Start a new voting session",
-                    "initialRun": true,
+                    "initialRun": false,
                     "fetchTask": true,
                     "context": [
                         "commandBox",
@@ -69,21 +69,21 @@
                     ],
                     "parameters": [
                         {
-                            "name": "type",
-                            "description": "Voting type",
+                            "name": "deck",
+                            "description": "Card deck",
                             "title": "Type",
                             "choices": [
                                 {
-                                    "title": "modified-fibonacci",
+                                    "title": "Modified Fibonacci",
                                     "value": "modified-fibonacci"
                                 },
                                 {
-                                    "title": "t-shirt",
-                                    "value": "t-shirt"
+                                    "title": "Fibonacci",
+                                    "value": "fibonacci"
                                 },
                                 {
-                                    "title": "numbers",
-                                    "value": "numbers"
+                                    "title": "T-shirt sizes",
+                                    "value": "t-shirt"
                                 }
                             ]
                         },
