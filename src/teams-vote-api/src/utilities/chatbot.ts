@@ -1,7 +1,7 @@
 import { formatUrlForTitle } from '@teams-vote/client-util';
 import { Deck, tryParseDeck } from '@teams-vote/data';
 // import { formatUrlForTitle } from '@teams-vote/client-util';
-import { InvokeResponse, TeamsActivityHandler, TurnContext } from 'botbuilder';
+import { InvokeResponse, TeamsActivityHandler, TeamsInfo, TurnContext } from 'botbuilder';
 import { ITaskModuleResponseOfFetch, TaskModuleContinueResponse } from 'botbuilder-teams';
 // import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
 
@@ -48,6 +48,11 @@ export class ChatBot extends TeamsActivityHandler {
         console.log("COMMAND", context.activity)
         console.log()
         console.log(appUrl + "/TeamsVote/teams/tab/")
+        try {
+            console.log(TeamsInfo.getMember(context, context.activity.callerId))
+        } catch {
+            console.log(context.activity.callerId)
+        }
 
         return {
             status: 200,

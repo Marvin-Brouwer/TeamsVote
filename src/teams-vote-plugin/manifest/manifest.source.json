@@ -65,8 +65,7 @@
                     "fetchTask": true,
                     "context": [
                         "commandBox",
-                        "compose",
-                        "message"
+                        "compose"
                     ],
                     "parameters": [
                         {

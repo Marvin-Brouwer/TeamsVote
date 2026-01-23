@@ -23,6 +23,12 @@ concurrency:
   group: render-api-${{ github.ref }}${{ github.event_name == 'workflow_dispatch' && '[dispatch]' || '' }}
   cancel-in-progress: false
 
+env: 
+  VITE_UI_APP_URL: ${{ vars.TEAMS_UI_URL }}
+  TEAMS_PLUGIN_TENANT_ID: ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
+  TEAMS_CHATBOT_CLIENT_ID: ${{ secrets.TEAMS_CHATBOT_CLIENT_ID }}
+  TEAMS_CHATBOT_CLIENT_SECRET: ${{ secrets.TEAMS_CHATBOT_CLIENT_SECRET }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -60,6 +66,11 @@ jobs:
           TEAMS_CHATBOT_CLIENT_SECRET: ${{ secrets.TEAMS_CHATBOT_CLIENT_SECRET }}
         run: pnpm build
         working-directory: './src/teams-vote-api'
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: teams-vote-${{ env.MANIFEST_VERSION }}
+          path: ./src/teams-vote-api/dist
         # TODO run tests
   deploy:
     needs: build
@@ -118,11 +129,16 @@ jobs:
           echo "Following deploy: $URL"
 
           for i in {1..60}; do
-            STATUS=$(curl -s \
-              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-              -H "Accept: application/json" \
-              https://api.render.com/v1/deploys/$DEPLOY_ID | jq -r '.status')
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Accept: application/json" \
+            https://api.render.com/v1/services/${{ vars.RENDER_SERVICE_ID }}/deploys)
 
+            BODY=$(echo "$RESPONSE" | sed '$d')
+            CODE=$(echo "$RESPONSE" | tail -n1)
+            echo "(HTTP $CODE) $BODY"
+
+            STATUS=$(echo "$BODY" | jq -r '.status')
             echo "Deploy status: $STATUS"
 
             if [ "$STATUS" = "live" ]; then
