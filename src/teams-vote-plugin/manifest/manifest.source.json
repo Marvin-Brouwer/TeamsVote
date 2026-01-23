@@ -56,10 +56,36 @@
             "botId": "<TEAMS_CHATBOT_CLIENT_ID>",
             "commands": [
                 {
-                    "id": "vote",
+                    "id": "start",
                     "type": "action",
-                    "title": "Vote",
-                    "description": "Start a new voting session"
+                    "title": "Start",
+                    "description": "Start a new voting session",
+                    "parameters": [
+                        {
+                            "name": "type",
+                            "description": "Voting type",
+                            "title": "Type",
+                            "choices": [
+                                {
+                                    "title": "modified-fibonacci",
+                                    "value": "modified-fibonacci"
+                                },
+                                {
+                                    "title": "t-shirt",
+                                    "value": "t-shirt"
+                                },
+                                {
+                                    "title": "numbers",
+                                    "value": "numbers"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "title",
+                            "description": "Title of the session",
+                            "title": "Session Title"
+                        }
+                    ]
                 }
             ]
         }
