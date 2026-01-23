@@ -26,13 +26,18 @@
         "identity",
         "messageTeamMembers"
     ],
+    "webApplicationInfo": {
+        "id": "<TEAMS_APP_CLIENT_ID>",
+        "resource": "<TEAMS_APP_CLIENT_ID_URL>"
+    },
     "staticTabs": [
         {
             "entityId": "teamsVoteTab",
             "name": "Vote",
             "contentUrl": "<TEAMS_UI_URL>/teams/tab/",
             "scopes": [
-                "groupChat", "team"
+                "groupChat",
+                "team"
             ]
         }
     ],
@@ -43,12 +48,31 @@
         {
             "botId": "<TEAMS_CHATBOT_CLIENT_ID>",
             "scopes": [
-                "groupChat", "team"
+                "groupChat",
+                "team"
             ],
             "supportsCalling": false,
             "supportsVideo": false,
             "supportsFiles": false,
             "isNotificationOnly": true
         }
-    ]
+    ],
+    "authorization": {
+        "permissions": {
+            "resourceSpecific": [
+                {
+                    "name": "ChatMessage.Send.Chat",
+                    "type": "Delegated"
+                },
+                {
+                    "name": "ChannelMessage.Send",
+                    "type": "Delegated"
+                },
+                {
+                    "name": "User.Read",
+                    "type": "Delegated"
+                }
+            ]
+        }
+    }
 }
