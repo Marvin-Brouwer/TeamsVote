@@ -3,9 +3,9 @@ import { useTeams } from "../contexts/teams-context";
 import { Deck, defaultDeck, StartRequest, tryParseDeck } from "@teams-vote/data";
 import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { api } from "../helpers/api";
+import { cardBuilder } from '@teams-vote/client-util';
 
 import "./new-vote.css"
-import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-builder';
 
 export const NewVoteView: Component = () => {
 
