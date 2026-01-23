@@ -61,9 +61,10 @@ export const TabView: Component = () => {
         try {
             console.log('Here used to be a postCard', card)
 
-            teamsDialog.url.open({
+            teamsDialog.url.bot.open({
                 url: `${appOrigin}/TeamsVote/teams/spinner/`, // your UI
                 title: formatUrlForTitle(roundKeyValue),
+                completionBotId: import.meta.env.VITE_BOT_ID,
                 size: {
                     height: DialogDimension.Large,
                     width: DialogDimension.Large
