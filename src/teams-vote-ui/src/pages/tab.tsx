@@ -60,10 +60,12 @@ export const TabView: Component = () => {
 
         try {
             console.log('Here used to be a postCard', card)
+            console.log('a')
             const authToken = await authentication.getAuthToken({
                 resources: ["https://graph.microsoft.com"] // request Graph token
             });
-            await messages.postCard(teamsContext()!.chat!.id, authToken, card)
+            console.log('b')
+            await messages.postCard(teamsMeetingId, authToken, card)
 
             // immediately open the task module for initiator
             teamsDialog.url.open({
