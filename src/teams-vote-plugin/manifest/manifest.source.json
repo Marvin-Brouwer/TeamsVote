@@ -71,6 +71,10 @@
                 {
                     "name": "User.Read",
                     "type": "Delegated"
+                },
+                {
+                    "name": "OnlineMeeting.ReadBasic.Chat",
+                    "type": "Application"
                 }
             ]
         }

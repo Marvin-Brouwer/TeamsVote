@@ -38,6 +38,20 @@ export class ChatBot extends TeamsActivityHandler {
         //     await next();
         // });
     }
+    protected async handleTeamsTaskModuleSubmit(context: TurnContext, taskModuleRequest: TaskModuleRequest): Promise<TaskModuleResponse> {
+
+        console.log('context', context)
+        console.log('taskModuleRequest', taskModuleRequest)
+        
+        return TaskModuleContinueResponse
+            .createResponseOfFetch()
+            .title(formatUrlForTitle("test"))
+            .url(appUrl + "/teams/tab/")
+            .width('medium')
+            .height('large')
+            .toResponseOfFetch();
+    }
+
     protected async handleTeamsTaskModuleFetch(context: TurnContext, taskModuleRequest: TaskModuleRequest): Promise<TaskModuleResponse> {
         const card = {
             type: "AdaptiveCard",

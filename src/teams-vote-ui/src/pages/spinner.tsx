@@ -16,7 +16,7 @@ export const Spinner: Component = () => {
 
 
         try {
-            microsoftTeams.tasks.submitTask({
+            microsoftTeams.dialog.url.submit({
                 command: 'test2'
             }, import.meta.env.VITE_BOT_ID)
         } catch (e) {
