@@ -47,23 +47,8 @@ export class ChatBot extends TeamsActivityHandler {
         console.log()
         console.log("COMMAND", context.activity)
         console.log()
-        console.log(appUrl + "/TeamsVote/teams/tab/")
-        try {
-            console.log("passed name", context.activity.from.name)
-            console.log("username", await TeamsInfo.getMember(context, context.activity.from.id))
-        } catch (e) {
-            console.error(e)
-        }
 
-        return {
-            status: 200,
-            body: {
-                task: {
-                    type: "message",
-                    value: "Test"
-                }
-            }
-        }
+        await context.sendActivity("TEST");
 
         return {
             status: 200,
