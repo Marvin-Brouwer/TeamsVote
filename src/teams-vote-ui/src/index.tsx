@@ -19,9 +19,9 @@ export const routes = () => <Router base={routeBase()} root={AppRoot}>
     <PagesReRouter>
         <Route path="/teams/" component={TeamsRoot}>
             <Route path="/tab/" component={TabView} />
-            <Route path="/new/:roundKey/"  component={NewVoteView} />
+            <Route path="/new/:roundKey/" component={NewVoteView} />
             <Route path="/vote/" component={SessionRoot}>
-                <Route path="/:teamsChannelId/:token/" component={VoterView} />
+                <Route path="/:token/" component={VoterView} />
             </Route>
         </Route>
         <Route path="/" component={NotSupportedPage} />

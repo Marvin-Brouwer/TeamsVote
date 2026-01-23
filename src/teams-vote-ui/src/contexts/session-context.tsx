@@ -1,8 +1,8 @@
 import { useParams } from "@solidjs/router";
-import { type Accessor, children, createContext, createMemo, createSignal, onCleanup, onMount, type ParentComponent, Setter, Show, useContext } from "solid-js";
+import { type Accessor, children, createContext, createSignal, onCleanup, onMount, type ParentComponent, Setter, Show, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useTeams } from "./teams-context";
-import { ClientSession, Deck, User, StatusRequest, StatusResponse } from '@teams-vote/data';
+import { ClientSession, User, StatusRequest } from '@teams-vote/data';
 import { api } from "../helpers/api";
 import { cardBuilder } from "@teams-vote/client-util";
 
@@ -51,22 +51,20 @@ export const SessionProvider: ParentComponent = (props) => {
     const abortController = new AbortController();
     onCleanup(() => abortController.abort('onCleanup'))
 
-    const { teamsContext, messages } = useTeams()!;
-    const teamsChannelId = teamsContext().channel?.id
-    const user = !teamsContext().user ? undefined : {
-        id: teamsContext().user!.id,
-        name: teamsContext().user!.displayName!
-    }
+    const { getMeetingId, getUser } = useTeams()!;
+    const meetingId = getMeetingId()
+    const user = getUser()
 
-    const { roundKey, token } = useParams() as { roundKey: string, token: string }
+    const { token } = useParams() as { token: string }
     let interval: number | undefined;
     onMount(() => {
         interval = setInterval(async () => {
             try {
+                if (!meetingId) throw new Error('No meetingId')
+                if (!user) throw new Error('No user')
                 const statusRequest: StatusRequest = {
-                    roundKey,
-                    meetingId: teamsChannelId!,
-                    user: user!,
+                    meetingId,
+                    user,
                     token
                 }
                 const status = await api.requestStatus(statusRequest, abortController.signal)

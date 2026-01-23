@@ -44,7 +44,7 @@ export const TabView: Component = () => {
 
         const session = await api.requestSessionStart(startRequest, abortController.signal);
         const appOrigin = window.location.origin;
-        const pageUrl = `${appOrigin}/TeamsVote/teams/vote/${teamsMeetingId}/${session.token}`;
+        const pageUrl = `${appOrigin}/TeamsVote/teams/vote/${session.token}`;
 
         const card = cardBuilder.createJoinCard(pageUrl, roundKeyValue, teamsContext()!.app.appId!.toString());
 

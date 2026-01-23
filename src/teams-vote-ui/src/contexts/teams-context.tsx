@@ -70,7 +70,6 @@ export const TeamsProvider: ParentComponent = (props) => {
     });
 
     onMount(async () => {
-    console.log('teamscontext mounted')
         const windowTeamsContext = await globalTeamsContext();
         setTeamsContext(windowTeamsContext);
         if (!windowTeamsContext) return;

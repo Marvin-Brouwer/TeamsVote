@@ -46,7 +46,7 @@ function createJoinCard(pageUrl: string, roundKey: string, teamsAppId: string) {
     deepLink.searchParams.append('url', encodeURIComponent(pageUrl))
     deepLink.searchParams.append('height', encodeURIComponent('large'))
     deepLink.searchParams.append('width', encodeURIComponent('medium'))
-    deepLink.searchParams.append('title', `TeamsVote ${formatUrlForTitle(roundKey)}`)
+    deepLink.searchParams.append('title', formatUrlForTitle(roundKey))
 
     return adaptiveCard(
         {
