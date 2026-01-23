@@ -14,7 +14,7 @@ const [healthCheck] = createResource(() => true, api.checkHealth);
 
 export const TabView: Component = () => {
 
-    const { teamsContext, getUser, getMeetingId, teamsDialog, authentication, messages } = useTeams()!;
+    const { teamsContext, getUser, getMeetingId, teamsDialog, authentication, messages, teamsTasks } = useTeams()!;
     const [running, setRunningState] = createSignal(false)
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
@@ -60,22 +60,34 @@ export const TabView: Component = () => {
 
         try {
             console.log('Here used to be a postCard', card)
-            console.log('a')
-            const authToken = await authentication.getAuthToken({
-                resources: ["https://graph.microsoft.com"] // request Graph token
-            });
-            console.log('b')
-            await messages.postCard(teamsMeetingId, authToken, card)
 
-            // immediately open the task module for initiator
-            teamsDialog.url.open({
-                title: formatUrlForTitle(roundKeyValue),
-                url: pageUrl,
-                size: {
+            teamsDialog.url.bot.open({
+    url: pageUrl, // your UI
+    title: "Test",
+    completionBotId: import.meta.env.VITE_BOT_ID,
+    size: {
                     height: DialogDimension.Large,
                     width: DialogDimension.Medium
                 }
-            });
+});
+            // teamsTasks.
+
+            // console.log('a')
+            // const authToken = await authentication.getAuthToken({
+            //     resources: ["https://graph.microsoft.com"] // request Graph token
+            // });
+            // console.log('b')
+            // await messages.postCard(teamsMeetingId, authToken, card)
+
+            // // immediately open the task module for initiator
+            // teamsDialog.url.open({
+            //     title: formatUrlForTitle(roundKeyValue),
+            //     url: pageUrl,
+            //     size: {
+            //         height: DialogDimension.Large,
+            //         width: DialogDimension.Medium
+            //     }
+            // });
         } finally {
             keyField.disabled = false;
             startButton.disabled = false;

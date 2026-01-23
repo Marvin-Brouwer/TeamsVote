@@ -80,14 +80,14 @@ export const TeamsProvider: ParentComponent = (props) => {
             if (teamsContext) microsoftTeams.app.registerOnThemeChangeHandler((theme) => {
                 applyTheme(theme);
             });
-
-            try {
-                console.log('conversation', microsoftTeams.conversations.isSupported());
-            } finally { }
-            try {
-                console.log('meetingRoom', microsoftTeams.meetingRoom.getPairedMeetingRoomInfo());
-            } finally { }
         });
+
+        try {
+            console.log('conversation', microsoftTeams.conversations.isSupported());
+        } finally { }
+        try {
+            console.log('meetingRoom', await microsoftTeams.meetingRoom.getPairedMeetingRoomInfo());
+        } finally { }
     });
 
     const activeTeamsContext = createMemo(() => {
