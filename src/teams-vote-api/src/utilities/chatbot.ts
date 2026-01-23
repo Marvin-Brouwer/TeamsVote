@@ -49,9 +49,9 @@ export class ChatBot extends TeamsActivityHandler {
         console.log()
         console.log(appUrl + "/TeamsVote/teams/tab/")
         try {
-            console.log(TeamsInfo.getMember(context, context.activity.callerId))
+            console.log(await TeamsInfo.getMember(context, context.activity.from.id))
         } catch {
-            console.log(context.activity.callerId)
+            console.log(context.activity.from.id)
         }
 
         return {

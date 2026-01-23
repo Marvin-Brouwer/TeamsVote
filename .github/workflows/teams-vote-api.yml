@@ -23,12 +23,6 @@ concurrency:
   group: render-api-${{ github.ref }}${{ github.event_name == 'workflow_dispatch' && '[dispatch]' || '' }}
   cancel-in-progress: false
 
-env: 
-  VITE_UI_APP_URL: ${{ vars.TEAMS_UI_URL }}
-  TEAMS_PLUGIN_TENANT_ID: ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
-  TEAMS_CHATBOT_CLIENT_ID: ${{ secrets.TEAMS_CHATBOT_CLIENT_ID }}
-  TEAMS_CHATBOT_CLIENT_SECRET: ${{ secrets.TEAMS_CHATBOT_CLIENT_SECRET }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -60,6 +54,7 @@ jobs:
         working-directory: '.'
       - name: Build app
         env: 
+          # WARNING, add these to render env variables too!
           VITE_UI_APP_URL: ${{ vars.TEAMS_UI_URL }}
           TEAMS_PLUGIN_TENANT_ID: ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
           TEAMS_CHATBOT_CLIENT_ID: ${{ secrets.TEAMS_CHATBOT_CLIENT_ID }}
