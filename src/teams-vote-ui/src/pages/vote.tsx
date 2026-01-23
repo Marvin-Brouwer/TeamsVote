@@ -1,4 +1,4 @@
-import { Show, type Component } from "solid-js";
+import { onMount, Show, type Component } from "solid-js";
 import { AdminPanel, VotePanel } from "../components/vote";
 import { useSession } from "../contexts/session-context";
 import { UserList } from "../components/user-list";

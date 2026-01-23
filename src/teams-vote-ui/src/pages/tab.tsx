@@ -5,16 +5,15 @@ import { Deck, defaultDeck, StartRequest } from "@teams-vote/data";
 import { api } from "../helpers/api";
 import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-builder';
 import { DeckSelector } from "../components/deck-selector";
+import { formatUrlForTitle } from "@teams-vote/client-util";
 
 import "./tab.css"
-import { formatUrlForTitle } from "@teams-vote/client-util";
-import { DialogDimension } from "@microsoft/teams-js";
 
 const [healthCheck] = createResource(() => true, api.checkHealth);
 
 export const TabView: Component = () => {
 
-    const { teamsContext, getUser, getMeetingId, teamsDialog, authentication, messages, teamsTasks } = useTeams()!;
+    const { teamsContext, getUser, getMeetingId, teamsDialog } = useTeams()!;
     const [running, setRunningState] = createSignal(false)
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
@@ -61,14 +60,17 @@ export const TabView: Component = () => {
         try {
             console.log('Here used to be a postCard', card)
 
-            teamsDialog.url.bot.open({
-                url: pageUrl, // your UI
-                title: "Test",
-                completionBotId: import.meta.env.VITE_BOT_ID,
+            teamsDialog.url.open({
+                url: `${appOrigin}/TeamsVote/teams/spinner`, // your UI
+                title: formatUrlForTitle(roundKeyValue),
                 size: {
-                    height: DialogDimension.Large,
-                    width: DialogDimension.Medium
+                    height: 20,
+                    width: 20
                 }
+            },(r) => console.log('r',r), pm => console.log('pm', pm));
+
+            teamsDialog.url.submit({
+                command: "startVote"
             });
             // teamsTasks.
 
