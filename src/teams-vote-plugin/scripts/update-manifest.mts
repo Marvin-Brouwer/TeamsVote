@@ -9,6 +9,9 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// We don't need millisecond accuracy
+const timestamp = new Date().toISOString().replaceAll('-', '').replaceAll('T', '').replaceAll(':', '').split('.')[0]
+
 const devManifestPath = path.join(__dirname, "../manifest/manifest.source.json");
 const outputManifestPath = path.join(__dirname, "../package/manifest.json");
 mkdir(dirname(outputManifestPath), { recursive: true }, (err) => {
@@ -40,7 +43,7 @@ function getEnv(key: string) {
 let manifestContent = fs.readFileSync(devManifestPath, "utf-8");
 
 function replaceEnv(key: string) {
-  manifestContent = manifestContent.split(`<${key}>`).join(getEnv(key));
+  manifestContent = manifestContent.replaceAll(`<${key}>`, getEnv(key));
 }
 replaceEnv('TEAMS_APP_ID');
 replaceEnv('TEAMS_UI_URL');
@@ -50,6 +53,7 @@ replaceEnv('TEAMS_CHATBOT_CLIENT_ID');
 
 // Write updated manifest
 const manifestJson = JSON.parse(manifestContent);
+manifestJson.version = `${manifestJson.version}.${timestamp}`
 fs.writeFileSync(outputManifestPath, JSON.stringify(manifestJson, null, 2));
 
 console.log(`Manifest updated`);

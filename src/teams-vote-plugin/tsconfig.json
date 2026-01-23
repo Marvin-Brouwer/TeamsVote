@@ -11,7 +11,8 @@
     "outDir": "dist",                        // compiled JS output
     "rootDir": ".",                        // source files
     "sourceMap": true,
-    "types": ["node"]                        // include Node typings
+    "types": ["node"],                        // include Node typings
+    "lib": ["ES2021.String"]
   },
   "include": [
     "bots/**/*.ts",
