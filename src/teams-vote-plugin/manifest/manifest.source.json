@@ -28,7 +28,7 @@
     ],
     "webApplicationInfo": {
         "id": "<TEAMS_APP_CLIENT_ID>",
-        "resource": "<TEAMS_APP_CLIENT_ID_URL>"
+        "resource": "<TEAMS_UI_URL>"
     },
     "staticTabs": [
         {
