@@ -72,6 +72,9 @@
                             "name": "deck",
                             "description": "Card deck",
                             "title": "Type",
+                            "isRequired": false,
+                            "inputType": "choiceset",
+                            "value": "modified-fibonacci",
                             "choices": [
                                 {
                                     "title": "Modified Fibonacci",
@@ -90,7 +93,9 @@
                         {
                             "name": "title",
                             "description": "Title of the session",
-                            "title": "Session Title"
+                            "title": "Session Title",
+                            "isRequired": true,
+                            "inputType": "text"
                         }
                     ]
                 }
