@@ -46,7 +46,7 @@ export class ChatBot extends TeamsActivityHandler {
         return TaskModuleContinueResponse
             .createResponseOfFetch()
             .title(formatUrlForTitle("test"))
-            .url(appUrl + "/TeamsVote/teams/tab/")
+            .url(appUrl + "/teams/tab/")
             .width('medium')
             .height('large')
             .toResponseOfFetch();
