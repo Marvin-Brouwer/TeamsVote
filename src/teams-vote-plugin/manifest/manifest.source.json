@@ -43,7 +43,9 @@
         }
     ],
     "validDomains": [
-        "marvin-brouwer.github.io"
+        "marvin-brouwer.github.io",
+        "login.microsoftonline.com",
+        "teams.microsoft.com"
     ],
     "bots": [
         {
@@ -62,7 +64,7 @@
         "permissions": {
             "resourceSpecific": [
                 {
-                    "name": "ChatMessage.Send.Chat",
+                    "name": "ChatMessage.Send",
                     "type": "Delegated"
                 },
                 {
@@ -74,7 +76,7 @@
                     "type": "Delegated"
                 },
                 {
-                    "name": "OnlineMeeting.ReadBasic.Chat",
+                    "name": "OnlineMeetings.Read.All",
                     "type": "Application"
                 }
             ]
