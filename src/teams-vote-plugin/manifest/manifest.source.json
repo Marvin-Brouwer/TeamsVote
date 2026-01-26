@@ -10,7 +10,7 @@
         "termsOfUseUrl": "https://github.com/Marvin-Brouwer/TeamsVote/blob/main/doc/tos.md"
     },
     "name": {
-        "short": "TeamsVote",
+        "short": "TVote",
         "full": "Scrum voting, but simple"
     },
     "description": {
@@ -32,18 +32,13 @@
     },
     "staticTabs": [
         {
-            "entityId": "teamsVoteTab",
+            "entityId": "tVoteTab",
             "name": "Vote",
             "contentUrl": "<TEAMS_UI_URL>/teams/tab/",
-            "contentBotId": "<TEAMS_CHATBOT_CLIENT_ID>",
-            "context": [
-                "meetingChatTab",
-                "channelTab",
-                "privateChatTab"
-            ],
             "scopes": [
                 "groupChat",
-                "team"
+                "team",
+                "personal"
             ]
         }
     ],
