@@ -10,6 +10,7 @@ import { formatUrlForTitle } from "@teams-vote/client-util";
 import "./tab.css"
 import { DialogDimension } from "@microsoft/teams-js";
 import * as microsoftTeams from '@microsoft/teams-js';
+import { authenticateWithConnector } from "@microsoft/teams-js/dist/esm/packages/teams-js/dts/private/externalAppAuthentication";
 
 const [healthCheck] = createResource(() => true, api.checkHealth);
 
@@ -94,6 +95,15 @@ export const TabView: Component = () => {
                 url: authEndpoint,
             })
             console.log(test)
+            const test2 = authenticateWithConnector({
+                connectorId: '06899032-7fae-4792-b084-ab75b2caa73f',
+                oAuthConfigId: '06899032-7fae-4792-b084-ab75b2caa73f',
+                traceId: new microsoftTeams.UUID(),
+                windowParameters: {
+
+                }
+            })
+            console.log(test2)
             const authToken = await authentication.getAuthToken({
                 silent: false,
                 tenantId: import.meta.env.VITE_TENANT,
