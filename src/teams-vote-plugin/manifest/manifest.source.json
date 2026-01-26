@@ -35,6 +35,12 @@
             "entityId": "teamsVoteTab",
             "name": "Vote",
             "contentUrl": "<TEAMS_UI_URL>/teams/tab/",
+            "contentBotId": "<TEAMS_CHATBOT_CLIENT_ID>",
+            "context": [
+                "meetingChatTab",
+                "channelTab",
+                "privateChatTab"
+            ],
             "scopes": [
                 "groupChat",
                 "team"
