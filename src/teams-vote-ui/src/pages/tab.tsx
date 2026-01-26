@@ -88,15 +88,17 @@ export const TabView: Component = () => {
             // teamsTasks.
 
             // console.log('a')
-            console.log('getAuthToken', new URL("./TeamsVote/teams/auth_return.html", location.href).href)
-            const test = authentication.authenticate({
-                url: new URL("./TeamsVote/teams/auth_return.html", location.origin).href,
+            const authEndpoint = new URL("./TeamsVote/teams/auth_return.html", location.origin).href;
+            console.log('authEndpoint', authEndpoint)
+            const test = await authentication.authenticate({
+                url: authEndpoint,
             })
             console.log(test)
             const authToken = await authentication.getAuthToken({
                 silent: false,
                 tenantId: import.meta.env.VITE_TENANT,
                 resources: [
+                    authEndpoint,
                     location.href,
                     "api://06899032-7fae-4792-b084-ab75b2caa73f/tab"
                     // TODO maybe request Graph token
