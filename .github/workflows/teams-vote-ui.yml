@@ -55,7 +55,8 @@ jobs:
       - name: Build app
         env: 
           VITE_API_URL: ${{ vars.VITE_API_URL }}
-          VITE_BOT_ID: ${{ vars.TEAMS_CHATBOT_CLIENT_ID }}
+          VITE_BOT_ID: ${{ secrets.TEAMS_CHATBOT_CLIENT_ID }}
+          VITE_TENANT: ${{ secrets.TEAMS_PLUGIN_TENANT_ID }}
         run: pnpm build
         working-directory: './src/teams-vote-ui'
       - name: Setup Pages

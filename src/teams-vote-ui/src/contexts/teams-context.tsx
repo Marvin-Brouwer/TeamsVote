@@ -83,10 +83,6 @@ export const TeamsProvider: ParentComponent = (props) => {
                 applyTheme(theme);
             });
         });
-
-        try {
-            console.log('conversation', await microsoftTeams.conversations.getChatMembers());
-        } finally { }
     });
 
     const activeTeamsContext = createMemo(() => {

@@ -88,7 +88,10 @@ export const TabView: Component = () => {
             // teamsTasks.
 
             // console.log('a')
+            console.log('getAuthToken', window.location.href, window.location.origin)
             const authToken = await authentication.getAuthToken({
+                silent: false,
+                tenantId: import.meta.env.VITE_TENANT
                 // resources: ["https://graph.microsoft.com"] // request Graph token
             });
             // console.log('b')
