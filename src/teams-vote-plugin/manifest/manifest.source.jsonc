@@ -29,7 +29,7 @@
     "webApplicationInfo": {
         "id": "<TEAMS_APP_CLIENT_ID>",
         // https://stackoverflow.com/a/72171127/2319865
-        "resource": "api://marvin-brouwer.github.io/<TEAMS_APP_CLIENT_ID>",
+        "resource": "api://<TEAMS_APP_CLIENT_ID>/tab",
         // Adding this added the correct permissions when uploading to teams, seems to be required
         "nestedAppAuthInfo": [
             {
