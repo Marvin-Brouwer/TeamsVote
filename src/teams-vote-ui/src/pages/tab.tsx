@@ -15,7 +15,7 @@ const [healthCheck] = createResource(() => true, api.checkHealth);
 
 export const TabView: Component = () => {
 
-    const { teamsContext, getUser, getMeetingId, teamsDialog } = useTeams()!;
+    const { teamsContext, getUser, getMeetingId, teamsDialog, authentication } = useTeams()!;
     const [running, setRunningState] = createSignal(false)
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
@@ -70,15 +70,17 @@ export const TabView: Component = () => {
                 console.error('submittask', e)
             }
 
-            teamsDialog.url.bot.open({
-                url: `${appOrigin}/TeamsVote/teams/spinner/`, // your UI
-                title: formatUrlForTitle(roundKeyValue),
-                completionBotId: import.meta.env.VITE_BOT_ID,
-                size: {
-                    height: DialogDimension.Large,
-                    width: DialogDimension.Large
-                }
-            },(r) => console.log('r',r), pm => console.log('pm', pm));
+            // teamsDialog.url.bot.open({
+            //     url: `${appOrigin}/TeamsVote/teams/spinner/`, // your UI
+            //     title: formatUrlForTitle(roundKeyValue),
+            //     completionBotId: import.meta.env.VITE_BOT_ID,
+            //     size: {
+            //         height: DialogDimension.Large,
+            //         width: DialogDimension.Large
+            //     }
+            // },(r) => console.log('r',r), pm => console.log('pm', pm));
+
+            microsoftTeams.pages.getConfig()
 
             // teamsDialog.url.submit({
             //     command: "startVote"
@@ -86,9 +88,9 @@ export const TabView: Component = () => {
             // teamsTasks.
 
             // console.log('a')
-            // const authToken = await authentication.getAuthToken({
-            //     resources: ["https://graph.microsoft.com"] // request Graph token
-            // });
+            const authToken = await authentication.getAuthToken({
+                // resources: ["https://graph.microsoft.com"] // request Graph token
+            });
             // console.log('b')
             // await messages.postCard(teamsMeetingId, authToken, card)
 

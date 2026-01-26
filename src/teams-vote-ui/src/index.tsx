@@ -14,12 +14,13 @@ const TabView = namedLazy(() => import("./pages/tab").then(m => m.TabView));
 const NewVoteView = namedLazy(() => import("./pages/new-vote").then(m => m.NewVoteView));
 const VoterView = namedLazy(() => import("./pages/vote").then(m => m.VoterView));
 const NotSupportedPage = namedLazy(() => import("./pages/not-supported").then(m => m.NotSupportedPage));
+
 const Spinner = namedLazy(() => import("./pages/spinner").then(m => m.Spinner));
 
 export const routes = () => <Router base={routeBase()} root={AppRoot}>
     <PagesReRouter>
+        <Route path="/teams/spinner/" component={Spinner} />
         <Route path="/teams/" component={TeamsRoot}>
-            <Route path="/spinner/" component={Spinner} />
             <Route path="/tab/" component={TabView} />
             <Route path="/new/:roundKey/" component={NewVoteView} />
             <Route path="/vote/" component={SessionRoot}>
