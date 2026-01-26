@@ -90,7 +90,7 @@ export const TabView: Component = () => {
             // console.log('a')
             console.log('getAuthToken', new URL("./TeamsVote/teams/auth_return.html", location.href).href)
             const test = authentication.authenticate({
-                url: new URL("./TeamsVote/teams/auth_return.html", location.href).href,
+                url: new URL("./TeamsVote/teams/auth_return.html", location.origin).href,
             })
             console.log(test)
             const authToken = await authentication.getAuthToken({
