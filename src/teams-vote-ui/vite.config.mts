@@ -61,12 +61,13 @@ export default gitHubSpaConfig(packageJson, {
   },
 })
 
-
+// TODO don't run on error
 function copyIndexForRoutes(routes: string[]) {
   return {
     name: 'vite-plugin-copy-index-for-routes',
     apply: 'build',
     closeBundle: async () => {
+      
       const outDir = path.resolve(__dirname, 'dist');
       const indexFile = path.join(outDir, 'index.html');
 

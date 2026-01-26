@@ -91,7 +91,7 @@ export const TabView: Component = () => {
             console.log('getAuthToken', window.location.href, window.location.origin)
             const authToken = await authentication.getAuthToken({
                 silent: false,
-                tenantId: import.meta.env.VITE_TENANT
+                tenantId: import.meta.env.VITE_TENANT,
                 resources: ["api://06899032-7fae-4792-b084-ab75b2caa73f/tab"] // request Graph token
             });
             // console.log('b')
