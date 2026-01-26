@@ -95,6 +95,7 @@ export const TabView: Component = () => {
                 resources: [
                     location.href,
                     "api://06899032-7fae-4792-b084-ab75b2caa73f/tab",
+                    "api://marvin-brouwer.github.io/06899032-7fae-4792-b084-ab75b2caa73f",
                     // TODO maybe request Graph token
                 ]
             });

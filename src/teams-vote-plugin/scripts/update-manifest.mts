@@ -2,6 +2,7 @@ import fs, { mkdir } from "node:fs";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
+import stripJsonComments from 'strip-json-comments'
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ const __dirname = path.dirname(__filename);
 // We don't need millisecond accuracy
 const timestamp = new Date().toISOString().replaceAll('-', '').replaceAll('T', '').replaceAll(':', '').split('.')[0]
 
-const devManifestPath = path.join(__dirname, "../manifest/manifest.source.json");
+const devManifestPath = path.join(__dirname, "../manifest/manifest.source.jsonc");
 const outputManifestPath = path.join(__dirname, "../package/manifest.json");
 mkdir(dirname(outputManifestPath), { recursive: true }, (err) => {
   if (err) throw err;
@@ -45,6 +46,8 @@ let manifestContent = fs.readFileSync(devManifestPath, "utf-8");
 function replaceEnv(key: string) {
   manifestContent = manifestContent.replaceAll(`<${key}>`, getEnv(key));
 }
+
+manifestContent = stripJsonComments(manifestContent)
 replaceEnv('TEAMS_APP_ID');
 replaceEnv('TEAMS_UI_URL');
 replaceEnv('TEAMS_APP_CLIENT_ID');

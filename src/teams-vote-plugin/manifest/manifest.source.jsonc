@@ -28,7 +28,9 @@
     ],
     "webApplicationInfo": {
         "id": "<TEAMS_APP_CLIENT_ID>",
-        "resource": "api://<TEAMS_APP_CLIENT_ID>",
+        // https://stackoverflow.com/a/72171127/2319865
+        "resource": "api://marvin-brouwer.github.io/<TEAMS_APP_CLIENT_ID>",
+        // Adding this added the correct permissions when uploading to teams, seems to be required
         "nestedAppAuthInfo": [
             {
                 "redirectUri": "<TEAMS_UI_URL>/teams/auth_return.html",
@@ -64,6 +66,7 @@
             "supportsCalling": false,
             "supportsVideo": false,
             "supportsFiles": false,
+            // Make the bot non-addressable, we don't use the bot this way
             "isNotificationOnly": true
         }
     ]
