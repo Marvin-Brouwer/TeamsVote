@@ -28,7 +28,13 @@
     ],
     "webApplicationInfo": {
         "id": "<TEAMS_APP_CLIENT_ID>",
-        "resource": "api://<TEAMS_APP_CLIENT_ID>"
+        "resource": "api://<TEAMS_APP_CLIENT_ID>",
+        "nestedAppAuthInfo": [
+            {
+                "redirectUri": "<TEAMS_UI_URL>/teams/auth_return.html",
+                "scopes": ["tab"]
+            }
+        ]
     },
     "staticTabs": [
         {

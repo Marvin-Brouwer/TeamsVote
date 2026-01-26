@@ -92,7 +92,7 @@ export const TabView: Component = () => {
             const authToken = await authentication.getAuthToken({
                 silent: false,
                 tenantId: import.meta.env.VITE_TENANT
-                // resources: ["https://graph.microsoft.com"] // request Graph token
+                resources: ["api://06899032-7fae-4792-b084-ab75b2caa73f/tab"] // request Graph token
             });
             // console.log('b')
             // await messages.postCard(teamsMeetingId, authToken, card)
