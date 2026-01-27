@@ -5,18 +5,16 @@ import { Deck, defaultDeck, StartRequest } from "@teams-vote/data";
 import { api } from "../helpers/api";
 import { cardBuilder } from '../../../teams-vote-client-util/src/teams/card-builder';
 import { DeckSelector } from "../components/deck-selector";
-import { formatUrlForTitle } from "@teams-vote/client-util";
-
-import "./tab.css"
 import { DialogDimension } from "@microsoft/teams-js";
 import * as microsoftTeams from '@microsoft/teams-js';
-import { authenticateWithConnector } from "@microsoft/teams-js/dist/esm/packages/teams-js/dts/private/externalAppAuthentication";
+
+import "./tab.css"
 
 const [healthCheck] = createResource(() => true, api.checkHealth);
 
 export const TabView: Component = () => {
 
-    const { teamsContext, getUser, getMeetingId, teamsDialog, authentication } = useTeams()!;
+    const { teamsContext, getUser, getMeetingId } = useTeams()!;
     const [running, setRunningState] = createSignal(false)
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
@@ -63,13 +61,28 @@ export const TabView: Component = () => {
         try {
             console.log('Here used to be a postCard', card)
 
-            try{
+            try {
                 microsoftTeams.tasks.submitTask({
                     command: 'test1'
                 }, import.meta.env.VITE_BOT_ID)
-            }catch(e){
+            } catch (e) {
                 console.error('submittask', e)
             }
+
+            microsoftTeams.dialog.url.bot.open(
+                {
+                    url: "https://marvin-brouwer.github.io/TeamsVote/teams/dialog/",
+                    title: "Start vote",
+                    completionBotId: import.meta.env.VITE_BOT_ID,
+                    size: {
+                        height: DialogDimension.Large,
+                        width: DialogDimension.Large
+                    }
+                },
+                (result) => {
+                    console.log("Dialog closed:", result);
+                }
+            );
 
             // teamsDialog.url.bot.open({
             //     url: `${appOrigin}/TeamsVote/teams/spinner/`, // your UI
@@ -81,7 +94,7 @@ export const TabView: Component = () => {
             //     }
             // },(r) => console.log('r',r), pm => console.log('pm', pm));
 
-            microsoftTeams.pages.getConfig()
+            console.log('config', await microsoftTeams.pages.getConfig())
 
             // teamsDialog.url.submit({
             //     command: "startVote"
@@ -89,31 +102,31 @@ export const TabView: Component = () => {
             // teamsTasks.
 
             // console.log('a')
-            const authEndpoint = new URL("./TeamsVote/teams/auth_return.html", location.origin).href;
-            console.log('authEndpoint', authEndpoint)
-            const test = await authentication.authenticate({
-                url: authEndpoint,
-            })
-            console.log(test)
-            const test2 = authenticateWithConnector({
-                connectorId: '06899032-7fae-4792-b084-ab75b2caa73f',
-                oAuthConfigId: '06899032-7fae-4792-b084-ab75b2caa73f',
-                traceId: new microsoftTeams.UUID(),
-                windowParameters: {
+            // const authEndpoint = new URL("./TeamsVote/teams/auth_return.html", location.origin).href;
+            // console.log('authEndpoint', authEndpoint)
+            // const test = await authentication.authenticate({
+            //     url: authEndpoint,
+            // })
+            // console.log(test)
+            // const test2 = authenticateWithConnector({
+            //     connectorId: '06899032-7fae-4792-b084-ab75b2caa73f',
+            //     oAuthConfigId: '06899032-7fae-4792-b084-ab75b2caa73f',
+            //     traceId: new microsoftTeams.UUID(),
+            //     windowParameters: {
 
-                }
-            })
-            console.log(test2)
-            const authToken = await authentication.getAuthToken({
-                silent: false,
-                tenantId: import.meta.env.VITE_TENANT,
-                resources: [
-                    authEndpoint,
-                    location.href,
-                    "api://06899032-7fae-4792-b084-ab75b2caa73f/tab"
-                    // TODO maybe request Graph token
-                ]
-            });
+            //     }
+            // })
+            // console.log(test2)
+            // const authToken = await authentication.getAuthToken({
+            //     silent: false,
+            //     tenantId: import.meta.env.VITE_TENANT,
+            //     resources: [
+            //         authEndpoint,
+            //         location.href,
+            //         "api://06899032-7fae-4792-b084-ab75b2caa73f/tab"
+            //         // TODO maybe request Graph token
+            //     ]
+            // });
             // console.log('b')
             // await messages.postCard(teamsMeetingId, authToken, card)
 

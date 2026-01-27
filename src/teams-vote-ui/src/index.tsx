@@ -6,6 +6,7 @@ import { routeBase, PagesReRouter, namedLazy } from '@quick-vite/gh-pages-spa/so
 import { AppRoot } from './app';
 
 import './index.css'
+import { TestDialog } from './pages/test-dialog';
 
 const TeamsRoot = namedLazy(() => import("./app").then(m => m.TeamsRoot));
 const SessionRoot = namedLazy(() => import("./app").then(m => m.SessionRoot));
@@ -21,6 +22,7 @@ export const routes = () => <Router base={routeBase()} root={AppRoot}>
     <PagesReRouter>
         <Route path="/teams/spinner/" component={Spinner} />
         <Route path="/teams/" component={TeamsRoot}>
+            <Route path="/dialog/" component={TestDialog} />
             <Route path="/tab/" component={TabView} />
             <Route path="/new/:roundKey/" component={NewVoteView} />
             <Route path="/vote/" component={SessionRoot}>

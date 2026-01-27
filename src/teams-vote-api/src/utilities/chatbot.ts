@@ -42,14 +42,21 @@ export class ChatBot extends TeamsActivityHandler {
 
         console.log('context', context)
         console.log('taskModuleRequest', taskModuleRequest)
-        
-        return TaskModuleContinueResponse
-            .createResponseOfFetch()
-            .title(formatUrlForTitle("test"))
-            .url(appUrl + "/teams/tab/")
-            .width('medium')
-            .height('large')
-            .toResponseOfFetch();
+
+        // return TaskModuleContinueResponse
+        //     .createResponseOfFetch()
+        //     .title(formatUrlForTitle("test"))
+        //     .url(appUrl + "/teams/tab/")
+        //     .width('medium')
+        //     .height('large')
+        //     .toResponseOfFetch();
+
+        return {
+            task: {
+                type: "message",
+                value: "Vote started!"
+            }
+        };
     }
 
     protected async handleTeamsTaskModuleFetch(context: TurnContext, taskModuleRequest: TaskModuleRequest): Promise<TaskModuleResponse> {
@@ -65,7 +72,7 @@ export class ChatBot extends TeamsActivityHandler {
         // Post directly to the chat or meeting
         const attachment = CardFactory.adaptiveCard(card);
         await context.sendActivity({ attachments: [attachment] });
-        
+
         const test: MessagingExtensionActionResponse = {
             task: {
                 type: "continue",

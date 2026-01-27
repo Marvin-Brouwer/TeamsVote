@@ -43,6 +43,7 @@
             "entityId": "tVoteTab",
             "name": "Vote",
             "contentUrl": "<TEAMS_UI_URL>/teams/tab/",
+            "contentBotId": "<TEAMS_CHATBOT_CLIENT_ID>",
             "scopes": [
                 "groupChat",
                 "team",
@@ -66,8 +67,8 @@
             "supportsCalling": false,
             "supportsVideo": false,
             "supportsFiles": false,
-            // Make the bot non-addressable, we don't use the bot this way
-            "isNotificationOnly": true
+            // Make the bot addressable, because of staticTab.contentBotId
+            "isNotificationOnly": false
         }
     ]
 }
