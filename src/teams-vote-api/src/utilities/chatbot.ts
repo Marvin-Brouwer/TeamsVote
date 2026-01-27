@@ -51,9 +51,34 @@ export class ChatBot extends TeamsActivityHandler {
         //     .height('large')
         //     .toResponseOfFetch();
 
+        try {
+            const data = taskModuleRequest.data;
+
+            // Post message into chat
+            await context.sendActivity({
+                attachments: [
+                    CardFactory.adaptiveCard({
+                        type: "AdaptiveCard",
+                        version: "1.4",
+                        body: [
+                            {
+                                type: "TextBlock",
+                                text: `Vote started! Estimate: ${data.estimate}`,
+                                weight: "bolder",
+                                size: "medium"
+                            }
+                        ]
+                    })
+                ]
+            });
+
+        } catch (e) {
+            console.error(e)
+        }
+
         return {
             task: {
-                type: "message",
+                type: "continue",
                 value: "Vote started!"
             }
         };
