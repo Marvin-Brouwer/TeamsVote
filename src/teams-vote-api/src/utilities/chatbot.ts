@@ -40,6 +40,7 @@ export class ChatBot extends TeamsActivityHandler {
     }
     protected async handleTeamsTaskModuleSubmit(context: TurnContext, taskModuleRequest: TaskModuleRequest): Promise<TaskModuleResponse> {
 
+        console.log('=========','handleTeamsTaskModuleSubmit', '=========')
         console.log('context', context)
         console.log('taskModuleRequest', taskModuleRequest)
 
@@ -77,14 +78,19 @@ export class ChatBot extends TeamsActivityHandler {
         }
 
         return {
-            task: {
-                type: "continue",
-                value: "Vote started!"
-            }
-        };
+            
+        }
+        return TaskModuleContinueResponse
+            .createResponseOfFetch()
+            .title(formatUrlForTitle("test"))
+            .url(appUrl + "/teams/tab/")
+            .width('medium')
+            .height('large')
+            .toResponseOfSubmit() as TaskModuleResponse;
     }
 
     protected async handleTeamsTaskModuleFetch(context: TurnContext, taskModuleRequest: TaskModuleRequest): Promise<TaskModuleResponse> {
+        console.log('=========','handleTeamsTaskModuleFetch', '=========')
         const card = {
             type: "AdaptiveCard",
             $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
