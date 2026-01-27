@@ -28,8 +28,8 @@
     ],
     "webApplicationInfo": {
         "id": "<TEAMS_APP_CLIENT_ID>",
-        // https://stackoverflow.com/a/72171127/2319865
-        "resource": "api://<TEAMS_APP_CLIENT_ID>/tab",
+        // https://stackoverflow.com/a/72171127/2319865 doesn't seem to fix it :(
+        "resource": "api://<TEAMS_APP_CLIENT_ID>",
         // Adding this added the correct permissions when uploading to teams, seems to be required
         "nestedAppAuthInfo": [
             {
