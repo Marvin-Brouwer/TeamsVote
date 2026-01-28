@@ -19,7 +19,7 @@ export const api = {
         return response;
     },
     async requestSessionStart(startRequest: StartRequest, signal: AbortSignal) {
-        const response = await fetch(`${apiUrl}/start`, {
+        const response = await fetch(`${apiUrl}/api/start`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(startRequest),
@@ -32,7 +32,7 @@ export const api = {
         return response;
     },
     async submitVote(submissionRequest: SubmissionRequest, signal: AbortSignal) {
-        await fetch(`${apiUrl}/submit`, {
+        await fetch(`${apiUrl}/api/submit`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(submissionRequest),
@@ -42,7 +42,7 @@ export const api = {
         });
     },
     async requestReset(resetRequest: StatusRequest, signal: AbortSignal) {
-        await fetch(`${apiUrl}/reset`, {
+        await fetch(`${apiUrl}/api/reset`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(resetRequest),
@@ -52,7 +52,7 @@ export const api = {
         });
     },
     async requestAggregate(aggregateRequest: StatusRequest, signal: AbortSignal) {
-        const response = await fetch(`${apiUrl}/aggregate`, {
+        const response = await fetch(`${apiUrl}/api/aggregate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(aggregateRequest),
@@ -64,7 +64,7 @@ export const api = {
         return response.average;
     },
     async acceptScore(acceptRequest: StatusRequest, signal: AbortSignal) {
-        await fetch(`${apiUrl}/accept`, {
+        await fetch(`${apiUrl}/api/accept`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(acceptRequest),
@@ -74,7 +74,7 @@ export const api = {
         });
     },
     async requestStatus(statusRequest: StatusRequest, signal: AbortSignal) {
-        const response = await fetch(`${apiUrl}/status`, {
+        const response = await fetch(`${apiUrl}/api/status`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(statusRequest),
