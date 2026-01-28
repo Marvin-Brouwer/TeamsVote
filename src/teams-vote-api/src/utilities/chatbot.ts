@@ -80,18 +80,21 @@ export class ChatBot extends TeamsActivityHandler {
         return TaskModuleContinueResponse
             .createResponseOfFetch()
             .title(formatUrlForTitle("test"))
-            .card(CardFactory.adaptiveCard({
+            .url(appUrl + "/teams/tab/")
+            .width('medium')
+            .height('large')
+            .card({
                 type: "AdaptiveCard",
                 version: "1.4",
                 body: [
                     {
                         type: "TextBlock",
-                        text: `Vote started from response! Estimate: ${taskModuleRequest.data}`,
+                        text: `Vote started! Estimate: ${JSON.stringify(taskModuleRequest.data.estimate)}`,
                         weight: "bolder",
                         size: "medium"
                     }
                 ]
-            }))
+            })
             .toResponseOfSubmit() as TaskModuleResponse;
     }
 
