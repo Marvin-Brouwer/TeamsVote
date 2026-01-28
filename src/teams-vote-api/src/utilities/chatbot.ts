@@ -53,7 +53,8 @@ export class ChatBot extends TeamsActivityHandler {
 
         setTimeout(async () => {
             try {
-                await context.adapter.continueConversation(
+                await teamsAdapter.continueConversationAsync(
+                    APP_ID,
                     conversationReference!,
                     async (proactiveContext) => {
                         await proactiveContext.sendActivity({
