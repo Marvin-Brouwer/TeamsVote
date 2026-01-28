@@ -1,42 +1,27 @@
-import { FastifyInstance } from "fastify";
-import { TurnContext } from "botbuilder";
 import { ChatBot } from "../utilities/chatbot.js";
 import { teamsAdapter } from "../utilities/teams-adapter.js";
+import { Router, Request } from "express";
+
 const bot = new ChatBot();
+const router = Router();
 
-export function applyChatHandler(app: FastifyInstance) {
+router.get("/messages", async (req, res) => {
 
-    app.post('/chatbot/messages', async (request, reply) => {
-        // Wrap Fastify's raw req/res to look like Express
-        const req = Object.assign(request.raw, {
-            body: request.body as any
+    try {
+        console.info(`Incoming request ${JSON.stringify(req.body)}`)
+        // Some weird express mismatch, just as any for now
+        await teamsAdapter.process(req, res as any, async (context) => {
+            console.info(`TurnContext activity ${JSON.stringify(context.activity)}`);
+            context.onSendActivities(async (_c, a, n) => {
+                console.info(`onSendActivities ${JSON.stringify(a)}`);
+                return await n();
+            })
+            await bot.run(context);
         });
-        const res = {
-            ...reply.raw,          // ServerResponse
-            // Provide the minimal Express-style methods CloudAdapter expects
-            status: (code: number) => { reply.code(code); return res; },
-            send: (body?: any) => { reply.send(body); return res; },
-            setHeader: (name: string, value: string) => { reply.header(name, value); return res; },
-            end: (...args: unknown[]) => {
-                for (const arg of args) reply.send(arg)
-                reply.raw.end()
-            },
-            header: reply.raw.getHeader
-        };
+    } catch (err) {
+        console.error("Unexpected teams bot error:", err);
+        return res.status(500).send(JSON.stringify(err));
+    }
+});
 
-        try {
-            app.log.info(`Incoming request ${JSON.stringify(req.body)}`)
-            await teamsAdapter.process(req, res, async (context: TurnContext) => {
-                app.log.info(`TurnContext activity ${JSON.stringify(context.activity)}`);
-                context.onSendActivities(async (_c, a, n) => {
-                    app.log.info(`onSendActivities ${JSON.stringify(a)}`);
-                    return await n();
-                })
-                await bot.run(context);
-            });
-        } catch (err) {
-            console.error("Unexpected teams bot error:", err);
-            return reply.code(500).send(JSON.stringify(err));
-        }
-    });
-}
+export const chatRoutes = router;

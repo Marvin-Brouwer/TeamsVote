@@ -34,7 +34,9 @@
         "nestedAppAuthInfo": [
             {
                 "redirectUri": "<TEAMS_UI_URL>/teams/auth_return.html",
-                "scopes": ["tab"]
+                "scopes": [
+                    "tab"
+                ]
             }
         ]
     },
@@ -68,7 +70,32 @@
             "supportsVideo": false,
             "supportsFiles": false,
             // Make the bot addressable, because of staticTab.contentBotId
-            "isNotificationOnly": false
+            "isNotificationOnly": false,
+            "commandLists": [
+                {
+                    "scopes": [
+                        "groupChat",
+                        "team",
+                        "personal"
+                    ],
+                    "commands": [
+                        {
+                            "title": "Help",
+                            "description": "Displays this help message"
+                        }
+                    ]
+                }
+            ]
         }
-    ]
+    ],
+    "authorization": {
+        "permissions": {
+            "resourceSpecific": [
+                {
+                    "name": "ChatMessageReadReceipt.Read.Chat",
+                    "type": "Application"
+                }
+            ]
+        }
+    }
 }

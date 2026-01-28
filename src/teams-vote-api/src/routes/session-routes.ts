@@ -1,4 +1,5 @@
 // src/server.ts
+import { Router } from "express";
 import { FastifyInstance } from "fastify";
 import { v4 as uuid } from "uuid";
 import { Mutex } from "async-mutex";
@@ -8,189 +9,174 @@ import { AggregateResponse, ServerSession, SessionResponse, StartRequest, Status
 const sessionLocks = new Map<string, Mutex>();
 const sessions = new Map<string, ServerSession>();
 
-export function applySessionRoutes(app: FastifyInstance) {
+function getMutex(meetingId: string) {
+    let mutex = sessionLocks.get(meetingId);
+    if (!mutex) {
+        mutex = new Mutex();
+        sessionLocks.set(meetingId, mutex);
+    }
+    return mutex;
+}
 
-    app.post("/start", async (request, reply) => {
-        const body = request.body as StartRequest;
-        const { roundKey, meetingId, selectedDeck, user } = body;
+const router = Router();
+router.get("/", (_, res) => {
+    return res.status(200).send({ status: "healthy" });
+});
+router.get("/health", (_, res) => {
+    return res.status(200).send({ status: "healthy" });
+});
+router.post('/start', (req, res) => {
+    const body = req.body as StartRequest;
+    const { roundKey, meetingId, selectedDeck, user } = body;
 
-        if (!meetingId) return reply.status(400).send({ error: "meetingId required" });
-        if (!roundKey) return reply.status(400).send({ error: "roundKey required" });
-        if (!selectedDeck) return reply.status(400).send({ error: "selectedDeck required" });
-        if (!user) return reply.status(400).send({ error: "user required" });
+    if (!meetingId) return res.status(400).send({ error: "meetingId required" });
+    if (!roundKey) return res.status(400).send({ error: "roundKey required" });
+    if (!selectedDeck) return res.status(400).send({ error: "selectedDeck required" });
+    if (!user) return res.status(400).send({ error: "user required" });
 
-        const roundToken = uuid();
+    const roundToken = uuid();
 
-        const session: ServerSession = {
-            meetingId,
-            roundKey,
-            token: roundToken,
-            selectedDeck,
-            users: new Map(),
-            submissions: new Map()
-        }
-
-        session.users.set(user.id, {
-            ...user,
-            admin: true
-        })
-
-        sessions.set(meetingId, session);
-
-        return session as SessionResponse;
-    });
-
-    function getMutex(meetingId: string) {
-        let mutex = sessionLocks.get(meetingId);
-        if (!mutex) {
-            mutex = new Mutex();
-            sessionLocks.set(meetingId, mutex);
-        }
-        return mutex;
+    const session: ServerSession = {
+        meetingId,
+        roundKey,
+        token: roundToken,
+        selectedDeck,
+        users: new Map(),
+        submissions: new Map()
     }
 
-    app.get("/", async () => {
-        return { status: "healthy" };
+    session.users.set(user.id, {
+        ...user,
+        admin: true
+    })
+
+    sessions.set(meetingId, session);
+
+    return res.status(200).send(session as SessionResponse);
+})
+
+router.post("/submit", (req, res) => {
+    const body = req.body as SubmissionRequest;
+    const { meetingId, token, user, score } = body;
+
+    const mutex = getMutex(meetingId);
+
+    return mutex.runExclusive(() => {
+        const session = sessions.get(meetingId);
+        if (!session || session.token !== token) {
+            return res.status(404).send({ error: "Session not found" });
+        }
+
+        if (!validateScore(session.selectedDeck, score)) {
+            return res.status(403).send({ error: "Incorrect score" });
+        }
+
+        session.submissions.set(user.id, { user, score });
+        sessions.set(meetingId, session);
+
+        return res.status(403).send();
     });
-    app.get("/health", async () => {
-        return { status: "healthy" };
-    });
+});
 
-    app.post("/submit", async (request, reply) => {
-        const body = request.body as SubmissionRequest;
-        const { meetingId, token, user, score } = body;
+router.post("/status", (req, res) => {
+    const body = req.body as StatusRequest;
+    const { meetingId, token, user } = body;
 
-        const mutex = getMutex(meetingId);
+    const mutex = getMutex(meetingId);
 
-        return mutex.runExclusive(() => {
-            const session = sessions.get(meetingId);
-            if (!session || session.token !== token) {
-                reply.status(404);
-                return { error: "Session not found" };
-            }
-
-            if (!validateScore(session.selectedDeck, score)) {
-                reply.status(403);
-                return { error: "Incorrect score" };
-            }
-
-            session.submissions.set(user.id, { user, score });
-            sessions.set(meetingId, session);
-
-            return undefined;
-        });
-    });
-
-    app.post("/status", async (request, reply) => {
-        const body = request.body as StatusRequest;
-        const { meetingId, token, user } = body;
-
-        const mutex = getMutex(meetingId);
-
-        return mutex.runExclusive(() => {
-
-            const session = sessions.get(meetingId);
-            if (!session || session.token !== token) {
-                reply.status(404);
-                return { error: "Session not found" };
-            }
-            const currentUser = session.users.get(user.id)
-            if (!currentUser) {
-                session.users.set(user.id, user)
-            }
-
-            const submissions = Array.from(session.submissions.values());
-            const users = Array.from(session.users.values());
-
-            console.log(currentUser)
-            const result: StatusResponse = {
-                roundKey: session.roundKey,
-                admin: (currentUser ?? user)?.admin ?? false,
-                submissions,
-                users
-            }
-
-            return result;
-        });
-    });
-
-    app.post("/aggregate", async (request, reply) => {
-        const body = request.body as StatusRequest;
-        const { meetingId, token, user } = body;
+    return mutex.runExclusive(() => {
 
         const session = sessions.get(meetingId);
         if (!session || session.token !== token) {
-            reply.status(404);
-            return { error: "Session not found" };
+            return res.status(404).send({ error: "Session not found" });
         }
+
         const currentUser = session.users.get(user.id)
         if (!currentUser) {
-            reply.status(404);
-            return { error: "Session not found" };
-        }
-        if (!currentUser.admin) {
-            reply.status(403);
-            return { error: "User is no admin" };
+            session.users.set(user.id, user)
         }
 
         const submissions = Array.from(session.submissions.values());
-        const result: AggregateResponse = {
+        const users = Array.from(session.users.values());
+
+        console.log(currentUser)
+        const result: StatusResponse = {
+            roundKey: session.roundKey,
+            admin: (currentUser ?? user)?.admin ?? false,
             submissions,
-            average: calculateAverage(session.selectedDeck, submissions)
+            users
         }
 
-        return result;
+        return res.status(200).send(result);
     });
+});
 
-    app.post("/accept", async (request, reply) => {
-        const body = request.body as StatusRequest;
-        const { meetingId, token, user } = body;
+router.post("/aggregate", (req, res) => {
+    const body = req.body as StatusRequest;
+    const { meetingId, token, user } = body;
 
-        const session = sessions.get(meetingId);
-        if (!session || session.token !== token) {
-            reply.status(404);
-            return { error: "Session not found" };
-        }
-        const currentUser = session.users.get(user.id)
-        if (!currentUser) {
-            reply.status(404);
-            return { error: "Session not found" };
-        }
-        if (!currentUser.admin) {
-            reply.status(403);
-            return { error: "User is no admin" };
-        }
+    const session = sessions.get(meetingId);
+    if (!session || session.token !== token) {
+        return res.status(404).send({ error: "Session not found" });
+    }
+    const currentUser = session.users.get(user.id)
+    if (!currentUser) {
+        return res.status(404).send({ error: "Session not found" });
+    }
+    if (!currentUser.admin) {
+        return res.status(403).send({ error: "User is no admin" });
+    }
 
-        sessions.delete(meetingId);
+    const submissions = Array.from(session.submissions.values());
+    const result: AggregateResponse = {
+        submissions,
+        average: calculateAverage(session.selectedDeck, submissions)
+    }
 
-        reply.status(200)
-        return undefined;
-    });
+    return res.status(200).send(result);
+});
 
-    app.post("/reset", async (request, reply) => {
-        const body = request.body as StatusRequest;
-        const { meetingId, token, user } = body;
+router.post("/accept", (req, res) => {
+    const body = req.body as StatusRequest;
+    const { meetingId, token, user } = body;
 
-        const session = sessions.get(meetingId);
-        if (!session || session.token !== token) {
-            reply.status(404);
-            return { error: "Session not found" };
-        }
-        const currentUser = session.users.get(user.id)
-        if (!currentUser) {
-            reply.status(404);
-            return { error: "Session not found" };
-        }
-        if (!currentUser.admin) {
-            reply.status(403);
-            return { error: "User is no admin" };
-        }
+    const session = sessions.get(meetingId);
+    if (!session || session.token !== token) {
+        return res.status(404).send({ error: "Session not found" });
+    }
+    const currentUser = session.users.get(user.id)
+    if (!currentUser) {
+        return res.status(404).send({ error: "Session not found" });
+    }
+    if (!currentUser.admin) {
+        return res.status(403).send({ error: "User is no admin" });
+    }
 
-        session.submissions.clear();
-        sessions.set(meetingId, session);
+    sessions.delete(meetingId);
 
-        reply.status(200)
-        return undefined;
-    });
+    return res.status(200).send();
+});
 
-}
+router.post("/reset", (req, res) => {
+    const body = req.body as StatusRequest;
+    const { meetingId, token, user } = body;
+
+    const session = sessions.get(meetingId);
+    if (!session || session.token !== token) {
+        return res.status(404).send({ error: "Session not found" });
+    }
+    const currentUser = session.users.get(user.id)
+    if (!currentUser) {
+        return res.status(404).send({ error: "Session not found" });
+    }
+    if (!currentUser.admin) {
+        return res.status(403).send({ error: "User is no admin" });
+    }
+
+    session.submissions.clear();
+    sessions.set(meetingId, session);
+
+    return res.status(200).send();
+});
+
+export const sessionRoutes = router;
