@@ -53,15 +53,29 @@ export class ChatBot extends TeamsActivityHandler {
 
         setTimeout(async () => {
             try {
-                await teamsAdapter.continueConversationAsync(
+                await teamsAdapter.createConversationAsync(
                     APP_ID,
-                    conversationReference!,
-                    async (proactiveContext) => {
-                        await proactiveContext.sendActivity({
-                            text: `🗳️ A vote has started 2!`
-                        });
+                    conversationReference?.channelId!,
+                    conversationReference?.serviceUrl!,
+                    '',
+                    {
+                        isGroup: context.activity.conversation.isGroup,
+                        channelData: context.activity.channelData!,
+                        bot: context.activity.recipient,
+                        activity: context.activity,
+                    },
+                    async (newContext) => {
+                        await newContext.adapter.continueConversation(
+                            conversationReference!,
+                            async (proactiveContext) => {
+                                await proactiveContext.sendActivity({
+                                    text: `🗳️ A vote has started 2!`
+                                });
+                            }
+                        );
+
                     }
-                );
+                )
             }
             catch (e) {
                 console.error(e)
