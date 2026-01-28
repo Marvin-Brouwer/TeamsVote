@@ -40,7 +40,7 @@ export class ChatBot extends TeamsActivityHandler {
     }
     protected async handleTeamsTaskModuleSubmit(context: TurnContext, taskModuleRequest: TaskModuleRequest): Promise<TaskModuleResponse> {
 
-        console.log('=========','handleTeamsTaskModuleSubmit', '=========')
+        console.log('=========', 'handleTeamsTaskModuleSubmit', '=========')
         console.log('context', context)
         console.log('taskModuleRequest', taskModuleRequest)
 
@@ -77,20 +77,26 @@ export class ChatBot extends TeamsActivityHandler {
             console.error(e)
         }
 
-        return {
-            
-        }
         return TaskModuleContinueResponse
             .createResponseOfFetch()
             .title(formatUrlForTitle("test"))
-            .url(appUrl + "/teams/tab/")
-            .width('medium')
-            .height('large')
+            .card(CardFactory.adaptiveCard({
+                type: "AdaptiveCard",
+                version: "1.4",
+                body: [
+                    {
+                        type: "TextBlock",
+                        text: `Vote started from response! Estimate: ${taskModuleRequest.data}`,
+                        weight: "bolder",
+                        size: "medium"
+                    }
+                ]
+            }))
             .toResponseOfSubmit() as TaskModuleResponse;
     }
 
     protected async handleTeamsTaskModuleFetch(context: TurnContext, taskModuleRequest: TaskModuleRequest): Promise<TaskModuleResponse> {
-        console.log('=========','handleTeamsTaskModuleFetch', '=========')
+        console.log('=========', 'handleTeamsTaskModuleFetch', '=========')
         const card = {
             type: "AdaptiveCard",
             $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
