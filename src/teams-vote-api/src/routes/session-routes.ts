@@ -19,12 +19,6 @@ function getMutex(meetingId: string) {
 }
 
 const router = Router();
-router.get("/", (_, res) => {
-    return res.status(200).send({ status: "healthy" });
-});
-router.get("/health", (_, res) => {
-    return res.status(200).send({ status: "healthy" });
-});
 router.post('/start', (req, res) => {
     const body = req.body as StartRequest;
     const { roundKey, meetingId, selectedDeck, user } = body;

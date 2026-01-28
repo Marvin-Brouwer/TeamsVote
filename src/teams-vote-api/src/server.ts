@@ -10,6 +10,12 @@ const app = express()
     methods: ["GET", "POST", "OPTIONS"],
     origin: true
   }))
+  .get("/", (_, res) => {
+      return res.status(200).send({ status: "healthy" });
+  })
+  .get("/health", (_, res) => {
+      return res.status(200).send({ status: "healthy" });
+  })
   .use('/api', sessionRoutes)
   .use('/chatbot', chatRoutes)
   .listen(port, '0.0.0.0', (err) => {
