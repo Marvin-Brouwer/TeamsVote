@@ -166,7 +166,7 @@ jobs:
               exit 0
             fi
 
-            if [ "$STATUS" = "failed" ]; then
+            if [ "$STATUS" = "update_failed" ]; then
               echo "### Render Deployment" >> $GITHUB_STEP_SUMMARY
               echo "- **STATUS**: \`failed\`" >> $GITHUB_STEP_SUMMARY
               echo "- [Deployment logs](https://dashboard.render.com/web/${{ vars.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID)" >> $GITHUB_STEP_SUMMARY
