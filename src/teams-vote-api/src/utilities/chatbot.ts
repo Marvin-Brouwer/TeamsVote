@@ -5,6 +5,7 @@ import { InvokeResponse, TaskModuleRequest, TeamsActivityHandler, TurnContext, T
 import { ITaskModuleResponseOfFetch, TaskModuleContinueResponse } from 'botbuilder-teams';
 import { teamsAdapter } from './teams-adapter.js';
 // import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
+import { APP_ID } from './teams-adapter';
 
 const appUrl = import.meta.env.VITE_UI_APP_URL as string;
 let conversationReference: Partial<ConversationReference> | undefined = undefined;
@@ -51,15 +52,19 @@ export class ChatBot extends TeamsActivityHandler {
         );
 
         setTimeout(async () => {
-
-            await teamsAdapter.continueConversation(
-                conversationReference!,
-                async (turnContext) => {
-                    await turnContext.sendActivity({
-                        text: `🗳️ A vote has started!`
-                    });
-                }
-            );
+            try {
+                await context.adapter.continueConversation(
+                    conversationReference!,
+                    async (proactiveContext) => {
+                        await proactiveContext.sendActivity({
+                            text: `🗳️ A vote has started 2!`
+                        });
+                    }
+                );
+            }
+            catch (e) {
+                console.error(e)
+            }
         }, 3000);
 
 
