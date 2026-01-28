@@ -79,10 +79,10 @@ export class ChatBot extends TeamsActivityHandler {
 
         return TaskModuleContinueResponse
             .createResponseOfFetch()
-            .title(formatUrlForTitle("test"))
-            .url(appUrl + "/teams/tab/")
-            .width('medium')
-            .height('large')
+            // .title(formatUrlForTitle("test"))
+            // .url(appUrl + "/teams/tab/")
+            // .width('medium')
+            // .height('large')
             .card({
                 type: "AdaptiveCard",
                 version: "1.4",
