@@ -6,6 +6,7 @@ import { chatRoutes } from './routes/chat-routes.js';
 
 const port = Number(process.env.PORT) || 10000;
 const app = express()
+  .use(express.json())
   .use(cors({
     methods: ["GET", "POST", "OPTIONS"],
     origin: true
