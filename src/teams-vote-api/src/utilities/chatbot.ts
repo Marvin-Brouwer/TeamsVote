@@ -1,11 +1,13 @@
 import { formatUrlForTitle } from '@teams-vote/client-util';
 import { Deck } from '@teams-vote/data';
 // import { formatUrlForTitle } from '@teams-vote/client-util';
-import { InvokeResponse, TaskModuleRequest, TeamsActivityHandler, TurnContext, TaskModuleResponse, CardFactory, MessagingExtensionActionResponse, TaskModuleTaskInfo } from 'botbuilder';
+import { InvokeResponse, TaskModuleRequest, TeamsActivityHandler, TurnContext, TaskModuleResponse, CardFactory, MessagingExtensionActionResponse, TaskModuleTaskInfo, ConversationReference, CloudAdapter } from 'botbuilder';
 import { ITaskModuleResponseOfFetch, TaskModuleContinueResponse } from 'botbuilder-teams';
+import { teamsAdapter } from './teams-adapter.js';
 // import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
 
 const appUrl = import.meta.env.VITE_UI_APP_URL as string;
+let conversationReference: Partial<ConversationReference> | undefined = undefined;
 
 // TODO TEST
 export class ChatBot extends TeamsActivityHandler {
@@ -43,6 +45,23 @@ export class ChatBot extends TeamsActivityHandler {
         console.log('=========', 'handleTeamsTaskModuleSubmit', '=========')
         console.log('context', context)
         console.log('taskModuleRequest', taskModuleRequest)
+
+        conversationReference = TurnContext.getConversationReference(
+            context.activity
+        );
+
+        setTimeout(async () => {
+
+            await teamsAdapter.continueConversation(
+                conversationReference!,
+                async (turnContext) => {
+                    await turnContext.sendActivity({
+                        text: `🗳️ A vote has started!`
+                    });
+                }
+            );
+        }, 3000);
+
 
         // return TaskModuleContinueResponse
         //     .createResponseOfFetch()
