@@ -267,6 +267,7 @@ export class ChatBot extends ActivityHandler {
   constructor() {
     super()
     this.onMessage(async (context, next) => {
+      console.log('onMessage', JSON.stringify(serializeTurnContext(ctx)))
       // TODO ignore non-mentions https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/channel-and-group-conversations?tabs=typescript
       // // Remove mention text from Text property, this function is altering the text on the Activity.
       // const modifiedText = TurnContext.removeMentionText(turnContext.activity, turnContext.activity.recipient.id);
@@ -276,18 +277,15 @@ export class ChatBot extends ActivityHandler {
       await next()
     })
     this.onConversationUpdate(async (ctx, next) => {
-      console.log('onConversationUpdate', ctx)
-      ctx.sendActivity('this is a test');
+      console.log('onConversationUpdate', JSON.stringify(serializeTurnContext(ctx)))
       await next();
     })
     this.onDialog(async (ctx, next) => {
-      console.log('onDialog', ctx)
-      ctx.sendActivity('this is a test');
+      console.log('onDialog', JSON.stringify(serializeTurnContext(ctx)))
       await next();
     })
     this.onInstallationUpdate(async (ctx, next) => {
-      console.log('onInstallationUpdate', ctx)
-      ctx.sendActivity('this is a test');
+      console.log('onInstallationUpdate', JSON.stringify(serializeTurnContext(ctx)))
       await next();
     })
   }
