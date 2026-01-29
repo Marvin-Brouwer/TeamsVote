@@ -304,16 +304,19 @@ export class ChatBot extends ActivityHandler {
         console.log("conversation reference", reference);
         try {
           const activity = new Activity(ActivityTypes.Message)
-          console.log("activity", activity);
+          console.log("activity1", activity.toJsonString());
+          console.log("activity2", Activity.fromJson(context.activity.toJsonString()).toJsonString());
+          activity.serviceUrl ??= reference.serviceUrl!;
           try {
             await teamsAdapter.createConversationAsync(APP_ID, reference.channelId, reference.serviceUrl!, APP_ID, {
               ...context,
               ...reference,
               ...reference.conversation,
               activity,
-              channelData: (context as any).channelData,
+              channelData: (context as any).channelData ?? { serviceUrl: reference.serviceUrl! }, 
               isGroup: reference.conversation.isGroup ?? false,
-              agent: reference.agent ?? undefined
+              agent: reference.agent ?? undefined,
+            
             }, async (newctx) => {
               console.log('newctx', newctx)
             })
