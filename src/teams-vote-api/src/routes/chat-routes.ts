@@ -5,7 +5,7 @@ import { Router, Request } from "express";
 const bot = new ChatBot();
 const router = Router();
 
-router.get("/messages", async (req, res) => {
+router.post("/messages", async (req, res) => {
 
     try {
         console.info(`Incoming request ${JSON.stringify(req.body)}`)
@@ -13,7 +13,11 @@ router.get("/messages", async (req, res) => {
         await teamsAdapter.process(req, res as any, async (context) => {
             console.info(`TurnContext activity ${JSON.stringify(context.activity)}`);
             context.onSendActivities(async (_c, a, n) => {
-                console.info(`onSendActivities ${JSON.stringify(a)}`);
+                console.info(`ctx.onSendActivities ${JSON.stringify(a)}`);
+                return await n();
+            })
+            context.onUpdateActivity(async (_c, a, n) => {
+                console.info(`ctx.onUpdateActivity ${JSON.stringify(a)}`);
                 return await n();
             })
             await bot.run(context);
