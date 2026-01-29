@@ -306,7 +306,7 @@ export class ChatBot extends ActivityHandler {
           const activity = new Activity(ActivityTypes.Message)
           console.log("activity", activity);
           try {
-            await teamsAdapter.createConversationAsync(APP_ID, reference.channelId, reference.serviceUrl!, '', {
+            await teamsAdapter.createConversationAsync(APP_ID, reference.channelId, reference.serviceUrl!, APP_ID, {
               ...context,
               ...reference,
               ...reference.conversation,
@@ -318,46 +318,46 @@ export class ChatBot extends ActivityHandler {
               console.log('newctx', newctx)
             })
           } catch (e) {
-            console.error('createConversationAsync', e)
+            console.error('ERROR createConversationAsync', e)
           }
         } catch (e) {
-          console.error('new Activity(ActivityTypes.Message)', e)
+          console.error('ERROR new Activity(ActivityTypes.Message)', e)
         }
         try {
           context.adapter.continueConversation(APP_ID, reference, async (continueContext) => {
             console.log('continueContext', continueContext)
           })
         } catch (e) {
-          console.error('createConversationAsync', e)
+          console.error('ERROR createConversationAsync', e)
         }
       } catch (e) {
-        console.error('context.activity.getConversationReference', e)
+        console.error('ERROR context.activity.getConversationReference', e)
       }
 
       try {
         const rr = await context.sendActivity("This is a test")
         console.log('rr', rr)
       } catch (e) {
-        console.error('context.sendActivity', e)
+        console.error('ERROR context.sendActivity', e)
       }
 
-      const taskResponse: TaskModuleContinueResponse = {
-        type: 'continue',
-        value: {
-          title: formatUrlForTitle("test"),
-          url: appUrl + "/teams/tab/",
-          height: 'medium',
-          width: 'large'
-        }
-      }
-      // const messageResponse: TaskModuleContinueResponse = {
-      //   type: 'message'
+      // const taskResponse: TaskModuleContinueResponse = {
+      //   type: 'continue',
+      //   value: {
+      //     title: formatUrlForTitle("test"),
+      //     url: appUrl + "/teams/tab/",
+      //     height: 'medium',
+      //     width: 'large'
+      //   }
       // }
+      const messageResponse: TaskModuleContinueResponse = {
+        type: 'message'
+      }
 
       return {
         status: 200,
         body: {
-          task: taskResponse
+          task: messageResponse
         }
       };
     }
