@@ -43,7 +43,7 @@
     "configurableTabs": [
         {
             "configurationUrl": "<TEAMS_UI_URL>/teams/tab/",
-            "id": "tvote-tab",
+            "id": "t-vote-tab",
             "canUpdateConfiguration": false,
             "meetingSurfaces": [
                 "sidePanel",
