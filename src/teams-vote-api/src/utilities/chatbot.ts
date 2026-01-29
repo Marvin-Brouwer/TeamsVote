@@ -9,6 +9,8 @@
 import { ActivityHandler, MessageFactory, TurnContext } from '@microsoft/agents-hosting'
 import { AdaptiveCardInvokeResponseType, TaskModuleContinueResponse } from '@microsoft/agents-hosting-teams'
 import { formatUrlForTitle } from '@teams-vote/client-util';
+import { APP_ID, teamsAdapter } from './teams-adapter.js';
+import { Activity, ActivityTypes } from '@microsoft/agents-activity';
 
 const appUrl = import.meta.env.VITE_UI_APP_URL as string;
 // let conversationReference: Partial<ConversationReference> | undefined = undefined;
@@ -291,12 +293,25 @@ export class ChatBot extends ActivityHandler {
   }
 
   protected async onInvokeActivity(context: TurnContext) {
-    console.log("onInvokeActivity", context.activity);
+    console.log("onInvokeActivity", context);
 
     if (context.activity.name === "task/submit") {
       const value = context.activity.value;
       console.log("Dialog submit value:", value);
 
+      const reference = context.activity.getConversationReference();
+      const activity = new Activity(ActivityTypes.Message)
+      await teamsAdapter.createConversationAsync(APP_ID, reference.channelId, reference.serviceUrl!, '', { 
+        ...context, 
+        ...reference, 
+        ...reference.conversation,
+        activity,
+        channelData: undefined,
+        isGroup: reference.conversation.isGroup ?? false,
+        agent: reference.agent ?? undefined
+      }, async (newctx) => {
+        console.log('newctx', newctx)
+      })
       const rr = await context.sendActivity("This is a test")
       console.log('rr', rr)
       
