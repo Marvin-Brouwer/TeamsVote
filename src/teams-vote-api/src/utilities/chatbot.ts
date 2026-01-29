@@ -9,7 +9,7 @@
 import { ActivityHandler, MessageFactory, TurnContext } from '@microsoft/agents-hosting'
 import { AdaptiveCardInvokeResponseType, TaskModuleContinueResponse, TaskModuleMessageResponse } from '@microsoft/agents-hosting-teams'
 import { formatUrlForTitle } from '@teams-vote/client-util';
-import { APP_ID, teamsAdapter } from './teams-adapter.js';
+import { BOT_APP_ID, teamsAdapter } from './teams-adapter.js';
 import { Activity, ActivityTypes } from '@microsoft/agents-activity';
 
 const appUrl = import.meta.env.VITE_UI_APP_URL as string;
@@ -267,7 +267,7 @@ export class ChatBot extends ActivityHandler {
   constructor() {
     super()
     this.onMessage(async (context, next) => {
-      console.log('onMessage', JSON.stringify(serializeTurnContext(ctx)))
+      console.log('onMessage', JSON.stringify(serializeTurnContext(context)))
       // TODO ignore non-mentions https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/channel-and-group-conversations?tabs=typescript
       // // Remove mention text from Text property, this function is altering the text on the Activity.
       // const modifiedText = TurnContext.removeMentionText(turnContext.activity, turnContext.activity.recipient.id);
@@ -306,7 +306,7 @@ export class ChatBot extends ActivityHandler {
           console.log("activity2", Activity.fromJson(context.activity.toJsonString()).toJsonString());
           activity.serviceUrl ??= reference.serviceUrl!;
           try {
-            await teamsAdapter.createConversationAsync(APP_ID, reference.channelId, reference.serviceUrl!, APP_ID, {
+            await teamsAdapter.createConversationAsync(BOT_APP_ID, reference.channelId, reference.serviceUrl!, BOT_APP_ID, {
               ...context,
               ...reference,
               ...reference.conversation,
@@ -325,7 +325,7 @@ export class ChatBot extends ActivityHandler {
           console.error('ERROR new Activity(ActivityTypes.Message)', e)
         }
         try {
-          context.adapter.continueConversation(APP_ID, reference, async (continueContext) => {
+          context.adapter.continueConversation(BOT_APP_ID, reference, async (continueContext) => {
             console.log('continueContext', continueContext)
           })
         } catch (e) {
