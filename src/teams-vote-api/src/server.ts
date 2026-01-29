@@ -28,18 +28,20 @@ const app = express()
   .on('request', waitForHealthCheck)
 
 function checkHealth(_req: unknown, res: Response) {
-    console.debug('Health check called');
-    return res.status(200).send({ status: "healthy" });
+  console.debug('Health check called');
+  return res.status(200).send({ status: "healthy" });
 }
 function waitForHealthCheck(req: Request) {
   if (req.url !== '/health') return;
-  console.log('Health check called, we are live!');
+  console.log('Initial health check called, we are live!');
   app.off('request', waitForHealthCheck)
 }
-function logRequest(req: Request, res: Response, next: NextFunction) { 
+function logRequest(req: Request, res: Response, next: NextFunction) {
   if (req.url === '/health') return next()
-      
-    console.debug(`${req.method} ${req.originalUrl} => `, req.body)
-    next()
-    console.debug(`${req.method} ${req.originalUrl} <= `, res.statusCode, res.statusMessage)
+
+  if (!req.body) console.debug(`${req.method} ${req.originalUrl}`)
+  else console.debug(`${req.method} ${req.originalUrl} => `, req.body)
+
+  next()
+  console.debug(`${req.method} ${req.originalUrl} <= `, res.statusCode, res.statusMessage)
 }
