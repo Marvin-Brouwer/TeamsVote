@@ -8,18 +8,17 @@ const router = Router();
 router.post("/messages", async (req, res) => {
 
     try {
-        console.info(`Incoming request ${JSON.stringify(req.body)}`)
         // Some weird express mismatch, just as any for now
         await teamsAdapter.process(req, res as any, async (context) => {
             console.info(`TurnContext activity ${JSON.stringify(context.activity)}`);
-            context.onSendActivities(async (_c, a, n) => {
-                console.info(`ctx.onSendActivities ${JSON.stringify(a)}`);
-                return await n();
-            })
-            context.onUpdateActivity(async (_c, a, n) => {
-                console.info(`ctx.onUpdateActivity ${JSON.stringify(a)}`);
-                return await n();
-            })
+            // context.onSendActivities(async (_c, a, n) => {
+            //     console.info(`ctx.onSendActivities ${JSON.stringify(a)}`);
+            //     return await n();
+            // })
+            // context.onUpdateActivity(async (_c, a, n) => {
+            //     console.info(`ctx.onUpdateActivity ${JSON.stringify(a)}`);
+            //     return await n();
+            // })
             await bot.run(context);
         });
     } catch (err) {

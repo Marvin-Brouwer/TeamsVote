@@ -341,23 +341,23 @@ export class ChatBot extends ActivityHandler {
         console.error('context.sendActivity', e)
       }
 
-      // const taskResponse: TaskModuleContinueResponse = {
-      //   type: 'continue',
-      //   value: {
-      //     title: formatUrlForTitle("test"),
-      //     url: appUrl + "/teams/tab/",
-      //     height: 'medium',
-      //     width: 'large'
-      //   }
-      // }
-      const messageResponse: TaskModuleContinueResponse = {
-        type: 'message'
+      const taskResponse: TaskModuleContinueResponse = {
+        type: 'continue',
+        value: {
+          title: formatUrlForTitle("test"),
+          url: appUrl + "/teams/tab/",
+          height: 'medium',
+          width: 'large'
+        }
       }
+      // const messageResponse: TaskModuleContinueResponse = {
+      //   type: 'message'
+      // }
 
       return {
         status: 200,
         body: {
-          task: messageResponse
+          task: taskResponse
         }
       };
     }
