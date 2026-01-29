@@ -17,10 +17,10 @@ const app = express()
     console.debug(`${req.method} ${req.originalUrl} <= `, res.statusCode, res.statusMessage)
   })
   .get("/", (_, res) => {
-      return res.status(200).send({ status: "healthy" });
+    return res.status(200).send({ status: "healthy" });
   })
   .get("/health", (_, res) => {
-      return res.status(200).send({ status: "healthy" });
+    return res.status(200).send({ status: "healthy" });
   })
   .use('/api', sessionRoutes)
   .use('/chatbot', chatRoutes)
@@ -32,4 +32,7 @@ const app = express()
   })
   .once('listening', () => {
     console.log(`API running on`, app.address());
-  });
+  })
+  .once('request', (req) => {
+    console.log('first request', req.url);
+  })
