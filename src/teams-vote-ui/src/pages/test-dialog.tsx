@@ -2,10 +2,12 @@ import { dialog } from "@microsoft/teams-js";
 import type { Component } from "solid-js";
 
 export const TestDialog: Component = () => <div class="view loading-spinner">
-    <fluent-button onClick={() => dialog.url.submit({
-        action: "startVote",
-        estimate: 5
-    })}>
+    <fluent-button onClick={() => {
+        dialog.url.submit({
+            action: "startVote",
+            estimate: 5
+        })
+    }}>
         Test
     </fluent-button>
 </div>

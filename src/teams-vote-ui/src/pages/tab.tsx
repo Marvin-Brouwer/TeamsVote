@@ -14,7 +14,7 @@ const [healthCheck] = createResource(() => true, api.checkHealth);
 
 export const TabView: Component = () => {
 
-    const { teamsContext, getUser, getMeetingId } = useTeams()!;
+    const { teamsContext, getUser, getMeetingId, messages } = useTeams()!;
     const [running, setRunningState] = createSignal(false)
     const [deck, changeDeck] = createSignal<Deck>(defaultDeck);
     const [roundKey, setRoundKey] = createSignal<string>()
@@ -83,6 +83,14 @@ export const TabView: Component = () => {
                     console.log("Dialog closed:", result);
                 }
             );
+
+            try {
+                const ctx = await new Promise((r) => microsoftTeams.sendCustomMessage('test', undefined,(args) => r(args)));
+                console.log('sendCustomMessage', ctx)
+            } catch(e) {
+                console.error('sendCustomMessage', e)
+            }
+            
 
             // teamsDialog.url.bot.open({
             //     url: `${appOrigin}/TeamsVote/teams/spinner/`, // your UI

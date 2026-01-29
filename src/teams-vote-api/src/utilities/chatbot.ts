@@ -297,6 +297,8 @@ export class ChatBot extends ActivityHandler {
       const value = context.activity.value;
       console.log("Dialog submit value:", value);
 
+      const rr = await context.sendActivity("This is a test")
+      console.log('rr', rr)
       
       const taskResponse: TaskModuleContinueResponse = {
         type: 'continue',
