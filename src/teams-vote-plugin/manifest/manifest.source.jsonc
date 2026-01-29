@@ -50,7 +50,12 @@
                 "stage"
             ],
             "context": ["channelTab","meetingChatTab","privateChatTab","meetingDetailsTab","meetingSidePanel", "meetingStage"],
-            "supportedSharePointHosts": []
+            "supportedSharePointHosts": [],
+            "scopes": [
+                "groupChat",
+                "team"
+            ],
+            "sharePointPreviewImage": "color.png"
         }
     ],
     "validDomains": [
