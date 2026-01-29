@@ -40,17 +40,17 @@
             }
         ]
     },
-    "staticTabs": [
+    "configurableTabs": [
         {
-            "entityId": "tVoteTab",
-            "name": "Vote",
-            "contentUrl": "<TEAMS_UI_URL>/teams/tab/",
-            "contentBotId": "<TEAMS_CHATBOT_CLIENT_ID>",
-            "scopes": [
-                "groupChat",
-                "team",
-                "personal"
-            ]
+            "configurationUrl": "<TEAMS_UI_URL>/teams/tab/",
+            "id": "tvote-tab",
+            "canUpdateConfiguration": false,
+            "meetingSurfaces": [
+                "sidePanel",
+                "stage"
+            ],
+            "context": ["channelTab","meetingChatTab","privateChatTab","meetingDetailsTab","meetingSidePanel", "meetingStage"],
+            "supportedSharePointHosts": []
         }
     ],
     "validDomains": [
