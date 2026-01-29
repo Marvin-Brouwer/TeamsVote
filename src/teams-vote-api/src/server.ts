@@ -11,6 +11,11 @@ const app = express()
     methods: ["GET", "POST", "OPTIONS"],
     origin: true
   }))
+  .use(async (req, res, next) => {
+    console.debug(`${req.method} ${req.originalUrl} => `, req.body)
+    next()
+    console.debug(`${req.method} ${req.originalUrl} <= `, res.statusCode, res.statusMessage)
+  })
   .get("/", (_, res) => {
       return res.status(200).send({ status: "healthy" });
   })

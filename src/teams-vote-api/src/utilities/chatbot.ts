@@ -291,7 +291,7 @@ export class ChatBot extends ActivityHandler {
   protected async onInvokeActivity(context: TurnContext) {
     console.log("onInvokeActivity", context.activity);
 
-    if (context.activity.name === "dialog.submit") {
+    if (context.activity.name === "task/submit") {
       const value = context.activity.value;
       console.log("Dialog submit value:", value);
 
@@ -304,7 +304,7 @@ export class ChatBot extends ActivityHandler {
       };
     }
 
-    return { status: 501 };
+    return super.onInvokeActivity(context);
   }
 
   protected onUnrecognizedActivity(context: TurnContext): Promise<void> {
