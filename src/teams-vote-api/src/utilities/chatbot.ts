@@ -300,20 +300,23 @@ export class ChatBot extends ActivityHandler {
       const rr = await context.sendActivity("This is a test")
       console.log('rr', rr)
       
-      const taskResponse: TaskModuleContinueResponse = {
-        type: 'continue',
-        value: {
-          title: formatUrlForTitle("test"),
-          url: appUrl + "/teams/tab/",
-          height: 'medium',
-          width: 'large'
-        }
+      // const taskResponse: TaskModuleContinueResponse = {
+      //   type: 'continue',
+      //   value: {
+      //     title: formatUrlForTitle("test"),
+      //     url: appUrl + "/teams/tab/",
+      //     height: 'medium',
+      //     width: 'large'
+      //   }
+      // }
+      const messageResponse: TaskModuleContinueResponse = {
+        type: 'message'
       }
 
       return {
         status: 200,
         body: {
-          task: taskResponse
+          task: messageResponse
         }
       };
     }
