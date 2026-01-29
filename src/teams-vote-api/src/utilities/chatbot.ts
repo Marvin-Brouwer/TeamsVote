@@ -7,6 +7,8 @@
 // // import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
 // import { APP_ID } from './teams-adapter.js';
 import { ActivityHandler, MessageFactory, TurnContext } from '@microsoft/agents-hosting'
+import { AdaptiveCardInvokeResponseType, TaskModuleContinueResponse } from '@microsoft/agents-hosting-teams'
+import { formatUrlForTitle } from '@teams-vote/client-util';
 
 const appUrl = import.meta.env.VITE_UI_APP_URL as string;
 // let conversationReference: Partial<ConversationReference> | undefined = undefined;
@@ -295,12 +297,20 @@ export class ChatBot extends ActivityHandler {
       const value = context.activity.value;
       console.log("Dialog submit value:", value);
 
-      // IMPORTANT: must return InvokeResponse
+      
+      const response: TaskModuleContinueResponse =  {
+        type: 'continue',
+        value: {
+          title: formatUrlForTitle("test"),
+          url: appUrl + "/teams/tab/",
+          height: 'medium',
+          width: 'large'
+        }
+      }
+      
       return {
         status: 200,
-        body: {
-          result: "ok"
-        }
+        body: response
       };
     }
 

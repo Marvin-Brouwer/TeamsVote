@@ -12,6 +12,10 @@ const app = express()
     origin: true
   }))
   .use(async (req, res, next) => {
+    if (req.url === '/health') {
+      console.debug('Health check called');
+      return;
+    }
     console.debug(`${req.method} ${req.originalUrl} => `, req.body)
     next()
     console.debug(`${req.method} ${req.originalUrl} <= `, res.statusCode, res.statusMessage)
@@ -33,6 +37,10 @@ const app = express()
   .once('listening', () => {
     console.log(`API running on`, app.address());
   })
-  .once('request', (req) => {
-    console.log('first request', req.url);
-  })
+  .on('request', waitForHealthCheck)
+
+function waitForHealthCheck(req: Request) {
+  if (req.url !== '/health') return;
+  console.log('Health check called, we are live!');
+  app.off('request', waitForHealthCheck)
+}
