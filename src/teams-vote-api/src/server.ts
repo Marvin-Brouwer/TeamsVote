@@ -1,5 +1,5 @@
 // src/server.ts
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from "cors";
 import { sessionRoutes } from "./routes/session-routes.js";
 import { chatRoutes } from './routes/chat-routes.js';
@@ -11,21 +11,9 @@ const app = express()
     methods: ["GET", "POST", "OPTIONS"],
     origin: true
   }))
-  .use(async (req, res, next) => {
-    if (req.url === '/health') {
-      console.debug('Health check called');
-      return;
-    }
-    console.debug(`${req.method} ${req.originalUrl} => `, req.body)
-    next()
-    console.debug(`${req.method} ${req.originalUrl} <= `, res.statusCode, res.statusMessage)
-  })
-  .get("/", (_, res) => {
-    return res.status(200).send({ status: "healthy" });
-  })
-  .get("/health", (_, res) => {
-    return res.status(200).send({ status: "healthy" });
-  })
+  .use(logRequest)
+  .get("/", checkHealth)
+  .get("/health", checkHealth)
   .use('/api', sessionRoutes)
   .use('/chatbot', chatRoutes)
   .listen(port, '0.0.0.0', (err) => {
@@ -39,8 +27,19 @@ const app = express()
   })
   .on('request', waitForHealthCheck)
 
+function checkHealth(_req: unknown, res: Response) {
+    console.debug('Health check called');
+    return res.status(200).send({ status: "healthy" });
+}
 function waitForHealthCheck(req: Request) {
   if (req.url !== '/health') return;
   console.log('Health check called, we are live!');
   app.off('request', waitForHealthCheck)
+}
+function logRequest(req: Request, res: Response, next: NextFunction) { 
+  if (req.url === '/health') return next()
+      
+    console.debug(`${req.method} ${req.originalUrl} => `, req.body)
+    next()
+    console.debug(`${req.method} ${req.originalUrl} <= `, res.statusCode, res.statusMessage)
 }
