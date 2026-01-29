@@ -7,7 +7,7 @@
 // // import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
 // import { APP_ID } from './teams-adapter.js';
 import { ActivityHandler, MessageFactory, TurnContext } from '@microsoft/agents-hosting'
-import { AdaptiveCardInvokeResponseType, TaskModuleContinueResponse } from '@microsoft/agents-hosting-teams'
+import { AdaptiveCardInvokeResponseType, TaskModuleContinueResponse, TaskModuleMessageResponse } from '@microsoft/agents-hosting-teams'
 import { formatUrlForTitle } from '@teams-vote/client-util';
 import { APP_ID, teamsAdapter } from './teams-adapter.js';
 import { Activity, ActivityTypes } from '@microsoft/agents-activity';
@@ -350,8 +350,9 @@ export class ChatBot extends ActivityHandler {
       //     width: 'large'
       //   }
       // }
-      const messageResponse: TaskModuleContinueResponse = {
-        type: 'message'
+      const messageResponse: TaskModuleMessageResponse = {
+        type: 'message',
+        value: 'Test'
       }
 
       return {
