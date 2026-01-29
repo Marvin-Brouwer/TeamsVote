@@ -293,7 +293,7 @@ export class ChatBot extends ActivityHandler {
   }
 
   protected async onInvokeActivity(context: TurnContext) {
-    console.log("onInvokeActivity", JSON.stringify(context, null, 2));
+    console.log("onInvokeActivity", JSON.stringify(serializeTurnContext(context), null, 2));
 
     if (context.activity.name === "task/submit") {
       const value = context.activity.value;
@@ -369,4 +369,37 @@ export class ChatBot extends ActivityHandler {
     console.warn('onUnrecognizedActivity', context)
     return super.onUnrecognizedActivity(context)
   }
+}
+
+function serializeTurnContext(context: TurnContext) {
+  const activity = context.activity;
+  let conversationReference: any = undefined;
+
+  try {
+    conversationReference = context.activity.getConversationReference()
+  } catch (e) {
+    conversationReference = e
+  }
+
+  return {
+    activity: {
+      type: activity.type,
+      name: activity.name,
+      id: activity.id,
+      timestamp: activity.timestamp,
+      serviceUrl: activity.serviceUrl,
+      channelId: activity.channelId,
+      locale: activity.locale,
+      from: activity.from,
+      recipient: activity.recipient,
+      conversation: activity.conversation,
+      channelData: activity.channelData,
+      value: activity.value,
+      entities: activity.entities,
+      attachments: activity.attachments
+    },
+    conversationReference,
+    isInvoke: activity.type === "invoke",
+    isTaskSubmit: activity.name === "task/submit"
+  };
 }
