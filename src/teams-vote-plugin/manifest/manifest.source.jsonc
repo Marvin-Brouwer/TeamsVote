@@ -40,24 +40,24 @@
             }
         ]
     },
-    "configurableTabs": [
-        {
-            "configurationUrl": "<TEAMS_UI_URL>/teams/tab/",
-            "id": "t-vote-tab",
-            "canUpdateConfiguration": false,
-            "meetingSurfaces": [
-                "sidePanel",
-                "stage"
-            ],
-            "context": ["channelTab","meetingChatTab","privateChatTab","meetingDetailsTab","meetingSidePanel", "meetingStage"],
-            "supportedSharePointHosts": [],
-            "scopes": [
-                "groupChat",
-                "team"
-            ],
-            "sharePointPreviewImage": "color.png"
-        }
-    ],
+    // "configurableTabs": [
+    //     {
+    //         "configurationUrl": "<TEAMS_UI_URL>/teams/tab/",
+    //         "id": "t-vote-tab",
+    //         "canUpdateConfiguration": false,
+    //         "meetingSurfaces": [
+    //             "sidePanel",
+    //             "stage"
+    //         ],
+    //         "context": ["channelTab","meetingChatTab","privateChatTab","meetingDetailsTab","meetingSidePanel", "meetingStage"],
+    //         "supportedSharePointHosts": [],
+    //         "scopes": [
+    //             "groupChat",
+    //             "team"
+    //         ],
+    //         "sharePointPreviewImage": "color.png"
+    //     }
+    // ],
     "validDomains": [
         "marvin-brouwer.github.io",
         "login.microsoftonline.com",
