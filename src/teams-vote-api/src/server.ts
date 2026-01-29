@@ -43,5 +43,5 @@ function logRequest(req: Request, res: Response, next: NextFunction) {
   else console.debug(`${req.method} ${req.originalUrl} => `, req.body)
 
   next()
-  console.debug(`${req.method} ${req.originalUrl} <= `, res.statusCode, res.statusMessage)
+  console.debug(`${req.method} ${req.originalUrl} <= `, res.statusCode, res.statusMessage ?? '')
 }

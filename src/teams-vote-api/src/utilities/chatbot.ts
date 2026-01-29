@@ -298,7 +298,7 @@ export class ChatBot extends ActivityHandler {
       console.log("Dialog submit value:", value);
 
       
-      const response: TaskModuleContinueResponse =  {
+      const taskResponse: TaskModuleContinueResponse = {
         type: 'continue',
         value: {
           title: formatUrlForTitle("test"),
@@ -307,10 +307,12 @@ export class ChatBot extends ActivityHandler {
           width: 'large'
         }
       }
-      
+
       return {
         status: 200,
-        body: response
+        body: {
+          task: taskResponse
+        }
       };
     }
 
