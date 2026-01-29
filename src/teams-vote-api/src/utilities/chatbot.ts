@@ -264,57 +264,75 @@ const appUrl = import.meta.env.VITE_UI_APP_URL as string;
 // }
 
 export class ChatBot extends ActivityHandler {
-  constructor () {
+  constructor() {
     super()
     this.onMessage(async (context, next) => {
-            // TODO ignore non-mentions https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/channel-and-group-conversations?tabs=typescript
-            // // Remove mention text from Text property, this function is altering the text on the Activity.
-            // const modifiedText = TurnContext.removeMentionText(turnContext.activity, turnContext.activity.recipient.id);
-            // Sends a message activity to the sender of the incoming activity.
+      // TODO ignore non-mentions https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/channel-and-group-conversations?tabs=typescript
+      // // Remove mention text from Text property, this function is altering the text on the Activity.
+      // const modifiedText = TurnContext.removeMentionText(turnContext.activity, turnContext.activity.recipient.id);
+      // Sends a message activity to the sender of the incoming activity.
       const replyText = `Agent: ${context.activity.text}`
       await context.sendActivity(MessageFactory.text(replyText))
       await next()
     })
     this.onConversationUpdate(async (ctx, next) => {
-        console.log('onConversationUpdate', ctx)
-        ctx.sendActivity('this is a test');
-        await next();
+      console.log('onConversationUpdate', ctx)
+      ctx.sendActivity('this is a test');
+      await next();
     })
     this.onDialog(async (ctx, next) => {
-        console.log('onDialog', ctx)
-        ctx.sendActivity('this is a test');
-        await next();
+      console.log('onDialog', ctx)
+      ctx.sendActivity('this is a test');
+      await next();
     })
     this.onInstallationUpdate(async (ctx, next) => {
-        console.log('onInstallationUpdate', ctx)
-        ctx.sendActivity('this is a test');
-        await next();
+      console.log('onInstallationUpdate', ctx)
+      ctx.sendActivity('this is a test');
+      await next();
     })
   }
 
   protected async onInvokeActivity(context: TurnContext) {
-    console.log("onInvokeActivity", context);
+    console.log("onInvokeActivity", JSON.stringify(context, null, 2));
 
     if (context.activity.name === "task/submit") {
       const value = context.activity.value;
       console.log("Dialog submit value:", value);
 
       const reference = context.activity.getConversationReference();
+      console.log("conversation reference", reference);
       const activity = new Activity(ActivityTypes.Message)
-      await teamsAdapter.createConversationAsync(APP_ID, reference.channelId, reference.serviceUrl!, '', { 
-        ...context, 
-        ...reference, 
-        ...reference.conversation,
-        activity,
-        channelData: undefined,
-        isGroup: reference.conversation.isGroup ?? false,
-        agent: reference.agent ?? undefined
-      }, async (newctx) => {
-        console.log('newctx', newctx)
-      })
-      const rr = await context.sendActivity("This is a test")
-      console.log('rr', rr)
-      
+      console.log("activity", activity);
+      try {
+        await teamsAdapter.createConversationAsync(APP_ID, reference.channelId, reference.serviceUrl!, '', {
+          ...context,
+          ...reference,
+          ...reference.conversation,
+          activity,
+          channelData: undefined,
+          isGroup: reference.conversation.isGroup ?? false,
+          agent: reference.agent ?? undefined
+        }, async (newctx) => {
+          console.log('newctx', newctx)
+        })
+      } catch (e) {
+        console.error('createConversationAsync', e)
+      }
+      try {
+        context.adapter.continueConversation(APP_ID, reference, async (continueContext) => {
+          console.log('continueContext', continueContext)
+        })
+      } catch (e) {
+        console.error('createConversationAsync', e)
+      }
+
+      try {
+        const rr = await context.sendActivity("This is a test")
+        console.log('rr', rr)
+      } catch (e) {
+        console.error('context.sendActivity', e)
+      }
+
       // const taskResponse: TaskModuleContinueResponse = {
       //   type: 'continue',
       //   value: {
@@ -340,7 +358,7 @@ export class ChatBot extends ActivityHandler {
   }
 
   protected onUnrecognizedActivity(context: TurnContext): Promise<void> {
-        console.warn('onUnrecognizedActivity', context)
-        return super.onUnrecognizedActivity(context)
+    console.warn('onUnrecognizedActivity', context)
+    return super.onUnrecognizedActivity(context)
   }
 }
