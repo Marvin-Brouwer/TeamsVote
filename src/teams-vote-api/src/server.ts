@@ -4,7 +4,10 @@ import cors from "cors";
 import { sessionRoutes } from "./routes/session-routes.js";
 import { chatRoutes } from './routes/chat-routes.js';
 
+const LOG_HEALTH_CHECK = false;
+
 const port = Number(process.env.PORT) || 10000;
+
 const app = express()
   .use(express.json())
   .use(cors({
@@ -28,7 +31,7 @@ const app = express()
   .on('request', waitForHealthCheck)
 
 function checkHealth(_req: unknown, res: Response) {
-  console.debug('Health check called');
+  if (LOG_HEALTH_CHECK) console.debug('Health check called');
   return res.status(200).send({ status: "healthy" });
 }
 function waitForHealthCheck(req: Request) {
