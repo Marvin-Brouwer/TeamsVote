@@ -299,31 +299,39 @@ export class ChatBot extends ActivityHandler {
       const value = context.activity.value;
       console.log("Dialog submit value:", value);
 
-      const reference = context.activity.getConversationReference();
-      console.log("conversation reference", reference);
-      const activity = new Activity(ActivityTypes.Message)
-      console.log("activity", activity);
       try {
-        await teamsAdapter.createConversationAsync(APP_ID, reference.channelId, reference.serviceUrl!, '', {
-          ...context,
-          ...reference,
-          ...reference.conversation,
-          activity,
-          channelData: undefined,
-          isGroup: reference.conversation.isGroup ?? false,
-          agent: reference.agent ?? undefined
-        }, async (newctx) => {
-          console.log('newctx', newctx)
-        })
+        const reference = context.activity.getConversationReference();
+        console.log("conversation reference", reference);
+        try {
+          const activity = new Activity(ActivityTypes.Message)
+          console.log("activity", activity);
+          try {
+            await teamsAdapter.createConversationAsync(APP_ID, reference.channelId, reference.serviceUrl!, '', {
+              ...context,
+              ...reference,
+              ...reference.conversation,
+              activity,
+              channelData: (context as any).channelData,
+              isGroup: reference.conversation.isGroup ?? false,
+              agent: reference.agent ?? undefined
+            }, async (newctx) => {
+              console.log('newctx', newctx)
+            })
+          } catch (e) {
+            console.error('createConversationAsync', e)
+          }
+        } catch (e) {
+          console.error('new Activity(ActivityTypes.Message)', e)
+        }
+        try {
+          context.adapter.continueConversation(APP_ID, reference, async (continueContext) => {
+            console.log('continueContext', continueContext)
+          })
+        } catch (e) {
+          console.error('createConversationAsync', e)
+        }
       } catch (e) {
-        console.error('createConversationAsync', e)
-      }
-      try {
-        context.adapter.continueConversation(APP_ID, reference, async (continueContext) => {
-          console.log('continueContext', continueContext)
-        })
-      } catch (e) {
-        console.error('createConversationAsync', e)
+        console.error('context.activity.getConversationReference', e)
       }
 
       try {
