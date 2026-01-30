@@ -7,7 +7,7 @@ const authConfig = {
     MicrosoftAppId: BOT_APP_ID,
     MicrosoftAppPassword: BOT_APP_PASSWORD,
     MicrosoftAppType: 'MultiTenant',
-    MicrosoftAppTenantId: process.env.TEAMS_PLUGIN_TENANT_ID // TODO TEAMS_PLUGIN_TENANT_ID is for transitioning SHOULD BE: '' // Empty for multi-tenant
+    MicrosoftAppTenantId: '' // Empty for multi-tenant
 }
 const credentialFactory = new ConfigurationServiceClientCredentialFactory(authConfig);
 const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication(

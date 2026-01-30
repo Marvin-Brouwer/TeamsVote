@@ -4,12 +4,17 @@
 # Install the module if you don't have it
 # Install-Module Microsoft.Graph
 
+
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$BotAppId
+)
+
 # Connect with appropriate permissions
 Connect-MgGraph -Scopes "Application.ReadWrite.All"
 
 # Change the app to multi-tenant
-$botAppId = "PUT_BOT_ID_HERE"
-$app = Get-MgApplication -Filter "appId eq '$botAppId'"  # ← Lowercase 'appId'
+$app = Get-MgApplication -Filter "appId eq '$BotAppId'"  # ← Lowercase 'appId'
 
 Write-Host "Found app: $($app.DisplayName) with Object ID: $($app.Id)"
 
