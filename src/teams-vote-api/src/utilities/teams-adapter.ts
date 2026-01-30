@@ -3,11 +3,6 @@ import { CloudAdapter, ConfigurationBotFrameworkAuthentication, ConfigurationSer
 export const BOT_APP_ID = process.env.TEAMS_CHATBOT_CLIENT_ID!;
 export const BOT_APP_PASSWORD = process.env.TEAMS_CHATBOT_CLIENT_SECRET!;
 
-// Temporary debugging - TODO remove after fixing
-console.log('BOT_APP_ID:', BOT_APP_ID);
-console.log('BOT_APP_PASSWORD exists:', !!BOT_APP_PASSWORD);
-console.log('BOT_APP_PASSWORD length:', BOT_APP_PASSWORD?.length);
-
 const authConfig = {
     MicrosoftAppId: BOT_APP_ID,
     MicrosoftAppPassword: BOT_APP_PASSWORD,
