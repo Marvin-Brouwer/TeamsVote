@@ -1,4 +1,5 @@
-import { CloudAdapter, ConfigurationBotFrameworkAuthentication, ConfigurationServiceClientCredentialFactory } from "botbuilder";
+import { CloudAdapter, ConfigurationBotFrameworkAuthentication } from "botbuilder";
+import { AppCredentials, MicrosoftAppCredentials, ServiceClientCredentialsFactory } from "botframework-connector";
 
 export const BOT_APP_ID = process.env.TEAMS_CHATBOT_CLIENT_ID!;
 export const BOT_APP_PASSWORD = process.env.TEAMS_CHATBOT_CLIENT_SECRET!;
@@ -9,14 +10,45 @@ const authConfig = {
     MicrosoftAppType: 'MultiTenant',
     MicrosoftAppTenantId: '' // Empty for multi-tenant
 }
-const credentialFactory = new ConfigurationServiceClientCredentialFactory(authConfig);
-const originalGetToken = credentialFactory.createCredentials.bind(credentialFactory);
-credentialFactory.createCredentials = async function(...args) {
-    console.log('Getting app credentials for:', args);
-    const result = await originalGetToken(...args);
-    console.log('Got credentials:', !!result);
-    return result;
-};
+
+
+// Custom credential factory that uses the Messaging Bot API
+class MessagingBotCredentialFactory extends ServiceClientCredentialsFactory {
+    async isValidAppId(appId: string): Promise<boolean> {
+        return appId === BOT_APP_ID;
+    }
+
+    async isAuthenticationDisabled(): Promise<boolean> {
+        return !BOT_APP_ID || !BOT_APP_PASSWORD;
+    }
+
+    async createCredentials(
+        _appId: string,
+        _audience: string,
+        _loginEndpoint: string,
+        validateAuthority: boolean
+    ): Promise<AppCredentials> {
+        // Override to use Messaging Bot API scope instead
+        const credentials = new MicrosoftAppCredentials(
+            authConfig.MicrosoftAppId,
+            authConfig.MicrosoftAppPassword,
+            undefined, // tenant
+            'https://5a807f24-c9de-44ee-a3a7-329e88a00ffc/.default' // Messaging Bot API scope
+        );
+
+        const originalGetToken = credentials.getToken.bind(credentialFactory);
+        credentials.getToken = async function(...args) {
+            console.log('Getting app credentials for:', args);
+            const result = await originalGetToken(...args);
+            console.log('Got credentials:', !!result);
+            return result;
+        };
+        
+        return credentials;
+    }
+}
+
+const credentialFactory = new MessagingBotCredentialFactory();
 const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication(
     // The ConfigurationBotFrameworkAuthentication constructor expects an empty config object as the first parameter when you're using a credential factory 
     // - all the auth config should be in the credentialFactory, not duplicated in both places.
