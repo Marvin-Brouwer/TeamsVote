@@ -405,7 +405,15 @@ function serializeTurnContext(context: TurnContext) {
   }
 
   return JSON.stringify({
-    activity: {
+    activity: formatActivity(activity),
+    contextConversationReference,
+    activityConversationReference,
+    isInvoke: activity.type === "invoke",
+    isTaskSubmit: activity.name === "task/submit"
+  }, null, 2);
+}
+function formatActivity(activity: Partial<Activity>) {
+  return {
       type: activity.type,
       name: activity.name,
       id: activity.id,
@@ -420,10 +428,9 @@ function serializeTurnContext(context: TurnContext) {
       value: activity.value,
       entities: activity.entities,
       attachments: activity.attachments
-    },
-    contextConversationReference,
-    activityConversationReference,
-    isInvoke: activity.type === "invoke",
-    isTaskSubmit: activity.name === "task/submit"
-  }, null, 2);
+    }
+}
+
+export function serializeActivity(activity: Partial<Activity>) {
+  return JSON.stringify(formatActivity(activity))
 }

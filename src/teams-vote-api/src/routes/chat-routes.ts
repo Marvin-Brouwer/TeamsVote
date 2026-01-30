@@ -1,6 +1,6 @@
-import { ChatBot } from "../utilities/chatbot.js";
+import { ChatBot, serializeActivity } from "../utilities/chatbot.js";
 import { teamsAdapter } from "../utilities/teams-adapter.js";
-import { Router, Request } from "express";
+import { Router } from "express";
 
 const bot = new ChatBot();
 const router = Router();
@@ -9,10 +9,10 @@ router.post("/messages", async (req, res) => {
 
     try {
         await teamsAdapter.process(req, res, async (context) => {
-            // context.onSendActivities(async (_c, a, n) => {
-            //     console.info(`ctx.onSendActivities ${JSON.stringify(a)}`);
-            //     return await n();
-            // })
+            context.onSendActivities(async (_c, a, n) => {
+                a.forEach((activity, i) => console.info(`ctx.onSendActivities[${i}] ${serializeActivity(activity)}`));
+                return await n();
+            })
             // context.onUpdateActivity(async (_c, a, n) => {
             //     console.info(`ctx.onUpdateActivity ${JSON.stringify(a)}`);
             //     return await n();
