@@ -1,12 +1,20 @@
-# Add Bot Framework API permission (user_impersonation)
-# Required for bot to send messages via Bot Framework Service
+# Add Messaging Bot API permission
+# Required for bot to send messages via Microsoft Bot Framework Service
 # Without this: bot receives messages OK but gets 401 when replying
 #
 # WHY THIS IS NEEDED:
 # When a bot sends messages through Teams, it needs to authenticate with Microsoft's
-# Bot Framework Service (not just Teams). Without the "user_impersonation" permission
-# for the Bot Framework API, the bot can RECEIVE messages (your endpoint gets called),
-# but it gets 401 "Authorization has been denied" errors when trying to SEND replies.
+# Messaging Bot API (not just Teams). Without the correct permission for this API,
+# the bot can RECEIVE messages (your endpoint gets called), but it gets 401 
+# "Authorization has been denied" errors when trying to SEND replies.
+#
+# This permission allows the bot to:
+# - Obtain valid OAuth tokens for the Messaging Bot API
+# - Send/update/delete messages through Teams channels
+# - Authenticate outbound API calls to the Bot Framework service
+#
+# The Messaging Bot API Application ID is: 5a807f24-c9de-44ee-a3a7-329e88a00ffc
+# The required permission is: AgentData.ReadWrite (e91d3cc8-ed3b-4bda-893f-3f6d758e3cc2)
 
 param(
     [Parameter(Mandatory=$true)]
@@ -24,14 +32,14 @@ if (-not $app) {
 
 Write-Host "Found app: $($app.DisplayName)"
 
-# Create the permission structure
+# Add Messaging Bot API permission
 $params = @{
     RequiredResourceAccess = @(
         @{
-            ResourceAppId = "00000005-0000-0ff1-ce00-000000000000"
+            ResourceAppId = "5a807f24-c9de-44ee-a3a7-329e88a00ffc"
             ResourceAccess = @(
                 @{
-                    Id = "5d186531-d1bf-4f07-8cea-7c42119e1bd9"
+                    Id = "e91d3cc8-ed3b-4bda-893f-3f6d758e3cc2"  # AgentData.ReadWrite
                     Type = "Scope"
                 }
             )
@@ -40,4 +48,5 @@ $params = @{
 }
 
 Update-MgApplication -ApplicationId $app.Id -BodyParameter $params
-Write-Host "Successfully added Bot Framework API permissions to $($app.DisplayName)"
+Write-Host "`nSuccessfully added Messaging Bot API permission (AgentData.ReadWrite) to $($app.DisplayName)"
+Write-Host "Please restart your bot application for the changes to take effect."
