@@ -10,7 +10,6 @@ router.post("/messages", async (req, res) => {
     try {
         // Some weird express mismatch, just as any for now
         await teamsAdapter.process(req, res as any, async (context) => {
-            console.info(`TurnContext activity ${JSON.stringify(context.activity)}`);
             // context.onSendActivities(async (_c, a, n) => {
             //     console.info(`ctx.onSendActivities ${JSON.stringify(a)}`);
             //     return await n();
