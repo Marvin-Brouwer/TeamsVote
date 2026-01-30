@@ -1,4 +1,4 @@
-import { CloudAdapter, ConfigurationBotFrameworkAuthentication, ConfigurationServiceClientCredentialFactory } from "botbuilder";
+import { BotFrameworkAdapter, CloudAdapter, ConfigurationBotFrameworkAuthentication, ConfigurationServiceClientCredentialFactory } from "botbuilder";
 
 export const BOT_APP_ID = process.env.TEAMS_CHATBOT_CLIENT_ID!;
 export const BOT_APP_PASSWORD = process.env.TEAMS_CHATBOT_CLIENT_SECRET!;
@@ -24,7 +24,10 @@ const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication(
     credentialFactory
 );
 
-export const teamsAdapter = new CloudAdapter(botFrameworkAuthentication);
+export const teamsAdapter = new BotFrameworkAdapter({
+    appId: BOT_APP_ID,
+    appPassword: BOT_APP_PASSWORD
+});
 teamsAdapter.onTurnError = async (context, error) => {
     console.error('ERROR in adapter.onTurnError:', error);
     console.error('Error name:', error.name);
