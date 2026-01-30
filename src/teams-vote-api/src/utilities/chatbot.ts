@@ -280,22 +280,22 @@ export class ChatBot extends ActivityHandler {
       await next()
     })
     this.onConversationUpdate(async (ctx, next) => {
-      console.log('onConversationUpdate', serializeTurnContext(ctx))
+      // console.log('onConversationUpdate', serializeTurnContext(ctx))
       await next();
     })
     this.onDialog(async (ctx, next) => {
-      console.log('onDialog', serializeTurnContext(ctx))
+      // console.log('onDialog', serializeTurnContext(ctx))
       await next();
     })
     this.onInstallationUpdate(async (ctx, next) => {
-      console.log('onInstallationUpdate', serializeTurnContext(ctx))
+      // console.log('onInstallationUpdate', serializeTurnContext(ctx))
       await next();
     })
     this.onInvokeActivity = this.onInvokeActivity.bind(this);
   }
 
   protected async onInvokeActivity(context: TurnContext) {
-    console.log("onInvokeActivity", serializeTurnContext(context));
+    // console.log("onInvokeActivity", serializeTurnContext(context));
 
     if (context.activity.name === "task/submit") {
       const value = context.activity.value;
