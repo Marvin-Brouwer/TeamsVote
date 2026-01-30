@@ -432,5 +432,5 @@ function formatActivity(activity: Partial<Activity>) {
 }
 
 export function serializeActivity(activity: Partial<Activity>) {
-  return JSON.stringify(formatActivity(activity))
+  return JSON.stringify(formatActivity(activity), null, 2)
 }
