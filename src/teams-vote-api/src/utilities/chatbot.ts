@@ -6,11 +6,9 @@
 // import { teamsAdapter } from './teams-adapter.js';
 // // import { formatUrlForTitle } from '../../../teams-vote-client-util/src/helpers/url';
 // import { APP_ID } from './teams-adapter.js';
-import { ActivityHandler, MessageFactory, TurnContext } from '@microsoft/agents-hosting'
-import { AdaptiveCardInvokeResponseType, TaskModuleContinueResponse, TaskModuleMessageResponse } from '@microsoft/agents-hosting-teams'
 import { formatUrlForTitle } from '@teams-vote/client-util';
 import { BOT_APP_ID, teamsAdapter } from './teams-adapter.js';
-import { Activity, ActivityTypes } from '@microsoft/agents-activity';
+import { Activity, ActivityFactory, ActivityHandler, ActivityTypes, MessageFactory, TaskModuleMessageResponse, TurnContext } from 'botbuilder';
 
 const appUrl = import.meta.env.VITE_UI_APP_URL as string;
 // let conversationReference: Partial<ConversationReference> | undefined = undefined;
@@ -288,6 +286,7 @@ export class ChatBot extends ActivityHandler {
       console.log('onInstallationUpdate', JSON.stringify(serializeTurnContext(ctx)))
       await next();
     })
+    this.onInvokeActivity = this.onInvokeActivity.bind(this);
   }
 
   protected async onInvokeActivity(context: TurnContext) {
@@ -298,22 +297,23 @@ export class ChatBot extends ActivityHandler {
       console.log("Dialog submit value:", value);
 
       try {
-        const reference = context.activity.getConversationReference();
+        const reference = TurnContext.getConversationReference(context) ?? TurnContext.getConversationReference(context.activity);
         console.log("conversation reference", reference);
         try {
-          const activity = new Activity(ActivityTypes.Message)
-          console.log("activity1", activity.toJsonString());
-          console.log("activity2", Activity.fromJson(context.activity.toJsonString()).toJsonString());
+          const activity = ActivityFactory.fromObject(ActivityTypes.Message)
+          console.log("activity1", JSON.stringify(activity));
+          console.log("activity2", JSON.stringify(ActivityFactory.fromObject(context.activity)));
           activity.serviceUrl ??= reference.serviceUrl!;
           try {
-            await teamsAdapter.createConversationAsync(BOT_APP_ID, reference.channelId, reference.serviceUrl!, BOT_APP_ID, {
+            await teamsAdapter.createConversationAsync(BOT_APP_ID, reference.channelId!, reference.serviceUrl!, BOT_APP_ID, {
               ...context,
               ...reference,
               ...reference.conversation,
-              activity,
+              activity: activity as Activity,
               channelData: (context as any).channelData ?? { serviceUrl: reference.serviceUrl! }, 
-              isGroup: reference.conversation.isGroup ?? false,
-              agent: reference.agent ?? undefined,
+              isGroup: reference.conversation?.isGroup ?? false,
+              bot: reference.bot!
+              // agent: reference.agent ?? undefined,
             
             }, async (newctx) => {
               console.log('newctx', newctx)
@@ -325,18 +325,25 @@ export class ChatBot extends ActivityHandler {
           console.error('ERROR new Activity(ActivityTypes.Message)', e)
         }
         try {
-          context.adapter.continueConversation(BOT_APP_ID, reference, async (continueContext) => {
+          context.adapter.continueConversation(reference, async (continueContext) => {
             console.log('continueContext', continueContext)
           })
         } catch (e) {
-          console.error('ERROR createConversationAsync', e)
+          console.error('ERROR continueConversation', e)
+        }
+        try {
+          teamsAdapter.continueConversationAsync(BOT_APP_ID, reference, async (continueContext) => {
+            console.log('continueContext2', continueContext)
+          })
+        } catch (e) {
+          console.error('ERROR continueConversationAsync', e)
         }
       } catch (e) {
         console.error('ERROR context.activity.getConversationReference', e)
       }
 
       try {
-        const rr = await context.sendActivity("This is a test")
+        const rr = await context.sendActivity(MessageFactory.text("This is a test"))
         console.log('rr', rr)
       } catch (e) {
         console.error('ERROR context.sendActivity', e)
@@ -375,12 +382,18 @@ export class ChatBot extends ActivityHandler {
 
 function serializeTurnContext(context: TurnContext) {
   const activity = context.activity;
-  let conversationReference: any = undefined;
+  let contextConversationReference: any = undefined;
+  let activityConversationReference: any = undefined;
 
   try {
-    conversationReference = context.activity.getConversationReference()
+    contextConversationReference = TurnContext.getConversationReference(context)
   } catch (e) {
-    conversationReference = e
+    contextConversationReference = e
+  }
+  try {
+    activityConversationReference = TurnContext.getConversationReference(context.activity)
+  } catch (e) {
+    activityConversationReference = e
   }
 
   return {
@@ -400,7 +413,8 @@ function serializeTurnContext(context: TurnContext) {
       entities: activity.entities,
       attachments: activity.attachments
     },
-    conversationReference,
+    contextConversationReference,
+    activityConversationReference,
     isInvoke: activity.type === "invoke",
     isTaskSubmit: activity.name === "task/submit"
   };
