@@ -1,5 +1,5 @@
 import { CloudAdapter, ConfigurationBotFrameworkAuthentication } from "botbuilder";
-import { AppCredentials, MicrosoftAppCredentials, ServiceClientCredentialsFactory } from "botframework-connector";
+import { AppCredentials, MicrosoftAppCredentials, PasswordServiceClientCredentialFactory } from "botframework-connector";
 
 export const BOT_APP_ID = process.env.TEAMS_CHATBOT_CLIENT_ID!;
 export const BOT_APP_PASSWORD = process.env.TEAMS_CHATBOT_CLIENT_SECRET!;
@@ -13,7 +13,12 @@ const authConfig = {
 
 
 // Custom credential factory that uses the Messaging Bot API
-class MessagingBotCredentialFactory extends ServiceClientCredentialsFactory {
+class MessagingBotCredentialFactory extends PasswordServiceClientCredentialFactory {
+
+    constructor() {
+        super(authConfig.MicrosoftAppId, authConfig.MicrosoftAppPassword);
+    }
+
     async isValidAppId(appId: string): Promise<boolean> {
         return appId === BOT_APP_ID;
     }
@@ -37,9 +42,9 @@ class MessagingBotCredentialFactory extends ServiceClientCredentialsFactory {
         );
 
         const originalGetToken = credentials.getToken.bind(credentialFactory);
-        credentials.getToken = async function(...args) {
-            console.log('Getting app credentials for:', args);
-            const result = await originalGetToken(...args);
+        credentials.getToken = async function(forceRefresh) {
+            console.log('Getting token', forceRefresh ? 'forceRefresh' : '');
+            const result = await originalGetToken(forceRefresh);
             console.log('Got credentials:', !!result);
             return result;
         };

@@ -266,7 +266,8 @@ export class ChatBot extends ActivityHandler {
   constructor() {
     super()
     this.onMessage(async (context, next) => {
-      console.log('onMessage', serializeTurnContext(context))
+      // console.log('onMessage', serializeTurnContext(context))
+      console.log('onMessage')
       // TODO ignore non-mentions https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/channel-and-group-conversations?tabs=typescript
       // // Remove mention text from Text property, this function is altering the text on the Activity.
       // const modifiedText = TurnContext.removeMentionText(turnContext.activity, turnContext.activity.recipient.id);
