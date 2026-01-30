@@ -6,12 +6,15 @@ export const BOT_APP_PASSWORD = process.env.TEAMS_CHATBOT_CLIENT_SECRET!;
 const authConfig = {
     MicrosoftAppId: BOT_APP_ID,
     MicrosoftAppPassword: BOT_APP_PASSWORD,
+    MicrosoftAppType: 'MultiTenant',
+    MicrosoftAppTenantId: '' // Empty for multi-tenant
 }
-const credentialFactory = new ConfigurationServiceClientCredentialFactory({
-    ...authConfig,
-    MicrosoftAppType: 'bot'
-});
-
-const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication(authConfig, credentialFactory);
+const credentialFactory = new ConfigurationServiceClientCredentialFactory(authConfig);
+const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication(
+    // The ConfigurationBotFrameworkAuthentication constructor expects an empty config object as the first parameter when you're using a credential factory 
+    // - all the auth config should be in the credentialFactory, not duplicated in both places.
+    { }, 
+    credentialFactory
+);
 
 export const teamsAdapter = new CloudAdapter(botFrameworkAuthentication);

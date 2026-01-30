@@ -14,6 +14,7 @@
     "async-mutex": "^0.5.0",
     "botbuilder": "^4.23.3",
     "botbuilder-teams": "^0.2.9",
+    "botframework-connector": "^4.23.3",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "uuid": "^13.0.0"

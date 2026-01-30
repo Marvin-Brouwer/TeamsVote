@@ -9,6 +9,7 @@
 import { formatUrlForTitle } from '@teams-vote/client-util';
 import { BOT_APP_ID, teamsAdapter } from './teams-adapter.js';
 import { Activity, ActivityFactory, ActivityHandler, ActivityTypes, MessageFactory, TaskModuleMessageResponse, TurnContext } from 'botbuilder';
+import { MicrosoftAppCredentials } from 'botframework-connector';
 
 const appUrl = import.meta.env.VITE_UI_APP_URL as string;
 // let conversationReference: Partial<ConversationReference> | undefined = undefined;
@@ -266,7 +267,6 @@ export class ChatBot extends ActivityHandler {
     super()
     this.onMessage(async (context, next) => {
       console.log('onMessage', serializeTurnContext(context))
-      await testOptions(context);
       // TODO ignore non-mentions https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/channel-and-group-conversations?tabs=typescript
       // // Remove mention text from Text property, this function is altering the text on the Activity.
       // const modifiedText = TurnContext.removeMentionText(turnContext.activity, turnContext.activity.recipient.id);
