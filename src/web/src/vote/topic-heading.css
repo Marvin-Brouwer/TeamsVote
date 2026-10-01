@@ -1,0 +1,10 @@
+.title {
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+.deck {
+	margin: 0;
+	color: var(--colorNeutralForeground3);
+	font-size: var(--fontSizeBase200, 12px);
+}

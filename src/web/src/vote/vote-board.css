@@ -1,0 +1,21 @@
+.root {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacingVerticalL, 16px);
+	min-height: 100vh;
+	box-sizing: border-box;
+	padding: var(--spacingVerticalL, 16px) var(--spacingHorizontalXL, 20px);
+}
+
+.status:empty {
+	display: none;
+}
+
+.controls {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacingVerticalM, 12px);
+	margin-top: auto;
+	padding-top: var(--spacingVerticalM, 12px);
+	border-top: var(--strokeWidthThin, 1px) solid var(--colorNeutralStroke2);
+}

@@ -18,18 +18,17 @@ const events = createSessionEvents()
 const sessions = createSessionService(createSessionStore({ idleTimeoutMs: sessionIdleTimeoutMs }), events)
 const tokens = createSessionTokens(configuration.sessionTokenSecret)
 
+// Only for what the web app calls. Bot activities are bigger and bring their own body parsing.
+const allowWebApp = cors({ origin: configuration.webUrl, methods: ['GET', 'POST'], allowedHeaders: ['Authorization', 'Content-Type'], maxAge: 600 })
+const browserMiddleware = [allowWebApp, express.json({ limit: '4kb' })]
+
+// The web app pings /health to wake the server up before it shows the start form.
 const server = express()
 	.disable('x-powered-by')
 	.use(logRequest)
-	.get(['/', '/health'], (_request, response) => {
+	.get(['/', '/health'], allowWebApp, (_request, response) => {
 		response.send({ status: 'healthy' })
 	})
-
-// Only for what the web app calls. Bot activities are bigger and bring their own body parsing.
-const browserMiddleware = [
-	cors({ origin: configuration.webUrl, methods: ['GET', 'POST'], allowedHeaders: ['Authorization', 'Content-Type'], maxAge: 600 }),
-	express.json({ limit: '4kb' }),
-]
 
 server.use('/api/sessions', ...browserMiddleware, sessionRoutes(sessions, events, tokens))
 if (configuration.development) server.use('/dev', ...browserMiddleware, developmentRoutes(sessions, tokens))

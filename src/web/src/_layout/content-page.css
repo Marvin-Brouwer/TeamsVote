@@ -1,0 +1,31 @@
+.root {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	max-width: 760px;
+	margin: 0 auto;
+	padding: 0 var(--spacingHorizontalXL, 20px);
+	box-sizing: border-box;
+}
+
+.header {
+	padding: var(--spacingVerticalL, 16px) 0;
+}
+
+.brand {
+	font-weight: var(--fontWeightSemibold, 600);
+	font-size: var(--fontSizeBase500, 20px);
+	text-decoration: none;
+}
+
+.main {
+	flex: 1;
+}
+
+.footer {
+	display: flex;
+	gap: var(--spacingHorizontalL, 16px);
+	padding: var(--spacingVerticalXXL, 24px) 0;
+	color: var(--colorNeutralForeground3);
+	font-size: var(--fontSizeBase200, 12px);
+}

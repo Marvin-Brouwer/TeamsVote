@@ -1,0 +1,20 @@
+.cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+	gap: var(--spacingHorizontalS, 8px);
+}
+
+.card {
+	min-width: 0;
+	height: 48px;
+	font-size: var(--fontSizeBase400, 16px);
+}
+
+.error {
+	margin: var(--spacingVerticalS, 8px) 0 0;
+	color: var(--colorPaletteRedForeground1);
+}
+
+.error:empty {
+	display: none;
+}

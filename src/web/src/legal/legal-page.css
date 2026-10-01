@@ -1,0 +1,20 @@
+.document hr {
+	border: none;
+	border-top: var(--strokeWidthThin, 1px) solid var(--colorNeutralStroke2);
+	margin: var(--spacingVerticalXL, 20px) 0;
+}
+
+.document ul {
+	padding-inline-start: var(--spacingHorizontalXL, 20px);
+}
+
+.document table {
+	border-collapse: collapse;
+}
+
+.document th,
+.document td {
+	padding: var(--spacingVerticalXS, 4px) var(--spacingHorizontalS, 8px);
+	border: var(--strokeWidthThin, 1px) solid var(--colorNeutralStroke2);
+	text-align: start;
+}
