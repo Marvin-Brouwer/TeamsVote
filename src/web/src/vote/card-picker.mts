@@ -3,6 +3,7 @@ import { decks, unsureVote, type SessionView } from '@teams-vote/api/contracts'
 
 import { ApiError, type SessionClient } from '../_shared/api/api-client.mts'
 import styles from './card-picker.css'
+import { cardsPerRow, cardsThatFit } from './card-picker.rows.mts'
 
 import type { SessionStore } from './vote.store.mts'
 import type { ToggleButton } from '@fluentui/web-components'
@@ -12,7 +13,10 @@ export type CardPickerOptions = {
 	readonly client: SessionClient
 }
 
-/** The cards of the deck, plus "?". Your pick stays highlighted. Locked while the votes are revealed. */
+/**
+ * The cards of the deck, plus "?", as portrait playing cards. Your pick stays highlighted. Locked while the votes are revealed.
+ * When they don't fit on one row they spread over as few rows as fit, evenly, centred: see `card-picker.rows.mts`.
+ */
 export const CardPicker = component<CardPickerOptions>({
 	name: 'card-picker',
 	styles,
@@ -60,15 +64,29 @@ export const CardPicker = component<CardPickerOptions>({
 			for (const button of buttons.values()) button.disabled = view.revealed || view.ended
 		}
 
-		append(
-			element('div', {
-				classes: styles.cards,
-				role: 'group',
-				aria: { label: 'Your estimate' },
-				children: [...buttons.values()],
-			}),
-			error,
-		)
+		const cards = element('div', {
+			classes: styles.cards,
+			role: 'group',
+			aria: { label: 'Your estimate' },
+			children: [...buttons.values()],
+		})
+		const area = element('div', { classes: styles.area, children: cards })
+		append(area, error)
+
+		// Capping the width of the centred, wrapping row is what makes the browser break it where we want.
+		function balanceRows() {
+			const firstCard = buttons.values().next().value
+			if (!firstCard) return
+			const gap = Number.parseFloat(getComputedStyle(cards).columnGap) || 0
+			const cardWidth = firstCard.getBoundingClientRect().width
+			const perRow = cardsPerRow(buttons.size, cardsThatFit(area.clientWidth, cardWidth, gap))
+			cards.style.maxWidth = `${Math.ceil(perRow * cardWidth + (perRow - 1) * gap)}px`
+		}
+		const resizeObserver = new ResizeObserver(balanceRows)
+		resizeObserver.observe(area)
+		signal.addEventListener('abort', () => {
+			resizeObserver.disconnect()
+		})
 
 		render(initial)
 		options.session.on('change', signal, ({ detail }) => {
