@@ -1,6 +1,6 @@
 # Microsoft AppSource Compliance Statement — TeamsVote
 
-**Last Updated:** _2026-01-26_
+**Last Updated:** _2026-10-01_
 
 TeamsVote is designed to comply with Microsoft AppSource requirements for security, privacy, and data handling. This document summarizes how TeamsVote meets relevant criteria for listing within the Microsoft 365 ecosystem.
 
@@ -29,9 +29,11 @@ TeamsVote relies exclusively on Microsoft’s identity platform for authenticati
 
 ## 3. Data Handling & Privacy
 
-TeamsVote transmits minimal personal data (username, user ID, and Teams meeting or group chat identifier) to an externally hosted backend for real-time voting functionality.  
+TeamsVote transmits minimal personal data (display name, Entra user object ID, and the Teams conversation identifier), plus the topic and the votes, to an externally hosted backend for real-time voting functionality.  
 
-No personal data is persisted or logged. All session data is processed **in-memory only** and discarded at the end of the voting session.  
+No personal data is persisted or logged. All session data is processed **in-memory only** and discarded when the vote is accepted, after two hours without activity, or when the backend restarts.  
+
+The dialogs are static files served by Microsoft Azure Static Web Apps; no personal data is sent there.  
 
 Backend hosting:
 

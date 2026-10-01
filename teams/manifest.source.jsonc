@@ -1,106 +1,75 @@
+// The Teams app manifest, with placeholders that `build-package.mts` fills in:
+// <TEAMS_APP_ID>   the Teams app's own id, a GUID you generate once and keep forever
+// <BOT_CLIENT_ID>  the bot's app registration (client) id
+// <WEB_URL>        origin of the web app, no trailing slash
+// <WEB_DOMAIN>     host of the web app, derived from WEB_URL
+// <VERSION>        filled in per build
 {
-    "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.24/MicrosoftTeams.schema.json",
-    "manifestVersion": "1.24",
-    "version": "1.0",
-    "id": "<TEAMS_APP_ID>",
-    "developer": {
-        "name": "Marvin Brouwer",
-        "websiteUrl": "https://github.com/Marvin-Brouwer/TeamsVote",
-        "privacyUrl": "https://github.com/Marvin-Brouwer/TeamsVote/blob/main/doc/privacy-policy.md",
-        "termsOfUseUrl": "https://github.com/Marvin-Brouwer/TeamsVote/blob/main/doc/tos.md"
-    },
-    "name": {
-        "short": "TVote",
-        "full": "Scrum voting, but simple"
-    },
-    "description": {
-        "short": "Scrum voting, but simple",
-        "full": "Every scrum voting website or teams plugin does too much. \nThis app just requests estimates from team members and collects the total."
-    },
-    "accentColor": "#6466af",
-    "icons": {
-        "color": "color.png",
-        "outline": "outline.png"
-    },
-    "permissions": [
-        "identity",
-        "messageTeamMembers"
-    ],
-    "webApplicationInfo": {
-        "id": "<TEAMS_APP_CLIENT_ID>",
-        // https://stackoverflow.com/a/72171127/2319865 doesn't seem to fix it :(
-        "resource": "api://<TEAMS_APP_CLIENT_ID>",
-        // Adding this added the correct permissions when uploading to teams, seems to be required
-        "nestedAppAuthInfo": [
-            {
-                "redirectUri": "<TEAMS_UI_URL>/teams/auth_return.html",
-                "scopes": [
-                    "tab"
-                ]
-            }
-        ]
-    },
-    // "configurableTabs": [
-    //     {
-    //         "configurationUrl": "<TEAMS_UI_URL>/teams/tab/",
-    //         "id": "t-vote-tab",
-    //         "canUpdateConfiguration": false,
-    //         "meetingSurfaces": [
-    //             "sidePanel",
-    //             "stage"
-    //         ],
-    //         "context": ["channelTab","meetingChatTab","privateChatTab","meetingDetailsTab","meetingSidePanel", "meetingStage"],
-    //         "supportedSharePointHosts": [],
-    //         "scopes": [
-    //             "groupChat",
-    //             "team"
-    //         ],
-    //         "sharePointPreviewImage": "color.png"
-    //     }
-    // ],
-    "validDomains": [
-        "marvin-brouwer.github.io",
-        "login.microsoftonline.com",
-        "teams.microsoft.com"
-    ],
-    "bots": [
-        {
-            "botId": "<TEAMS_CHATBOT_CLIENT_ID>",
-            "scopes": [
-                "groupChat",
-                "team",
-                "personal"
-            ],
-            "supportsCalling": false,
-            "supportsVideo": false,
-            "supportsFiles": false,
-            // Make the bot addressable, because of staticTab.contentBotId
-            "isNotificationOnly": false,
-            "commandLists": [
-                {
-                    "scopes": [
-                        "groupChat",
-                        "team",
-                        "personal"
-                    ],
-                    "commands": [
-                        {
-                            "title": "Help",
-                            "description": "Displays this help message"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "authorization": {
-        "permissions": {
-            "resourceSpecific": [
-                {
-                    "name": "ChatMessageReadReceipt.Read.Chat",
-                    "type": "Application"
-                }
-            ]
-        }
-    }
+	"$schema": "https://developer.microsoft.com/json-schemas/teams/v1.24/MicrosoftTeams.schema.json",
+	"manifestVersion": "1.24",
+	"version": "<VERSION>",
+	"id": "<TEAMS_APP_ID>",
+	"developer": {
+		"name": "Marvin Brouwer",
+		"websiteUrl": "<WEB_URL>/",
+		"privacyUrl": "<WEB_URL>/privacy/",
+		"termsOfUseUrl": "<WEB_URL>/terms/"
+	},
+	"name": {
+		"short": "TVote",
+		"full": "TVote: scrum voting, but simple"
+	},
+	"description": {
+		"short": "Scrum voting, but simple",
+		"full": "Every planning poker tool does too much. TVote asks the chat for an estimate, lets everyone vote in a dialog, and replaces the card with the result. Votes live in memory for as long as the vote runs, nothing is stored."
+	},
+	"accentColor": "#5B5FC7",
+	"icons": {
+		"color": "color.png",
+		"outline": "outline.png"
+	},
+	"bots": [
+		{
+			"botId": "<BOT_CLIENT_ID>",
+			"scopes": ["groupChat", "team", "personal"],
+			"supportsFiles": false,
+			"supportsCalling": false,
+			"supportsVideo": false,
+			"isNotificationOnly": false,
+			"commandLists": [
+				{
+					"scopes": ["groupChat", "team", "personal"],
+					"commands": [
+						{
+							"title": "help",
+							"description": "How to start an estimate, and which decks there are"
+						}
+					]
+				}
+			]
+		}
+	],
+	"composeExtensions": [
+		{
+			"botId": "<BOT_CLIENT_ID>",
+			"commands": [
+				{
+					"id": "start-estimate",
+					"type": "action",
+					"title": "Start estimate",
+					"description": "Ask this chat for an estimate",
+					"context": ["compose", "commandBox"],
+					// The dialog comes straight from the web app, so it opens even while the API is still waking up.
+					"fetchTask": false,
+					"taskInfo": {
+						"title": "Start an estimate",
+						"width": "medium",
+						"height": "medium",
+						"url": "<WEB_URL>/teams/start/"
+					}
+				}
+			]
+		}
+	],
+	"validDomains": ["<WEB_DOMAIN>"]
 }

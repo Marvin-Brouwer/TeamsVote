@@ -11,6 +11,8 @@
   "scripts": {
     "dev": "concurrently --names api,web --prefix-colors blue,magenta \"pnpm --filter @teams-vote/api dev\" \"pnpm --filter @teams-vote/web dev\"",
     "build": "pnpm -r --stream run build",
+    "deploy:build": "pnpm --filter @teams-vote/api build",
+    "deploy:start": "pnpm --filter @teams-vote/api start",
     "build:teams-package": "tsx teams/build-package.mts",
     "lint": "eslint --cache .",
     "lint:fix": "eslint --cache --fix .",

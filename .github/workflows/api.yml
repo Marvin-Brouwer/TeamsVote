@@ -1,0 +1,133 @@
+name: Publish API
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - src/api/**
+      - pnpm-lock.yaml
+      - .github/workflows/api.yml
+
+permissions:
+  contents: read
+
+# One deploy at a time. Don't cancel a running one, Render can't take a half-finished deploy back.
+concurrency:
+  group: render-api-${{ github.ref }}${{ github.event_name == 'workflow_dispatch' && '[dispatch]' || '' }}
+  cancel-in-progress: false
+
+jobs:
+  # Render builds from the repository itself. This job only makes sure it's worth deploying.
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - name: Lint
+        run: pnpm exec eslint src/api
+      - name: Typecheck
+        run: pnpm --filter @teams-vote/api typecheck
+      - name: Test
+        run: pnpm exec vitest run --project api
+      - name: Build
+        run: pnpm --filter @teams-vote/api build
+
+  deploy:
+    needs: check
+    environment:
+      name: render-api
+      url: ${{ vars.API_URL }}
+    runs-on: ubuntu-latest
+    env:
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      RENDER_SERVICE_ID: ${{ vars.RENDER_SERVICE_ID }}
+    steps:
+      - name: Cancel older queued or running deploys
+        run: |
+          deploys=$(curl -s \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Accept: application/json" \
+            "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys?limit=30")
+
+          # Newest first, active ones only, keep the newest
+          deploy_ids=$(echo "$deploys" | jq -r '
+            map(.deploy // .) | sort_by(.createdAt) | reverse
+            | map(select(
+                .status=="created" or
+                .status=="queued" or
+                .status=="build_in_progress" or
+                .status=="deploying" or
+                .status=="update_in_progress" or
+                .status=="pre_deploy_in_progress"
+              ))
+            | .[1:][]?.id
+          ')
+
+          if [ -z "$deploy_ids" ]; then
+            echo "No older deploys to cancel"
+            exit 0
+          fi
+
+          for deploy_id in $deploy_ids; do
+            echo "Canceling deploy $deploy_id"
+            curl -s -X POST \
+              -H "Authorization: Bearer $RENDER_API_KEY" \
+              -H "Accept: application/json" \
+              "https://api.render.com/v1/deploys/$deploy_id/cancel"
+          done
+
+      - name: Start Render deploy
+        id: trigger
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Accept: application/json" \
+            "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys")
+
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          CODE=$(echo "$RESPONSE" | tail -n1)
+
+          if [ "$CODE" -ne 201 ]; then
+            echo "Render deploy trigger failed (HTTP $CODE) $BODY"
+            exit 1
+          fi
+
+          DEPLOY_ID=$(echo "$BODY" | jq -r '.id')
+          echo "deploy_id=$DEPLOY_ID" >> "$GITHUB_OUTPUT"
+          echo "View on Render: https://dashboard.render.com/web/$RENDER_SERVICE_ID/deploys/$DEPLOY_ID"
+
+      - name: Wait for deploy
+        env:
+          DEPLOY_ID: ${{ steps.trigger.outputs.deploy_id }}
+        run: |
+          DEPLOY_URL="https://dashboard.render.com/web/$RENDER_SERVICE_ID/deploys/$DEPLOY_ID"
+          echo "View on Render: $DEPLOY_URL"
+
+          for i in {1..80}; do
+            STATUS=$(curl -s \
+              -H "Authorization: Bearer $RENDER_API_KEY" \
+              -H "Accept: application/json" \
+              "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys/$DEPLOY_ID" | jq -r '.status')
+            echo "Deploy status: $STATUS"
+
+            case "$STATUS" in
+              live)
+                echo "### Render deployment: \`live\`" >> "$GITHUB_STEP_SUMMARY"
+                echo "- [Application logs](https://dashboard.render.com/web/$RENDER_SERVICE_ID/logs?r=live)" >> "$GITHUB_STEP_SUMMARY"
+                echo "- [Deployment logs]($DEPLOY_URL)" >> "$GITHUB_STEP_SUMMARY"
+                exit 0
+                ;;
+              update_failed|build_failed|canceled)
+                echo "### Render deployment: \`$STATUS\`" >> "$GITHUB_STEP_SUMMARY"
+                echo "- [Deployment logs]($DEPLOY_URL)" >> "$GITHUB_STEP_SUMMARY"
+                exit 1
+                ;;
+            esac
+
+            sleep 20s
+          done
+
+          echo "Timed out waiting for the deploy: $DEPLOY_URL"
+          exit 1

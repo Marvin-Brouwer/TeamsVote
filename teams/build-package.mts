@@ -1,68 +1,66 @@
-import fs, { mkdir } from "node:fs";
-import path, { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-import dotenv from "dotenv";
+/**
+ * Builds the Teams app package: the manifest with its placeholders filled in, plus the two icons, zipped.
+ * Upload the result in Teams (Apps → Manage your apps → Upload an app) or in the Teams Developer Portal.
+ *
+ * Reads TEAMS_APP_ID, BOT_CLIENT_ID and WEB_URL from the environment, or from teams/.env when it exists.
+ * The version is 1.0.<GITHUB_RUN_NUMBER> in CI and 1.0.<timestamp> locally, so every build counts up.
+ *
+ * Usage: pnpm build:teams-package
+ */
+import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import dotenv from 'dotenv'
+import { zipSync } from 'fflate'
 import stripJsonComments from 'strip-json-comments'
 
-dotenv.config();
+const teamsDirectory = path.dirname(fileURLToPath(import.meta.url))
+dotenv.config({ path: path.join(teamsDirectory, '.env'), quiet: true })
 
-// __dirname equivalent in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// We don't need millisecond accuracy
-const timestamp = new Date().toISOString().replaceAll('-', '').replaceAll('T', '').replaceAll(':', '').split('.')[0]
-
-const devManifestPath = path.join(__dirname, "../manifest/manifest.source.jsonc");
-const outputManifestPath = path.join(__dirname, "../package/manifest.json");
-mkdir(dirname(outputManifestPath), { recursive: true }, (err) => {
-  if (err) throw err;
-});
-
-
-const appId = process.env.TEAMS_APP_ID;
-const appUrl = process.env.TEAMS_UI_URL;
-
-if (!appId) {
-  console.error("❌ TEAMS_APP_ID environment variable is not set");
-  process.exit(1);
-}
-if (!appUrl) {
-  console.error("❌ TEAMS_UI_URL environment variable is not set");
-  process.exit(1);
+function requireEnvironment(key: string): string {
+	const value = process.env[key]
+	if (!value) {
+		console.error(`${key} is not set. See doc/setup.md, step 7.`)
+		process.exit(1)
+	}
+	return value
 }
 
-function getEnv(key: string) {
-  const value = process.env[key];
-  if (!value) {
-    console.error(`❌ ${key} environment variable is not set`);
-    process.exit(1);
-  }
-  return value;
-}
-// Read dev manifest
-let manifestContent = fs.readFileSync(devManifestPath, "utf-8");
+const webUrl = new URL(requireEnvironment('WEB_URL'))
+const version = `1.0.${process.env.GITHUB_RUN_NUMBER ?? new Date().toISOString().replaceAll(/\D/g, '').slice(0, 12)}`
 
-function replaceEnv(key: string) {
-  manifestContent = manifestContent.replaceAll(`<${key}>`, getEnv(key));
+const placeholders: Record<string, string> = {
+	TEAMS_APP_ID: requireEnvironment('TEAMS_APP_ID'),
+	BOT_CLIENT_ID: requireEnvironment('BOT_CLIENT_ID'),
+	WEB_URL: webUrl.origin,
+	WEB_DOMAIN: webUrl.host,
+	VERSION: version,
 }
 
-manifestContent = stripJsonComments(manifestContent)
-replaceEnv('TEAMS_APP_ID');
-replaceEnv('TEAMS_UI_URL');
-replaceEnv('TEAMS_APP_CLIENT_ID');
-replaceEnv('TEAMS_APP_CLIENT_ID_URL');
-replaceEnv('TEAMS_CHATBOT_CLIENT_ID');
+let manifest = stripJsonComments(readFileSync(path.join(teamsDirectory, 'manifest.source.jsonc'), 'utf8'))
+for (const [key, value] of Object.entries(placeholders)) manifest = manifest.replaceAll(`<${key}>`, value)
 
-// Write updated manifest
-const manifestJson = JSON.parse(manifestContent);
-manifestJson.version = `${manifestJson.version}.${timestamp}`
-fs.writeFileSync(outputManifestPath, JSON.stringify(manifestJson, null, 2));
+const leftOver = /<[A-Z_]+>/.exec(manifest)
+if (leftOver) {
+	console.error(`The manifest still has a placeholder nobody filled in: ${leftOver[0]}`)
+	process.exit(1)
+}
 
-console.log(`Manifest updated`);
-console.log(`  MANIFEST_VERSION=${manifestJson.version}`);
+// Parsing doubles as a check that the comments came out cleanly.
+const manifestJson = JSON.stringify(JSON.parse(manifest), undefined, 2)
 
-if (process.env.GITHUB_ENV) fs.appendFileSync(
-  process.env.GITHUB_ENV,
-  `MANIFEST_VERSION=${manifestJson.version}\n`
-);
+const outputDirectory = path.join(teamsDirectory, 'dist')
+const outputFile = path.join(outputDirectory, `teamsvote-${version}.zip`)
+mkdirSync(outputDirectory, { recursive: true })
+writeFileSync(outputFile, zipSync({
+	'manifest.json': new TextEncoder().encode(manifestJson),
+	'color.png': readFileSync(path.join(teamsDirectory, 'color.png')),
+	'outline.png': readFileSync(path.join(teamsDirectory, 'outline.png')),
+}))
+
+console.info(`Built ${path.relative(process.cwd(), outputFile)} (version ${version})`)
+
+if (process.env.GITHUB_OUTPUT) {
+	appendFileSync(process.env.GITHUB_OUTPUT, `version=${version}\npackage=${outputFile}\n`)
+}

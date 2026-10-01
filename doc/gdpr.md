@@ -1,6 +1,6 @@
 # GDPR Compliance Statement — TeamsVote
 
-**Last Updated:** _2026-01-26_
+**Last Updated:** _2026-10-01_
 
 TeamsVote is designed with privacy and data minimization in mind and operates in accordance with the General Data Protection Regulation (GDPR) (EU) 2016/679.
 
@@ -8,7 +8,7 @@ TeamsVote is designed with privacy and data minimization in mind and operates in
 
 ## Lawful Basis for Processing
 
-TeamsVote processes limited personal data supplied by Microsoft Teams (username, user ID, and meeting or group chat identifier) for the legitimate interest of enabling real-time voting functionality within Teams (Article 6(1)(f) GDPR).
+TeamsVote processes limited personal data supplied by Microsoft Teams (display name, Entra user object ID, and the identifier of the conversation the vote runs in), together with the topic and votes entered, for the legitimate interest of enabling real-time voting functionality within Teams (Article 6(1)(f) GDPR).
 
 No further secondary processing occurs.
 
@@ -27,9 +27,9 @@ In alignment with Articles 5(1)(b) and 5(1)(c), TeamsVote:
 
 ## Data Storage & Retention
 
-TeamsVote does **not** persist personal data. All session data is processed **in-memory only** and discarded at the end of the session.
+TeamsVote does **not** persist personal data. All session data is processed **in-memory only** and discarded when the vote is accepted, after two hours without activity, or when the backend restarts.
 
-No personal data exists at rest, and no logs containing personal data are created.
+No personal data exists at rest, and no logs containing personal data are created. The backend's request log holds only method, path, status and duration.
 
 ---
 
@@ -43,6 +43,8 @@ TeamsVote communicates with an externally hosted backend for real-time coordinat
 - does **not** transfer data outside the EU
 
 The backend is hosted on Render within the EU Central region, ensuring compliance with GDPR restrictions on international data transfers (Chapter V).
+
+The dialogs are static files served by Microsoft Azure Static Web Apps. TeamsVote sends no personal data there; Microsoft may process technical data such as IP addresses in its platform logs, under the organisation's existing agreements with Microsoft.
 
 ---
 

@@ -4,8 +4,9 @@ import { rootedMarkdown } from '@rooted/markdown/vite'
 import { generateRouteManifest } from '@rooted/router/manifest'
 import { routeSeoPlugin } from '@rooted/seo/router'
 
-// WEB_URL is where the app is hosted, set by the deploy workflow. Its path becomes Vite's `base`.
+// WEB_URL is where the app is hosted, set by the deploy workflow. Its path becomes Vite's `base`, which needs a trailing slash.
 const webUrl = new URL(process.env.WEB_URL ?? 'http://localhost:5173/')
+if (!webUrl.pathname.endsWith('/')) webUrl.pathname += '/'
 
 export default rootedManifest({
 	webManifest: {
