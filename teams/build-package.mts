@@ -21,7 +21,7 @@ dotenv.config({ path: path.join(teamsDirectory, '.env'), quiet: true })
 function requireEnvironment(key: string): string {
 	const value = process.env[key]
 	if (!value) {
-		console.error(`${key} is not set. See doc/setup.md, step 7.`)
+		console.error(`${key} is not set. See doc/setup.md, step 4.`)
 		process.exit(1)
 	}
 	return value
