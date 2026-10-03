@@ -83,8 +83,8 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 					value: {
 						title: 'Start an estimate',
 						card: cardAttachment('adaptive', installCard(submission)),
-						width: 'small',
-						height: 'small',
+						// No height: Teams fits the dialog to the card, plus the consent text it adds below the button.
+						width: 'medium',
 					},
 				},
 			}
