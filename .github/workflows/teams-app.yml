@@ -1,6 +1,6 @@
 name: Teams app package
 
-# Builds the zip to upload in Teams. Uploading stays a manual step, see doc/setup.md step 7.
+# Builds the zip to upload in Teams. Uploading stays a manual step, see doc/setup.md step 6.
 on:
   workflow_dispatch:
   push:
@@ -26,8 +26,9 @@ jobs:
           BOT_CLIENT_ID: ${{ vars.BOT_CLIENT_ID }}
           WEB_URL: ${{ vars.WEB_URL }}
         run: pnpm build:teams-package
+      # Uploaded as the zip itself, named after the file, so it downloads ready to upload to Teams.
       - name: Upload package
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
-          name: tvote-${{ steps.package.outputs.version }}
           path: ${{ steps.package.outputs.package }}
+          archive: false
