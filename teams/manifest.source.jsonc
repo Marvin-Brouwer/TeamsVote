@@ -1,0 +1,75 @@
+// The Teams app manifest, with placeholders that `build-package.mts` fills in:
+// <TEAMS_APP_ID>   the Teams app's own id, a GUID you generate once and keep forever
+// <BOT_CLIENT_ID>  the bot's app registration (client) id
+// <WEB_URL>        origin of the web app, no trailing slash
+// <WEB_DOMAIN>     host of the web app, derived from WEB_URL
+// <VERSION>        filled in per build
+{
+	"$schema": "https://developer.microsoft.com/json-schemas/teams/v1.24/MicrosoftTeams.schema.json",
+	"manifestVersion": "1.24",
+	"version": "<VERSION>",
+	"id": "<TEAMS_APP_ID>",
+	"developer": {
+		"name": "Marvin Brouwer",
+		"websiteUrl": "<WEB_URL>/",
+		"privacyUrl": "<WEB_URL>/privacy/",
+		"termsOfUseUrl": "<WEB_URL>/terms/"
+	},
+	"name": {
+		"short": "TVote",
+		"full": "TVote: scrum voting, but simple"
+	},
+	"description": {
+		"short": "Scrum voting, but simple",
+		"full": "Every planning poker tool does too much. TVote asks the chat for an estimate, lets everyone vote in a dialog, and replaces the card with the result. Votes live in memory for as long as the vote runs, nothing is stored."
+	},
+	"accentColor": "#5B5FC7",
+	"icons": {
+		"color": "color.png",
+		"outline": "outline.png"
+	},
+	"bots": [
+		{
+			"botId": "<BOT_CLIENT_ID>",
+			"scopes": ["groupChat", "team", "personal"],
+			"supportsFiles": false,
+			"supportsCalling": false,
+			"supportsVideo": false,
+			"isNotificationOnly": false,
+			"commandLists": [
+				{
+					"scopes": ["groupChat", "team", "personal"],
+					"commands": [
+						{
+							"title": "help",
+							"description": "How to start an estimate, and which decks there are"
+						}
+					]
+				}
+			]
+		}
+	],
+	"composeExtensions": [
+		{
+			"botId": "<BOT_CLIENT_ID>",
+			"commands": [
+				{
+					"id": "start-estimate",
+					"type": "action",
+					"title": "Start estimate",
+					"description": "Ask this chat for an estimate",
+					"context": ["compose", "commandBox"],
+					// The dialog comes straight from the web app, so it opens even while the API is still waking up.
+					"fetchTask": false,
+					"taskInfo": {
+						"title": "Start an estimate",
+						"width": "medium",
+						"height": "medium",
+						"url": "<WEB_URL>/teams/start/"
+					}
+				}
+			]
+		}
+	],
+	"validDomains": ["<WEB_DOMAIN>"]
+}

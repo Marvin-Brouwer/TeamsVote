@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+	<!-- Ballot paper -->
+	<path d="M22 6h20l2 2v24H20V8z" fill="#ffffff" stroke="#c8c8c8" stroke-width="1" />
+	<path d="M24 12h4v4h-4zM24 19h4v4h-4zM24 26h4v4h-4z" fill="none" stroke="#5b5fc7" stroke-width="1.2" />
+	<path d="M24.5 13.8l1.4 1.5 2.9-3.6" fill="none" stroke="#13a10e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+	<path d="M31 14h9M31 21h9M31 28h7" stroke="#5b5fc7" stroke-width="1.2" stroke-linecap="round" />
+	<!-- Box -->
+	<path d="M6 28l10-6h32l10 6v26l-8 4H14l-8-4z" fill="#2f6fd6" />
+	<path d="M6 28l8 4h36l8-4v26l-8 4H14l-8-4z" fill="#1e5bc6" />
+	<path d="M14 32v26M50 32v26" stroke="#1449a8" stroke-width="1" />
+	<path d="M20 26h24l-2 3H22z" fill="#0d2f6e" />
+</svg>

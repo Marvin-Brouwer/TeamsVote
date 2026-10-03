@@ -1,0 +1,32 @@
+{
+  "name": "@t-vote/api",
+  "private": true,
+  "type": "module",
+  "description": "TVote session API and Teams bot. Runs on Render, keeps sessions in memory only.",
+  "exports": {
+    "./contracts": "./src/contracts/_module.mts"
+  },
+  "scripts": {
+    "dev": "tsx watch --env-file=.env.development --env-file-if-exists=.env.local src/server.mts",
+    "build": "vite build",
+    "start": "node dist/server.mjs",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@microsoft/teams.api": "2.1.0",
+    "@microsoft/teams.apps": "2.1.0",
+    "@microsoft/teams.cards": "2.1.0",
+    "@microsoft/teams.common": "2.1.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "jose": "^6.2.12"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.19.0",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.2",
+    "vitest": "^5.0.3"
+  }
+}

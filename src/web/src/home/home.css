@@ -1,0 +1,13 @@
+.lead {
+	font-size: var(--fontSizeBase400, 16px);
+	line-height: var(--lineHeightBase400, 22px);
+	color: var(--colorNeutralForeground2);
+}
+
+.steps {
+	padding-inline-start: var(--spacingHorizontalXL, 20px);
+}
+
+.steps li {
+	margin-bottom: var(--spacingVerticalS, 8px);
+}

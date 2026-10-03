@@ -1,0 +1,43 @@
+.list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.participant {
+	display: flex;
+	align-items: center;
+	gap: var(--spacingHorizontalS, 8px);
+	padding: var(--spacingVerticalS, 8px) 0;
+	border-bottom: var(--strokeWidthThin, 1px) solid var(--colorNeutralStroke3);
+}
+
+.name {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.role {
+	color: var(--colorNeutralForeground3);
+	font-size: var(--fontSizeBase200, 12px);
+}
+
+.average {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	margin: var(--spacingVerticalM, 12px) 0 0;
+}
+
+.average:empty {
+	display: none;
+}
+
+.averageValue {
+	font-size: var(--fontSizeHero700, 28px);
+	line-height: var(--lineHeightHero700, 36px);
+	color: var(--colorBrandForeground1);
+}

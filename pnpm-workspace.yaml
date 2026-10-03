@@ -2,9 +2,5 @@ packages:
   - src/*
 
 onlyBuiltDependencies:
-  - '@swc/core'
-  - botbuilder
   - esbuild
-  - protobufjs
-
-registry: https://registry.npmjs.org/
+  - sharp

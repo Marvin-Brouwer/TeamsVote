@@ -1,0 +1,33 @@
+name: Teams app package
+
+# Builds the zip to upload in Teams. Uploading stays a manual step, see doc/setup.md step 7.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - teams/**
+      - .github/workflows/teams-app.yml
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - name: Build package
+        id: package
+        env:
+          TEAMS_APP_ID: ${{ vars.TEAMS_APP_ID }}
+          BOT_CLIENT_ID: ${{ vars.BOT_CLIENT_ID }}
+          WEB_URL: ${{ vars.WEB_URL }}
+        run: pnpm build:teams-package
+      - name: Upload package
+        uses: actions/upload-artifact@v5
+        with:
+          name: tvote-${{ steps.package.outputs.version }}
+          path: ${{ steps.package.outputs.package }}

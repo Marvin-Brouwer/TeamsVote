@@ -1,14 +1,14 @@
-# Microsoft AppSource Compliance Statement — TeamsVote
+# Microsoft AppSource Compliance Statement — TVote
 
-**Last Updated:** _2026-01-26_
+**Last Updated:** _2026-10-01_
 
-TeamsVote is designed to comply with Microsoft AppSource requirements for security, privacy, and data handling. This document summarizes how TeamsVote meets relevant criteria for listing within the Microsoft 365 ecosystem.
+TVote is designed to comply with Microsoft AppSource requirements for security, privacy, and data handling. This document summarizes how TVote meets relevant criteria for listing within the Microsoft 365 ecosystem.
 
 ---
 
 ## 1. Application Category & Integration
 
-TeamsVote is a Microsoft Teams plugin that:
+TVote is a Microsoft Teams plugin that:
 
 - runs entirely within Microsoft Teams
 - does not function as a standalone service
@@ -19,7 +19,7 @@ TeamsVote is a Microsoft Teams plugin that:
 
 ## 2. Identity, Authentication & Authorization
 
-TeamsVote relies exclusively on Microsoft’s identity platform for authentication and authorization:
+TVote relies exclusively on Microsoft’s identity platform for authentication and authorization:
 
 - no external authentication services are used
 - no custom credentials are collected or stored
@@ -29,9 +29,11 @@ TeamsVote relies exclusively on Microsoft’s identity platform for authenticati
 
 ## 3. Data Handling & Privacy
 
-TeamsVote transmits minimal personal data (username, user ID, and Teams meeting or group chat identifier) to an externally hosted backend for real-time voting functionality.  
+TVote transmits minimal personal data (display name, Entra user object ID, and the Teams conversation identifier), plus the topic and the votes, to an externally hosted backend for real-time voting functionality.  
 
-No personal data is persisted or logged. All session data is processed **in-memory only** and discarded at the end of the voting session.  
+No personal data is persisted or logged. All session data is processed **in-memory only** and discarded when the vote is accepted, after two hours without activity, or when the backend restarts.  
+
+The dialogs are static files served by Microsoft Azure Static Web Apps; no personal data is sent there.  
 
 Backend hosting:
 
@@ -44,7 +46,7 @@ No analytics, tracking, or third-party data sharing occurs.
 
 ## 4. GDPR & Regulatory Alignment
 
-TeamsVote aligns with GDPR and other relevant privacy regulations. See GDPR.md for full details.
+TVote aligns with GDPR and other relevant privacy regulations. See GDPR.md for full details.
 
 ---
 
@@ -60,7 +62,7 @@ Security and access control are governed by Microsoft Teams and the organization
 
 ## 6. Financial & Billing Compliance
 
-TeamsVote:
+TVote:
 
 - is free to use  
 - does not process payments  
@@ -80,7 +82,7 @@ Admins retain full control through:
 
 ## 8. Third-Party Dependencies
 
-TeamsVote does **not** depend on external third-party services for personal data processing beyond the EU-hosted backend.
+TVote does **not** depend on external third-party services for personal data processing beyond the EU-hosted backend.
 
 ---
 

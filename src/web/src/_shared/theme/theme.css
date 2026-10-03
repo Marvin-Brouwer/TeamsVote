@@ -1,0 +1,83 @@
+/*
+ * Theme layer. The tokens are Fluent's own CSS variables, which `setTheme` puts on the document
+ * for the theme Teams is in (see fluent.mts). Nothing here picks a colour of its own.
+ *
+ * Until the theme is known the page stays transparent, so a Teams dialog shows its own
+ * background instead of flashing white in dark mode.
+ */
+:root {
+	color-scheme: light dark;
+	background: transparent;
+}
+
+:root[data-theme='default'] {
+	color-scheme: light;
+}
+
+:root[data-theme='dark'],
+:root[data-theme='contrast'] {
+	color-scheme: dark;
+}
+
+html,
+body {
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	background: var(--colorNeutralBackground1, transparent);
+	color: var(--colorNeutralForeground1, CanvasText);
+	font-family: var(--fontFamilyBase, 'Segoe UI', system-ui, sans-serif);
+	font-size: var(--fontSizeBase300, 14px);
+	line-height: var(--lineHeightBase300, 20px);
+	-webkit-font-smoothing: antialiased;
+}
+
+a {
+	color: var(--colorBrandForegroundLink, LinkText);
+}
+
+a:hover {
+	color: var(--colorBrandForegroundLinkHover, LinkText);
+}
+
+h1,
+h2,
+h3 {
+	font-weight: var(--fontWeightSemibold, 600);
+	margin: 0 0 var(--spacingVerticalS, 8px);
+}
+
+h1 {
+	font-size: var(--fontSizeBase600, 24px);
+	line-height: var(--lineHeightBase600, 32px);
+}
+
+h2 {
+	font-size: var(--fontSizeBase500, 20px);
+	line-height: var(--lineHeightBase500, 28px);
+}
+
+h3 {
+	font-size: var(--fontSizeBase400, 16px);
+	line-height: var(--lineHeightBase400, 22px);
+}
+
+p {
+	margin: 0 0 var(--spacingVerticalM, 12px);
+}
+
+/* Fluent elements that aren't defined yet (before the client loads them, or in a pre-rendered page) take no space. */
+:not(:defined):is(fluent-button, fluent-toggle-button, fluent-text-input, fluent-dropdown, fluent-badge, fluent-message-bar) {
+	visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}

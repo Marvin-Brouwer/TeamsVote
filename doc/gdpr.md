@@ -1,14 +1,14 @@
-# GDPR Compliance Statement — TeamsVote
+# GDPR Compliance Statement — TVote
 
-**Last Updated:** _2026-01-26_
+**Last Updated:** _2026-10-01_
 
-TeamsVote is designed with privacy and data minimization in mind and operates in accordance with the General Data Protection Regulation (GDPR) (EU) 2016/679.
+TVote is designed with privacy and data minimization in mind and operates in accordance with the General Data Protection Regulation (GDPR) (EU) 2016/679.
 
 ---
 
 ## Lawful Basis for Processing
 
-TeamsVote processes limited personal data supplied by Microsoft Teams (username, user ID, and meeting or group chat identifier) for the legitimate interest of enabling real-time voting functionality within Teams (Article 6(1)(f) GDPR).
+TVote processes limited personal data supplied by Microsoft Teams (display name, Entra user object ID, and the identifier of the conversation the vote runs in), together with the topic and votes entered, for the legitimate interest of enabling real-time voting functionality within Teams (Article 6(1)(f) GDPR).
 
 No further secondary processing occurs.
 
@@ -16,7 +16,7 @@ No further secondary processing occurs.
 
 ## Data Minimization & Purpose Limitation
 
-In alignment with Articles 5(1)(b) and 5(1)(c), TeamsVote:
+In alignment with Articles 5(1)(b) and 5(1)(c), TVote:
 
 - does not collect additional personal data beyond what Microsoft Teams provides
 - does not perform analytics, profiling, or tracking
@@ -27,15 +27,15 @@ In alignment with Articles 5(1)(b) and 5(1)(c), TeamsVote:
 
 ## Data Storage & Retention
 
-TeamsVote does **not** persist personal data. All session data is processed **in-memory only** and discarded at the end of the session.
+TVote does **not** persist personal data. All session data is processed **in-memory only** and discarded when the vote is accepted, after two hours without activity, or when the backend restarts.
 
-No personal data exists at rest, and no logs containing personal data are created.
+No personal data exists at rest, and no logs containing personal data are created. The backend's request log holds only method, path, status and duration.
 
 ---
 
 ## Data Processor & Hosting Location
 
-TeamsVote communicates with an externally hosted backend for real-time coordination. This backend:
+TVote communicates with an externally hosted backend for real-time coordination. This backend:
 
 - is hosted in the **European Union (Frankfurt, Germany)**
 - processes data **in-memory**
@@ -43,6 +43,8 @@ TeamsVote communicates with an externally hosted backend for real-time coordinat
 - does **not** transfer data outside the EU
 
 The backend is hosted on Render within the EU Central region, ensuring compliance with GDPR restrictions on international data transfers (Chapter V).
+
+The dialogs are static files served by Microsoft Azure Static Web Apps. TVote sends no personal data there; Microsoft may process technical data such as IP addresses in its platform logs, under the organisation's existing agreements with Microsoft.
 
 ---
 
@@ -52,13 +54,13 @@ Under GDPR:
 
 - The user’s organization (Microsoft 365 tenant) is the **data controller** for identity and account data
 - Microsoft is a **processor** for Teams account and identity services
-- TeamsVote functions as a **sub-processor** for the duration of a voting session but does not store personal data or act as a controller for persistent data
+- TVote functions as a **sub-processor** for the duration of a voting session but does not store personal data or act as a controller for persistent data
 
 ---
 
 ## Data Subject Rights
 
-Because TeamsVote does not persist personal data:
+Because TVote does not persist personal data:
 
 - access
 - rectification
@@ -67,13 +69,13 @@ Because TeamsVote does not persist personal data:
 - objection
 - restriction of processing
 
-do not generally apply directly to TeamsVote (Articles 15–21). Data subject requests should be directed to the user’s Microsoft 365 administrator.
+do not generally apply directly to TVote (Articles 15–21). Data subject requests should be directed to the user’s Microsoft 365 administrator.
 
 ---
 
 ## Security Measures
 
-TeamsVote employs appropriate technical measures in accordance with Article 32:
+TVote employs appropriate technical measures in accordance with Article 32:
 
 - all communications are encrypted in transit via HTTPS/TLS
 - no data is stored at rest
@@ -85,7 +87,7 @@ Access control and identity management remain governed by Microsoft Teams and th
 
 ## DPIA Considerations
 
-Due to the lack of persistent storage, profiling, or sensitive data categories, TeamsVote does not require a Data Protection Impact Assessment (DPIA) under Article 35.
+Due to the lack of persistent storage, profiling, or sensitive data categories, TVote does not require a Data Protection Impact Assessment (DPIA) under Article 35.
 
 ---
 

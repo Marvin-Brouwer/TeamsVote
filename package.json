@@ -1,14 +1,37 @@
 {
-  "name": "teams-vote",
+  "name": "t-vote",
+  "private": true,
   "license": "Apache-2.0",
+  "type": "module",
   "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
   "scripts": {
-    "m365": "m365",
-    "deploy:build": "pnpm run -r --sequential build",
-    "deploy:start": "pnpm run --filter @teams-vote/api start "
+    "dev": "concurrently --names api,web --prefix-colors blue,magenta \"pnpm --filter @t-vote/api dev\" \"pnpm --filter @t-vote/web dev\"",
+    "build": "pnpm -r --stream run build",
+    "deploy:build": "pnpm --filter @t-vote/api build",
+    "deploy:start": "pnpm --filter @t-vote/api start",
+    "build:teams-package": "tsx teams/build-package.mts",
+    "lint": "eslint --cache .",
+    "lint:fix": "eslint --cache --fix .",
+    "typecheck": "pnpm -r --stream run typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
-    "@pnp/cli-microsoft365": "^11.3.1",
-    "typescript": "^5.9.3"
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.19.0",
+    "concurrently": "^10.0.5",
+    "dotenv": "^17.2.3",
+    "eslint": "^10.11.0",
+    "fflate": "^0.8.3",
+    "globals": "^16.5.0",
+    "strip-json-comments": "^5.0.3",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.0",
+    "vitest": "^5.0.3"
   }
 }
