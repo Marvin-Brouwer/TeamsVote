@@ -2,7 +2,7 @@
   "name": "@teams-vote/web",
   "private": true,
   "type": "module",
-  "description": "The TeamsVote dialogs and pages. Static, built with rooted, hosted on Azure Static Web Apps.",
+  "description": "The TVote dialogs and pages. Static, built with rooted, hosted on Azure Static Web Apps.",
   "scripts": {
     "dev": "vite",
     "build": "vite build -- --minify",

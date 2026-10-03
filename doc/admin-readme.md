@@ -1,9 +1,9 @@
-# TeamsVote — IT Admin & Security Overview
+# TVote — IT Admin & Security Overview
 
 **Last Updated:** _2026-10-01_
 
 **Purpose:**  
-TeamsVote is a Microsoft Teams plugin that enables ephemeral, real-time voting sessions within meetings or group chats. It is designed with privacy and security in mind, ensuring minimal exposure of personal or organizational data.
+TVote is a Microsoft Teams plugin that enables ephemeral, real-time voting sessions within meetings or group chats. It is designed with privacy and security in mind, ensuring minimal exposure of personal or organizational data.
 
 ---
 

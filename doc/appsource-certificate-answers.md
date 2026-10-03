@@ -1,4 +1,4 @@
-# TeamsVote — AppSource Certification Answers
+# TVote — AppSource Certification Answers
 
 **Repository / Website:** <https://github.com/Marvin-Brouwer/TeamsVote>  
 **App Platform:** Microsoft Teams  
@@ -10,9 +10,9 @@
 
 ## 1. General Information
 
-- **App Name:** TeamsVote  
+- **App Name:** TVote  
 - **Supported Platforms:** Microsoft Teams  
-- **Description:** TeamsVote is a Microsoft Teams plugin that enables ephemeral, real-time voting sessions in meetings or group chats. All data is processed in-memory and discarded at the end of each session.  
+- **Description:** TVote is a Microsoft Teams plugin that enables ephemeral, real-time voting sessions in meetings or group chats. All data is processed in-memory and discarded at the end of each session.  
 
 ---
 
@@ -48,7 +48,7 @@
 3. **Does your app require elevated permissions?**  
    - No. A bot and a message extension only. No Microsoft Graph permissions, no resource-specific consent.
 4. **Does your app handle financial information?**  
-   - No. TeamsVote is free and does not process payments.
+   - No. TVote is free and does not process payments.
 
 ---
 
@@ -85,6 +85,6 @@
 ## 6. Marketing & Listing
 
 - **App Description:**  
-  TeamsVote is a Microsoft Teams plugin that enables ephemeral, real-time voting sessions within meetings or group chats. No persistent personal data is stored. All processing occurs securely in-memory on an EU-hosted backend.
+  TVote is a Microsoft Teams plugin that enables ephemeral, real-time voting sessions within meetings or group chats. No persistent personal data is stored. All processing occurs securely in-memory on an EU-hosted backend.
 - **Keywords:** voting, poll, Teams plugin, collaboration, ephemeral, GDPR compliant
 - **Screenshots / Videos:** [TODO]

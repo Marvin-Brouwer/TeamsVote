@@ -1,8 +1,8 @@
-# Privacy Policy — TeamsVote
+# Privacy Policy — TVote
 
 **Last Updated:** _2026-10-01_
 
-This Privacy Policy explains how **TeamsVote** (“Service”) handles personal information when used within Microsoft Teams. TeamsVote is available at <https://github.com/Marvin-Brouwer/TeamsVote> and operates solely as a Microsoft Teams plugin.
+This Privacy Policy explains how **TVote** (“Service”) handles personal information when used within Microsoft Teams. TVote is available at <https://github.com/Marvin-Brouwer/TeamsVote> and operates solely as a Microsoft Teams plugin.
 
 By using the Service, you acknowledge that you have read and understood this Privacy Policy.
 
@@ -10,14 +10,14 @@ By using the Service, you acknowledge that you have read and understood this Pri
 
 ## 1. Information We Process
 
-TeamsVote processes minimal personal data strictly for the purpose of enabling live voting functionality within Microsoft Teams. Specifically, TeamsVote may process the following data provided by Microsoft Teams:
+TVote processes minimal personal data strictly for the purpose of enabling live voting functionality within Microsoft Teams. Specifically, TVote may process the following data provided by Microsoft Teams:
 
 - Microsoft Teams display name
 - Microsoft Entra user object identifier, as provided by Microsoft Teams
 - the identifier of the Teams conversation (group chat, meeting chat or channel) the vote was started in, and of the vote card message
 - the topic you enter and the votes cast
 
-TeamsVote does **not** create separate user accounts and does not collect additional personal information.
+TVote does **not** create separate user accounts and does not collect additional personal information.
 
 ---
 
@@ -35,11 +35,11 @@ This data is not used for analytics, behavioral profiling, tracking, or marketin
 
 ## 3. Data Storage & Retention
 
-TeamsVote does **not** store personal data. Session-related data is held temporarily **in-memory only**, and discarded automatically when the vote is accepted, after two hours without activity, or when the backend restarts, whichever comes first.
+TVote does **not** store personal data. Session-related data is held temporarily **in-memory only**, and discarded automatically when the vote is accepted, after two hours without activity, or when the backend restarts, whichever comes first.
 
 The backend keeps a technical request log with the request method, path, response status and duration. It contains no names, identifiers, tokens or votes.
 
-In your browser, TeamsVote remembers which card deck you picked last (local storage) and caches its own program files (service worker) so dialogs open faster. Neither contains personal data.
+In your browser, TVote remembers which card deck you picked last (local storage) and caches its own program files (service worker) so dialogs open faster. Neither contains personal data.
 
 No data is:
 
@@ -53,7 +53,7 @@ No data is:
 
 ## 4. Backend Processing & Hosting Location
 
-To enable real-time voting, TeamsVote communicates with an externally hosted backend. This backend:
+To enable real-time voting, TVote communicates with an externally hosted backend. This backend:
 
 - is hosted in the **European Union (Frankfurt, Germany)**
 - processes session data **in-memory only**
@@ -62,18 +62,18 @@ To enable real-time voting, TeamsVote communicates with an externally hosted bac
 
 The backend is hosted on Render within the EU Central region, ensuring compliance with GDPR requirements.
 
-The dialogs and web pages themselves are static files served by Microsoft Azure Static Web Apps. They receive no personal data from TeamsVote: the key that opens a vote travels in the part of the address browsers don't send to servers. As with any website, Microsoft may process technical data such as IP addresses in its own platform logs.
+The dialogs and web pages themselves are static files served by Microsoft Azure Static Web Apps. They receive no personal data from TVote: the key that opens a vote travels in the part of the address browsers don't send to servers. As with any website, Microsoft may process technical data such as IP addresses in its own platform logs.
 
 ---
 
 ## 5. Data Sharing & Disclosure
 
-TeamsVote does **not** sell, share, or otherwise disclose personal data to third parties. No third-party analytics or tracking services are used.
+TVote does **not** sell, share, or otherwise disclose personal data to third parties. No third-party analytics or tracking services are used.
 
 Data remains contained within:
 
 1. Microsoft Teams, and  
-2. the TeamsVote backend processor located in the EU
+2. the TVote backend processor located in the EU
 
 The static pages are hosted by Microsoft (Azure Static Web Apps), see section 4.
 
@@ -83,7 +83,7 @@ The static pages are hosted by Microsoft (Azure Static Web Apps), see section 4.
 
 All communication between Microsoft Teams clients and the backend is encrypted in transit via HTTPS/TLS. Because no data is stored or logged, no data exists at rest.
 
-Who you are is established by Microsoft Teams, which authenticates every message to the TeamsVote bot. When you open a vote, the bot gives your dialog a short-lived signed key for that one vote. Only the person who started a vote can reveal, reset or accept it.
+Who you are is established by Microsoft Teams, which authenticates every message to the TVote bot. When you open a vote, the bot gives your dialog a short-lived signed key for that one vote. Only the person who started a vote can reveal, reset or accept it.
 
 Security and access control are additionally governed by:
 
@@ -95,7 +95,7 @@ Security and access control are additionally governed by:
 
 ## 7. Children’s Privacy
 
-TeamsVote is not specifically targeted at children. Access requires a Microsoft Teams account provisioned by an organization. TeamsVote does not independently identify or track minors.
+TVote is not specifically targeted at children. Access requires a Microsoft Teams account provisioned by an organization. TVote does not independently identify or track minors.
 
 ---
 

@@ -45,7 +45,7 @@ server.listen(configuration.port, '0.0.0.0', error => {
 		console.error('Could not start the server', error)
 		process.exit(1)
 	}
-	console.info(`TeamsVote API listening on port ${configuration.port}, web app at ${configuration.webUrl}`)
+	console.info(`TVote API listening on port ${configuration.port}, web app at ${configuration.webUrl}`)
 })
 
 /**

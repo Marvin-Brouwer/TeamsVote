@@ -1,4 +1,4 @@
-# TeamsVote
+# TVote
 
 Teams scrum voting, but simple.
 

@@ -1,8 +1,8 @@
-# Terms of Service — TeamsVote
+# Terms of Service — TVote
 
 **Last Updated:** _2026-01-26_
 
-These Terms of Service (“Terms”) govern the use of **TeamsVote** (“Service”), a Microsoft Teams plugin made available at <https://github.com/Marvin-Brouwer/TeamsVote>, provided by the developer (“we”, “us”, “our”). By using the Service within Microsoft Teams, you (“you”, “user”) agree to be bound by these Terms.
+These Terms of Service (“Terms”) govern the use of **TVote** (“Service”), a Microsoft Teams plugin made available at <https://github.com/Marvin-Brouwer/TeamsVote>, provided by the developer (“we”, “us”, “our”). By using the Service within Microsoft Teams, you (“you”, “user”) agree to be bound by these Terms.
 
 If you do not agree to these Terms, you may not use the Service.
 
@@ -10,7 +10,7 @@ If you do not agree to these Terms, you may not use the Service.
 
 ## 1. Description of the Service
 
-TeamsVote is a plugin for Microsoft Teams that enables users to conduct lightweight vote or polling sessions within Teams channels, chats, or meetings. The Service operates fully within the Microsoft Teams environment and does not function as a standalone application.
+TVote is a plugin for Microsoft Teams that enables users to conduct lightweight vote or polling sessions within Teams channels, chats, or meetings. The Service operates fully within the Microsoft Teams environment and does not function as a standalone application.
 
 ---
 
@@ -22,7 +22,7 @@ You may use the Service only if you have access to a valid Microsoft Teams accou
 
 ## 3. Relationship with Microsoft Teams
 
-TeamsVote operates as an integration within Microsoft Teams. Usage of TeamsVote is subject to and dependent on Microsoft’s platform policies, including but not limited to:
+TVote operates as an integration within Microsoft Teams. Usage of TVote is subject to and dependent on Microsoft’s platform policies, including but not limited to:
 
 - Microsoft Teams Terms of Service
 - Microsoft 365 policies
@@ -34,7 +34,7 @@ Users must comply with Microsoft’s applicable terms and are solely responsible
 
 ## 4. User Information and Data Handling
 
-TeamsVote does not create or manage its own user accounts. The Service relies exclusively on identity and access provided by Microsoft Teams.
+TVote does not create or manage its own user accounts. The Service relies exclusively on identity and access provided by Microsoft Teams.
 
 We do **not** store personal data beyond what is temporarily required for the active session. Specifically:
 
@@ -62,7 +62,7 @@ Your organization is responsible for managing access and permissions through Mic
 
 ## 6. Payments
 
-TeamsVote is provided **free of charge**. The Service does not process payments, financial information, or billing.
+TVote is provided **free of charge**. The Service does not process payments, financial information, or billing.
 
 ---
 

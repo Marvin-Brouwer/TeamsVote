@@ -11,7 +11,7 @@ import type { DevelopmentJoinRequest, DevelopmentJoinResponse, DialogSubmission 
  * `?theme=dark` or `?theme=contrast` previews the other Teams themes.
  */
 export function developmentHost(): TeamsHost {
-	console.info('[TeamsVote] Not inside Teams, using the development host. Add ?user=Name to be someone else.')
+	console.info('[TVote] Not inside Teams, using the development host. Add ?user=Name to be someone else.')
 
 	return {
 		kind: 'development',
@@ -45,10 +45,10 @@ async function handleSubmission(result: DialogSubmission): Promise<void> {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ user: developmentUser() }),
 			})
-			console.info('[TeamsVote] Accepted. In Teams the dialog closes now and the card turns into the summary.')
+			console.info('[TVote] Accepted. In Teams the dialog closes now and the card turns into the summary.')
 			return
 		case 'close':
-			console.info('[TeamsVote] In Teams the dialog closes now.')
+			console.info('[TVote] In Teams the dialog closes now.')
 			return
 	}
 }

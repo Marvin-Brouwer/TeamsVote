@@ -2,7 +2,7 @@
   "name": "@teams-vote/api",
   "private": true,
   "type": "module",
-  "description": "TeamsVote session API and Teams bot. Runs on Render, keeps sessions in memory only.",
+  "description": "TVote session API and Teams bot. Runs on Render, keeps sessions in memory only.",
   "exports": {
     "./contracts": "./src/contracts/_module.mts"
   },
