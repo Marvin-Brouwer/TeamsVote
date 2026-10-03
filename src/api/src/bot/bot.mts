@@ -29,6 +29,22 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 		httpServerAdapter: new ExpressAdapter(server, { logger }),
 	})
 
+	// What came in, whether it got an answer and how long that took. No names or ids, see doc/privacy-policy.md.
+	// At LOG_LEVEL=info this shows which step Teams gave up on, when all it says is that it can't reach the app.
+	app.use(async ({ activity, next }) => {
+		const label = activity.type === 'invoke' ? `invoke ${activity.name}` : activity.type
+		const started = performance.now()
+		const elapsed = () => `${Math.round(performance.now() - started)}ms`
+		try {
+			const response = await next()
+			logger.info(`${label}: ${response === undefined ? 'no answer' : 'answered'} in ${elapsed()}`)
+			return response
+		} catch (error) {
+			logger.info(`${label}: failed after ${elapsed()}`)
+			throw error
+		}
+	})
+
 	// "@TVote PROJ-123 --t-shirt". In group chats the bot only hears messages that mention it.
 	app.on('message', async context => {
 		const { activity } = context
@@ -77,6 +93,7 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 				logger.warn('Still not in the conversation after a just-in-time install', error.cause)
 				return { task: { type: 'message', value: installFailedMessage } }
 			}
+			logger.info('Not in the conversation yet, offering the install card')
 			return {
 				task: {
 					type: 'continue',
@@ -90,6 +107,7 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 			}
 		}
 
+		logger.info(isAfterInstall(activity.value.data) ? 'Posted the vote card after a just-in-time install' : 'Posted the vote card')
 		// Take the person who started it straight to their own vote.
 		return { task: { type: 'continue', value: await voteDialogTask(dependencies, session, admin) } }
 	})
