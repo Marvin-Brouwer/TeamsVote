@@ -110,7 +110,7 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 				logger.warn(`Still not allowed to post after TVote was added to the conversation\n${describeError(error.cause)}`)
 				return { task: { type: 'message', value: installFailedMessage } }
 			}
-			logger.info('Not in the conversation yet, offering the install card')
+			logger.info(`Not in the conversation yet, offering the install card\n${describeError(error.cause)}`)
 			return {
 				task: {
 					type: 'continue',
