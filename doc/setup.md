@@ -138,12 +138,12 @@ Merge to `main` (or run the workflows by hand under Actions):
 
    These can take a few hours to apply, so do them on day one.
 3. **Upload the package:** Teams → Apps → Manage your apps → Upload an app → **Upload a custom app**, and pick the zip from step 5. The Teams Developer Portal (Apps → Import app) works too, and validates the package.
-4. **Add TVote** to a group chat and to a meeting's chat. That installs the bot there, and the bot can only post cards where it's installed.
+4. **Nothing to add per chat.** The bot can only post cards in chats it's part of. The first time someone starts an estimate in a chat or meeting without TVote, the dialog shows **Add TVote and start**: one click adds the bot to that chat and posts the card. Typing `@TVote` only works after that, because Teams only suggests bots that are already in the chat.
 
 ## 7. Smoke test
 
-- In the chat, send `@TVote help`, then `@TVote PROJ-1`. A vote card appears.
-- Below the message box: **…** → TVote → **Start estimate**. Fill in a topic, Start. A card appears and your vote dialog opens.
+- In a chat without TVote, below the message box: **+** (or **…**) → TVote → **Start estimate**. Fill in a topic, Start, then **Add TVote and start**. A card appears and your vote dialog opens.
+- In the same chat, send `@TVote help`, then `@TVote PROJ-1`. A vote card appears.
 - Do the same in a meeting chat.
 - Vote from two accounts, **Show votes**, **Re-vote**, vote again, **Accept**. The vote card turns into the result, and both dialogs close.
 - Switch Teams to dark, and to high contrast, with a dialog open. It should follow along.

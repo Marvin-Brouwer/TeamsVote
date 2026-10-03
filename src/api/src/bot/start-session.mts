@@ -16,7 +16,7 @@ export type StartRequest = {
 	readonly send: (activity: MessageActivityInput) => Promise<SentActivity>
 }
 
-/** The bot couldn't post into the conversation, which almost always means it isn't installed there. */
+/** Teams refused the vote card with a 403: the bot isn't installed in that conversation. */
 export class NotInConversationError extends Error {
 	constructor(cause: unknown) {
 		super('TVote is not part of this conversation.', { cause })
@@ -25,7 +25,7 @@ export class NotInConversationError extends Error {
 }
 
 /** Starts a session and posts its vote card. Shared by the message extension and the mention command. */
-export async function startSession({ sessions }: BotDependencies, request: StartRequest): Promise<Session> {
+export async function startSession({ sessions }: Pick<BotDependencies, 'sessions'>, request: StartRequest): Promise<Session> {
 	const session = sessions.start({ topic: request.topic, deck: request.deck, admin: request.admin })
 
 	let sent: SentActivity
@@ -34,11 +34,18 @@ export async function startSession({ sessions }: BotDependencies, request: Start
 	} catch (error) {
 		// Nobody can ever reach a session without a card, so don't keep it around.
 		sessions.accept(session.id, request.admin.id)
-		throw new NotInConversationError(error)
+		throw isForbidden(error) ? new NotInConversationError(error) : error
 	}
 
 	sessions.attachCard(session.id, { conversationId: request.conversationId, activityId: sent.id })
 	return session
+}
+
+// The Teams SDK sends with axios, whose errors carry the response. Checked by shape, axios isn't ours to import.
+function isForbidden(error: unknown): boolean {
+	if (typeof error !== 'object' || error === null || !('response' in error)) return false
+	const { response } = error
+	return typeof response === 'object' && response !== null && 'status' in response && response.status === 403
 }
 
 /** Checks what the start dialog submitted. It came through Teams, but the page that built it is ours to distrust. */
