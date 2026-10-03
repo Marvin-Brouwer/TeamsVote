@@ -11,7 +11,10 @@ const retryDelayMs = 2000
 export async function waitForApi(signal: AbortSignal): Promise<void> {
 	while (!signal.aborted) {
 		try {
-			const response = await fetch(`${apiUrl}/health`, { signal, cache: 'no-store' })
+			const response = await fetch(`${apiUrl}/health`, {
+				signal,
+				cache: 'no-store',
+			})
 			if (response.ok) return
 		} catch (error) {
 			if (isAbortError(error)) throw error
@@ -27,6 +30,8 @@ function delay(ms: number, signal: AbortSignal): Promise<void> {
 		signal.addEventListener('abort', () => {
 			clearTimeout(timer)
 			resolve()
-		}, { once: true })
+		}, {
+			once: true,
+		})
 	})
 }

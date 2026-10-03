@@ -1,4 +1,5 @@
 import eslint from '@eslint/js'
+import stylistic from '@stylistic/eslint-plugin'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
@@ -36,6 +37,18 @@ export default tseslint.config(
 	{
 		files: ['src/web/**/*.mts'],
 		languageOptions: { globals: globals.browser },
+		plugins: { '@stylistic': stylistic },
+		rules: {
+			// Element trees read top to bottom: one field per line, never an object on one line.
+			'@stylistic/object-curly-newline': ['error', { ObjectExpression: { minProperties: 1 } }],
+			'@stylistic/object-property-newline': 'error',
+			'@stylistic/array-bracket-newline': ['error', { multiline: true }],
+			'@stylistic/array-element-newline': ['error', { consistent: true, multiline: true }],
+			'@stylistic/indent': ['error', 'tab'],
+			'@stylistic/comma-dangle': ['error', 'always-multiline'],
+			'@stylistic/no-trailing-spaces': 'error',
+			curly: ['error', 'multi-line'],
+		},
 	},
 	{
 		files: ['**/tests/**/*.mts'],

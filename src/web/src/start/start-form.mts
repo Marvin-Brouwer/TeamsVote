@@ -61,39 +61,55 @@ export const StartForm = component<StartFormOptions>({
 			const deck = isDeckId(deckDropdown.value) ? deckDropdown.value : initialDeck
 			localStorage.set(deckStorageKey, deck)
 			startButton.disabled = true
-			options.host.submit({ action: 'start', topic: topicInput.value.trim(), deck })
+			options.host.submit({
+				action: 'start',
+				topic: topicInput.value.trim(),
+				deck,
+			})
 		}
 
-		append(element('div', {
-			classes: styles.root,
-			children: element('form', {
-				classes: styles.form,
-				on: {
-					submit(event) {
-						event.preventDefault()
+		append(
+			element('div', {
+				classes: styles.root,
+				children: element('form', {
+					classes: styles.form,
+					on: {
+						submit(event) {
+							event.preventDefault()
+						},
 					},
-				},
-				children: [
-					element('h1', { textContent: 'Start an estimate' }),
-					element('fluent-field', {
-						children: [
-							element('label', { slot: 'label', htmlFor: 'topic', textContent: 'What are you estimating?' }),
-							topicInput,
-						],
-					}),
-					element('fluent-field', {
-						children: [
-							element('label', { slot: 'label', htmlFor: 'deck', textContent: 'Cards' }),
-							deckDropdown,
-						],
-					}),
-					element('div', {
-						classes: styles.actions,
-						children: startButton,
-					}),
-				],
+					children: [
+						element('h1', {
+							textContent: 'Start an estimate',
+						}),
+						element('fluent-field', {
+							children: [
+								element('label', {
+									slot: 'label',
+									htmlFor: 'topic',
+									textContent: 'What are you estimating?',
+								}),
+								topicInput,
+							],
+						}),
+						element('fluent-field', {
+							children: [
+								element('label', {
+									slot: 'label',
+									htmlFor: 'deck',
+									textContent: 'Cards',
+								}),
+								deckDropdown,
+							],
+						}),
+						element('div', {
+							classes: styles.actions,
+							children: startButton,
+						}),
+					],
+				}),
 			}),
-		}))
+		)
 
 		requestAnimationFrame(() => {
 			topicInput.focus()

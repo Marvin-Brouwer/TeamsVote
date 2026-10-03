@@ -6,9 +6,11 @@ import { Notice } from '../feedback/notice.mts'
 export const OpenInTeams = component({
 	name: 'open-in-teams',
 	onMount({ append, create }) {
-		append(create(Notice, {
-			intent: 'info',
-			message: 'This page only works inside Microsoft Teams. Start or join an estimate from TVote in a chat.',
-		}))
+		append(
+			create(Notice, {
+				intent: 'info',
+				message: 'This page only works inside Microsoft Teams. Start or join an estimate from TVote in a chat.',
+			}),
+		)
 	},
 })
