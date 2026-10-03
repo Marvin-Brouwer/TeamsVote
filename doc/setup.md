@@ -145,7 +145,7 @@ Merge to `main` (or run the workflows by hand under Actions):
 - In the chat, send `@TVote help`, then `@TVote PROJ-1`. A vote card appears.
 - Below the message box: **…** → TVote → **Start estimate**. Fill in a topic, Start. A card appears and your vote dialog opens.
 - Do the same in a meeting chat.
-- Vote from two accounts, **Show votes**, **Re-vote**, vote again, **Accept**. The vote card turns into the result, and the other person's dialog closes after showing it.
+- Vote from two accounts, **Show votes**, **Re-vote**, vote again, **Accept**. The vote card turns into the result, and both dialogs close.
 - Switch Teams to dark, and to high contrast, with a dialog open. It should follow along.
 
 When something fails, the Render logs and whatever Teams shows are what's needed to find out why.
