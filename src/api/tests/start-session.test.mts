@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { installCard, isAfterInstall } from '../src/bot/cards/install-card.mts'
-import { NotInConversationError, readStartSubmission, startSession } from '../src/bot/start-session.mts'
+import { NotInConversationError, readStartSubmission, startSession, startSessionAfterInstall } from '../src/bot/start-session.mts'
 import { createSessionEvents } from '../src/sessions/session-events.mts'
 import { createSessionService } from '../src/sessions/session-service.mts'
 import { createSessionStore } from '../src/sessions/session-store.mts'
@@ -58,6 +58,43 @@ describe('starting a session', () => {
 
 		await expect(startSession({ sessions }, request)).rejects.toBe(failure)
 		expect(service.find(startedIds[0]!)).toBeUndefined()
+	})
+})
+
+describe('starting a session right after an install', () => {
+	it('tries again while Teams still refuses the card', async () => {
+		let attempts = 0
+		const { sessions, request } = arrangeStart(() => {
+			attempts++
+			return attempts < 3 ? Promise.reject(responseError(403)) : Promise.resolve({ id: 'activity', type: 'message' })
+		})
+
+		const session = await startSessionAfterInstall({ sessions }, request, [0, 0, 0])
+
+		expect(attempts).toBe(3)
+		expect(session.card?.activityId).toBe('activity')
+	})
+
+	it('gives up after the last delay', async () => {
+		let attempts = 0
+		const { sessions, request } = arrangeStart(() => {
+			attempts++
+			return Promise.reject(responseError(403))
+		})
+
+		await expect(startSessionAfterInstall({ sessions }, request, [0, 0])).rejects.toBeInstanceOf(NotInConversationError)
+		expect(attempts).toBe(3)
+	})
+
+	it('does not retry other failures', async () => {
+		let attempts = 0
+		const { sessions, request } = arrangeStart(() => {
+			attempts++
+			return Promise.reject(responseError(500))
+		})
+
+		await expect(startSessionAfterInstall({ sessions }, request, [0, 0])).rejects.not.toBeInstanceOf(NotInConversationError)
+		expect(attempts).toBe(1)
 	})
 })
 

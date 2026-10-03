@@ -7,16 +7,20 @@ import { cardMessage, userFromActivity, type BotDependencies } from './bot-conte
 import { helpCard } from './cards/help-card.mts'
 import { installCard, isAfterInstall } from './cards/install-card.mts'
 import { voteDialogId } from './cards/vote-card.mts'
+import { describeError } from './describe-error.mts'
 import { parseMentionCommand } from './mention-command.mts'
-import { NotInConversationError, readStartSubmission, startSession } from './start-session.mts'
+import { createRecentInstalls } from './recent-installs.mts'
+import { NotInConversationError, readStartSubmission, startSession, startSessionAfterInstall } from './start-session.mts'
 import { openVoteDialog, voteDialogTask } from './vote-dialog.mts'
 
 import type { Session } from '../sessions/session.mts'
-import type { TaskModuleResponse } from '@microsoft/teams.api'
+import type { MessageActivityInput, TaskModuleResponse } from '@microsoft/teams.api'
 import type { Express } from 'express'
 
 const installFailedMessage = 'TVote couldn\'t be added to this chat. Try again, or ask your Teams admin whether apps can be added here.'
 const postFailedMessage = 'The vote card couldn\'t be posted. Please try again.'
+// About three and a half seconds in all, well within the time Teams waits for an answer.
+const retryDelaysAfterInstallMs = [500, 1000, 2000]
 
 /**
  * The Teams bot. Registers `/api/messages` on the given Express app.
@@ -27,6 +31,11 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 	const app = new App({
 		logger,
 		httpServerAdapter: new ExpressAdapter(server, { logger }),
+	})
+
+	const recentInstalls = createRecentInstalls({ windowMs: 60_000 })
+	app.on('install.add', ({ activity }) => {
+		recentInstalls.add(activity.conversation.id)
 	})
 
 	// What came in, whether it got an answer and how long that took. No names or ids, see doc/privacy-policy.md.
@@ -64,7 +73,7 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 			})
 		} catch (error) {
 			if (!(error instanceof NotInConversationError)) throw error
-			logger.warn('Could not post a vote card after a mention', error.cause)
+			logger.warn(`Could not post a vote card after a mention\n${describeError(error.cause)}`)
 		}
 	})
 
@@ -76,21 +85,29 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 		if (typeof submission === 'string') return { task: { type: 'message', value: submission } }
 
 		const admin = userFromActivity(activity.from)
+		const conversationId = activity.conversation.id
+		// Teams doesn't always pass the install button's flag back, so the install event counts too.
+		const justInstalled = recentInstalls.has(conversationId) || isAfterInstall(activity.value.data)
+		const request = {
+			...submission,
+			admin,
+			conversationId,
+			send: async (message: MessageActivityInput) => await context.send(message),
+		}
+
 		let session: Session
 		try {
-			session = await startSession(dependencies, {
-				...submission,
-				admin,
-				conversationId: activity.conversation.id,
-				send: async message => await context.send(message),
-			})
+			session = justInstalled
+				? await startSessionAfterInstall(dependencies, request, retryDelaysAfterInstallMs)
+				: await startSession(dependencies, request)
 		} catch (error) {
 			if (!(error instanceof NotInConversationError)) {
-				logger.error('Could not post a vote card from the message extension', error)
+				logger.error(`Could not post a vote card from the message extension\n${describeError(error)}`)
 				return { task: { type: 'message', value: postFailedMessage } }
 			}
-			if (isAfterInstall(activity.value.data)) {
-				logger.warn('Still not in the conversation after a just-in-time install', error.cause)
+			// Never offer the install card twice: Teams won't take it after an install, and shows "can't reach the app".
+			if (justInstalled) {
+				logger.warn(`Still not allowed to post after TVote was added to the conversation\n${describeError(error.cause)}`)
 				return { task: { type: 'message', value: installFailedMessage } }
 			}
 			logger.info('Not in the conversation yet, offering the install card')
@@ -107,7 +124,7 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 			}
 		}
 
-		logger.info(isAfterInstall(activity.value.data) ? 'Posted the vote card after a just-in-time install' : 'Posted the vote card')
+		logger.info(justInstalled ? 'Posted the vote card after TVote was added to the conversation' : 'Posted the vote card')
 		// Take the person who started it straight to their own vote.
 		return { task: { type: 'continue', value: await voteDialogTask(dependencies, session, admin) } }
 	})
@@ -120,7 +137,7 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 	app.on('dialog.submit.close', (): TaskModuleResponse | undefined => undefined)
 
 	app.event('error', ({ error }) => {
-		logger.error('Unhandled bot error', error)
+		logger.error(`Unhandled bot error\n${describeError(error)}`)
 	})
 
 	await app.initialize()

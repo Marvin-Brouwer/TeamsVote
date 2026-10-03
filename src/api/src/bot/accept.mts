@@ -1,6 +1,7 @@
 import { SessionRuleError } from '../sessions/session.mts'
 import { cardMessage, userFromActivity, type BotDependencies } from './bot-context.mts'
 import { summaryCard } from './cards/summary-card.mts'
+import { describeError } from './describe-error.mts'
 
 import type { AcceptSubmission } from '../contracts/requests.mts'
 import type { ITaskSubmitInvokeActivity, TaskModuleResponse } from '@microsoft/teams.api'
@@ -32,7 +33,7 @@ export async function acceptVote({ sessions }: BotDependencies, { activity, api,
 	const { session, average } = accepted
 	if (session.card) {
 		await api.conversations.updateActivity(session.card.conversationId, session.card.activityId, cardMessage(summaryCard(session, average)))
-			.catch((error: unknown) => log.error('Could not replace the vote card with the summary', error))
+			.catch((error: unknown) => log.error(`Could not replace the vote card with the summary\n${describeError(error)}`))
 	}
 
 	// No body closes the dialog without a message.

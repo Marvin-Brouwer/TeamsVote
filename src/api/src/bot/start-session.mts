@@ -1,3 +1,5 @@
+import { setTimeout as delay } from 'node:timers/promises'
+
 import { isDeckId, type DeckId } from '../contracts/decks.mts'
 import { maxTopicLength } from '../contracts/topic.mts'
 import { cardMessage, type BotDependencies } from './bot-context.mts'
@@ -39,6 +41,22 @@ export async function startSession({ sessions }: Pick<BotDependencies, 'sessions
 
 	sessions.attachCard(session.id, { conversationId: request.conversationId, activityId: sent.id })
 	return session
+}
+
+/**
+ * `startSession` for a conversation TVote was added to a moment ago. Teams can refuse the card for a little while after
+ * the install, so a 403 is tried again after each of the given delays before it counts.
+ */
+export async function startSessionAfterInstall(dependencies: Pick<BotDependencies, 'sessions'>, request: StartRequest, retryDelaysMs: readonly number[]): Promise<Session> {
+	for (const delayMs of retryDelaysMs) {
+		try {
+			return await startSession(dependencies, request)
+		} catch (error) {
+			if (!(error instanceof NotInConversationError)) throw error
+			await delay(delayMs)
+		}
+	}
+	return await startSession(dependencies, request)
 }
 
 // The Teams SDK sends with axios, whose errors carry the response. Checked by shape, axios isn't ours to import.
