@@ -1,16 +1,16 @@
-import { cardAttachment, stripMentionsText } from '@microsoft/teams.api'
+import { stripMentionsText } from '@microsoft/teams.api'
 import { App, ExpressAdapter } from '@microsoft/teams.apps'
 import { ConsoleLogger, type LogLevel } from '@microsoft/teams.common'
 
 import { acceptVote } from './accept.mts'
 import { cardMessage, userFromActivity, type BotDependencies } from './bot-context.mts'
 import { helpCard } from './cards/help-card.mts'
-import { installCard, isAfterInstall } from './cards/install-card.mts'
 import { voteDialogId } from './cards/vote-card.mts'
 import { describeError } from './describe-error.mts'
 import { parseMentionCommand } from './mention-command.mts'
 import { createRecentInstalls } from './recent-installs.mts'
-import { NotInConversationError, readStartSubmission, startSession, startSessionAfterInstall } from './start-session.mts'
+import { openStartDialog, startDialogTask } from './start-dialog.mts'
+import { isFromStartDialog, NotInConversationError, readStartSubmission, startSession, startSessionAfterInstall } from './start-session.mts'
 import { openVoteDialog, voteDialogTask } from './vote-dialog.mts'
 
 import type { Session } from '../sessions/session.mts'
@@ -18,6 +18,7 @@ import type { MessageActivityInput, TaskModuleResponse } from '@microsoft/teams.
 import type { Express } from 'express'
 
 const installFailedMessage = 'TVote couldn\'t be added to this chat. Try again, or ask your Teams admin whether apps can be added here.'
+const notInConversationMessage = 'TVote isn\'t in this chat. Close this, and start the estimate again to add it.'
 const postFailedMessage = 'The vote card couldn\'t be posted. Please try again.'
 // About three and a half seconds in all, well within the time Teams waits for an answer.
 const retryDelaysAfterInstallMs = [500, 1000, 2000]
@@ -77,17 +78,34 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 		}
 	})
 
-	// "…" under the message box → TVote → Start estimate. The start page submits topic and deck.
-	// When TVote isn't in the chat yet, the install card's button submits them again, after Teams has added the bot.
+	// "+" under the message box → TVote → Start estimate. Teams asks what to open: the start dialog, or first the
+	// install card when TVote isn't in this chat yet. This waits for the bot, so right after a quiet spell it can time out.
+	app.on('message.ext.open', async ({ activity, api }) => {
+		try {
+			return await openStartDialog(dependencies.webUrl, async () => await api.conversations.getMemberById(activity.conversation.id, activity.from.id))
+		} catch (error) {
+			// Can't tell, so open the dialog anyway: posting the card will say what's wrong if it fails too.
+			logger.error(`Could not check whether TVote is in the conversation\n${describeError(error)}`)
+			return { task: { type: 'continue', value: startDialogTask(dependencies.webUrl) } }
+		}
+	})
+
+	// The start dialog submits topic and deck. The install card's button lands here too, once Teams has added the bot,
+	// without any of ours in it: that one gets the start dialog.
 	app.on('message.ext.submit', async context => {
 		const { activity } = context
+		if (!isFromStartDialog(activity.value.data)) {
+			logger.info('TVote was added to the conversation, opening the start dialog')
+			return { task: { type: 'continue', value: startDialogTask(dependencies.webUrl) } }
+		}
+
 		const submission = readStartSubmission(activity.value.data)
 		if (typeof submission === 'string') return { task: { type: 'message', value: submission } }
 
 		const admin = userFromActivity(activity.from)
 		const conversationId = activity.conversation.id
-		// Teams doesn't always pass the install button's flag back, so the install event counts too.
-		const justInstalled = recentInstalls.has(conversationId) || isAfterInstall(activity.value.data)
+		// Teams can refuse the card for a moment after adding the bot, so a start right after an install gets retries.
+		const justInstalled = recentInstalls.has(conversationId)
 		const request = {
 			...submission,
 			admin,
@@ -105,23 +123,8 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 				logger.error(`Could not post a vote card from the message extension\n${describeError(error)}`)
 				return { task: { type: 'message', value: postFailedMessage } }
 			}
-			// Never offer the install card twice: Teams won't take it after an install, and shows "can't reach the app".
-			if (justInstalled) {
-				logger.warn(`Still not allowed to post after TVote was added to the conversation\n${describeError(error.cause)}`)
-				return { task: { type: 'message', value: installFailedMessage } }
-			}
-			logger.info(`Not in the conversation yet, offering the install card\n${describeError(error.cause)}`)
-			return {
-				task: {
-					type: 'continue',
-					value: {
-						title: 'Start an estimate',
-						card: cardAttachment('adaptive', installCard(submission)),
-						// No height: Teams fits the dialog to the card, plus the consent text it adds below the button.
-						width: 'medium',
-					},
-				},
-			}
+			logger.warn(`Not allowed to post the vote card${justInstalled ? ', right after TVote was added' : ''}\n${describeError(error.cause)}`)
+			return { task: { type: 'message', value: justInstalled ? installFailedMessage : notInConversationMessage } }
 		}
 
 		logger.info(justInstalled ? 'Posted the vote card after TVote was added to the conversation' : 'Posted the vote card')

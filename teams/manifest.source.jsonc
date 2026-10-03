@@ -59,14 +59,9 @@
 					"title": "Start estimate",
 					"description": "Ask this chat for an estimate",
 					"context": ["compose", "commandBox"],
-					// The dialog comes straight from the web app, so it opens even while the API is still waking up.
-					"fetchTask": false,
-					"taskInfo": {
-						"title": "Start an estimate",
-						"width": "medium",
-						"height": "medium",
-						"url": "<WEB_URL>/teams/start/"
-					}
+					// Teams asks the bot what to open: the start dialog, or first the install card when TVote isn't in the
+					// chat yet. Teams only adds a bot to a chat from a card shown here. See src/api/src/bot/start-dialog.mts.
+					"fetchTask": true
 				}
 			]
 		}

@@ -1,6 +1,6 @@
 import { route } from '@rooted/router/routes'
 
-/** The message extension opens this directly, see `taskInfo` in the Teams manifest. */
+/** The bot opens this for "Start estimate" under the message box, once TVote is in the chat. See `start-dialog.mts` in the API. */
 export const StartRoute = route`/teams/start/`({
 	async resolve({ create }) {
 		const { StartPage } = await import('./start.mts')
