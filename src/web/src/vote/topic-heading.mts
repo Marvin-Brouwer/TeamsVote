@@ -19,7 +19,12 @@ export const TopicHeading = component<TopicHeadingOptions>({
 			element('h1', {
 				classes: styles.title,
 				children: topic.kind === 'link'
-					? element('a', { href: topic.url, target: '_blank', rel: 'noopener noreferrer', textContent: topic.label })
+					? element('a', {
+						href: topic.url,
+						target: '_blank',
+						rel: 'noopener noreferrer',
+						textContent: topic.label,
+					})
 					: topic.text,
 			}),
 			element('p', {

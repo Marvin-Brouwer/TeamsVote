@@ -4,7 +4,9 @@ import { route, token } from '@rooted/router/routes'
 export const VoteRoute = route`/teams/vote/${token('session', String)}/`({
 	async resolve({ create, tokens }) {
 		const { VotePage } = await import('./vote.mts')
-		return create(VotePage, { sessionId: tokens.session })
+		return create(VotePage, {
+			sessionId: tokens.session,
+		})
 	},
 	seo: {
 		title: 'Vote',

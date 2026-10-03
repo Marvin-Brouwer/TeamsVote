@@ -21,35 +21,63 @@ export const ParticipantList = component<ParticipantListOptions>({
 	name: 'participant-list',
 	styles,
 	onMount({ append, element, options, signal }) {
-		const list = element('ul', { classes: styles.list, aria: { label: 'Participants' } })
-		const average = element('p', { classes: styles.average, aria: { live: 'polite' } })
+		const list = element('ul', {
+			classes: styles.list,
+			aria: {
+				label: 'Participants',
+			},
+		})
+		const average = element('p', {
+			classes: styles.average,
+			aria: {
+				live: 'polite',
+			},
+		})
 		append(list, average)
 
 		function badge(look: BadgeLook) {
-			return element('fluent-badge', { appearance: look.appearance, color: look.color, textContent: look.text })
+			return element('fluent-badge', {
+				appearance: look.appearance,
+				color: look.color,
+				textContent: look.text,
+			})
 		}
 
 		function render(view: SessionView | undefined) {
 			if (!view) return
 
-			list.replaceChildren(...view.participants.map(participant => element('li', {
-				classes: styles.participant,
-				children: [
-					element('span', {
-						classes: styles.name,
-						textContent: participant.id === view.you.id ? `${participant.name} (you)` : participant.name,
-					}),
-					participant.admin ? element('span', { classes: styles.role, textContent: 'host' }) : undefined,
-					badge(participantBadge(participant, view.revealed)),
-				],
-			})))
+			list.replaceChildren(
+				...view.participants.map(participant => element('li', {
+					classes: styles.participant,
+					children: [
+						element('span', {
+							classes: styles.name,
+							textContent: participant.id === view.you.id ? `${participant.name} (you)` : participant.name,
+						}),
+						participant.admin
+							? element('span', {
+								classes: styles.role,
+								textContent: 'host',
+							})
+							: undefined,
+						badge(participantBadge(participant, view.revealed)),
+					],
+				})),
+			)
 
-			average.replaceChildren(...(view.revealed
-				? [
-					element('span', { textContent: 'Average' }),
-					element('strong', { classes: styles.averageValue, textContent: view.average ?? '—' }),
-				]
-				: []))
+			average.replaceChildren(
+				...(view.revealed
+					? [
+						element('span', {
+							textContent: 'Average',
+						}),
+						element('strong', {
+							classes: styles.averageValue,
+							textContent: view.average ?? '—',
+						}),
+					]
+					: []),
+			)
 		}
 
 		render(options.session.value)

@@ -22,7 +22,10 @@ export const AdminPanel = component<AdminPanelOptions>({
 	styles,
 	onMount({ append, element, options, signal }) {
 		const { session, client, host } = options
-		const error = element('p', { classes: styles.error, role: 'alert' })
+		const error = element('p', {
+			classes: styles.error,
+			role: 'alert',
+		})
 
 		async function run(action: () => Promise<void>) {
 			error.textContent = ''
@@ -36,16 +39,22 @@ export const AdminPanel = component<AdminPanelOptions>({
 		const skipButton = element('fluent-button', {
 			appearance: 'subtle',
 			textContent: 'Skip my vote',
-			on: { click: () => void run(() => client.vote(skipVote)) },
+			on: {
+				click: () => void run(() => client.vote(skipVote)),
+			},
 		})
 		const revealButton = element('fluent-button', {
 			appearance: 'primary',
 			textContent: 'Show votes',
-			on: { click: () => void run(() => client.reveal()) },
+			on: {
+				click: () => void run(() => client.reveal()),
+			},
 		})
 		const revoteButton = element('fluent-button', {
 			textContent: 'Re-vote',
-			on: { click: () => void run(() => client.reset()) },
+			on: {
+				click: () => void run(() => client.reset()),
+			},
 		})
 		const acceptButton = element('fluent-button', {
 			appearance: 'primary',

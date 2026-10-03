@@ -13,11 +13,15 @@ import { StartForm } from './start-form.mts'
 export const StartPage = component({
 	name: 'start-page',
 	async onMount({ replace, create, signal }) {
-		replace(create(WakingUp))
+		replace(
+			create(WakingUp),
+		)
 
 		const host = await connectTeams()
 		if (host.kind === 'browser') {
-			replace(create(OpenInTeams))
+			replace(
+				create(OpenInTeams),
+			)
 			return
 		}
 
@@ -27,6 +31,10 @@ export const StartPage = component({
 			return
 		}
 
-		replace(create(StartForm, { host }))
+		replace(
+			create(StartForm, {
+				host,
+			}),
+		)
 	},
 })

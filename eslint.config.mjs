@@ -2,6 +2,8 @@ import eslint from '@eslint/js'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
+import rootedOptionsNewline from './eslint/rooted-options-newline.mjs'
+
 export default tseslint.config(
 	{
 		ignores: ['**/dist/**', '**/node_modules/**', '**/*.g.mts', 'teams/dist/**', '**/.eslintcache'],
@@ -36,6 +38,16 @@ export default tseslint.config(
 	{
 		files: ['src/web/**/*.mts'],
 		languageOptions: { globals: globals.browser },
+		plugins: {
+			local: {
+				rules: {
+					'rooted-options-newline': rootedOptionsNewline,
+				},
+			},
+		},
+		rules: {
+			'local/rooted-options-newline': 'error',
+		},
 	},
 	{
 		files: ['**/tests/**/*.mts'],
