@@ -1,5 +1,5 @@
 import { component } from '@rooted/components'
-import { decks, parseTopic, type DeckId } from '@teams-vote/api/contracts'
+import { decks, parseTopic, type DeckId } from '@t-vote/api/contracts'
 
 import styles from './topic-heading.css'
 
@@ -19,12 +19,7 @@ export const TopicHeading = component<TopicHeadingOptions>({
 			element('h1', {
 				classes: styles.title,
 				children: topic.kind === 'link'
-					? element('a', {
-						href: topic.url,
-						target: '_blank',
-						rel: 'noopener noreferrer',
-						textContent: topic.label,
-					})
+					? element('a', { href: topic.url, target: '_blank', rel: 'noopener noreferrer', textContent: topic.label })
 					: topic.text,
 			}),
 			element('p', {

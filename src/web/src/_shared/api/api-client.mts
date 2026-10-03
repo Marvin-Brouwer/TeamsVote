@@ -1,6 +1,6 @@
 import { createStore } from '@rooted/store'
 
-import type { ErrorResponse, VoteRequest } from '@teams-vote/api/contracts'
+import type { ErrorResponse, VoteRequest } from '@t-vote/api/contracts'
 
 export const apiUrl = import.meta.env.VITE_API_URL
 
@@ -42,35 +42,20 @@ export async function errorMessage(response: Response): Promise<string> {
 /** The calls a vote dialog makes, all authorised by the session token the bot handed out. */
 export function sessionClient(sessionId: string, token: string) {
 	const base = `/api/sessions/${encodeURIComponent(sessionId)}`
-	const headers = {
-		'Authorization': `Bearer ${token}`,
-		'Content-Type': 'application/json',
-	}
+	const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
 
 	return {
 		sessionId,
 		token,
 		async vote(vote: string): Promise<void> {
-			const body: VoteRequest = {
-				vote,
-			}
-			await apiRequest(`${base}/vote`, {
-				method: 'POST',
-				headers,
-				body: JSON.stringify(body),
-			})
+			const body: VoteRequest = { vote }
+			await apiRequest(`${base}/vote`, { method: 'POST', headers, body: JSON.stringify(body) })
 		},
 		async reveal(): Promise<void> {
-			await apiRequest(`${base}/reveal`, {
-				method: 'POST',
-				headers,
-			})
+			await apiRequest(`${base}/reveal`, { method: 'POST', headers })
 		},
 		async reset(): Promise<void> {
-			await apiRequest(`${base}/reset`, {
-				method: 'POST',
-				headers,
-			})
+			await apiRequest(`${base}/reset`, { method: 'POST', headers })
 		},
 		eventsUrl: `${apiUrl}${base}/events`,
 	}

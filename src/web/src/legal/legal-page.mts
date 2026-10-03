@@ -13,15 +13,8 @@ export const LegalPage = component<LegalPageOptions>({
 	name: 'legal-page',
 	styles,
 	onMount({ append, create, options }) {
-		append(
-			create(ContentPage, {
-				children: [
-					create(Markdown, {
-						source: options.source,
-						classes: styles.document,
-					}),
-				],
-			}),
-		)
+		append(create(ContentPage, {
+			children: [create(Markdown, { source: options.source, classes: styles.document })],
+		}))
 	},
 })

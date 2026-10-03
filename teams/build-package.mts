@@ -51,7 +51,7 @@ if (leftOver) {
 const manifestJson = JSON.stringify(JSON.parse(manifest), undefined, 2)
 
 const outputDirectory = path.join(teamsDirectory, 'dist')
-const outputFile = path.join(outputDirectory, `teamsvote-${version}.zip`)
+const outputFile = path.join(outputDirectory, `tvote-${version}.zip`)
 mkdirSync(outputDirectory, { recursive: true })
 writeFileSync(outputFile, zipSync({
 	'manifest.json': new TextEncoder().encode(manifestJson),

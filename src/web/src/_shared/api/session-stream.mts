@@ -1,4 +1,4 @@
-import { sessionStateEvent, type SessionView } from '@teams-vote/api/contracts'
+import { sessionStateEvent, type SessionView } from '@t-vote/api/contracts'
 
 import { isAbortError } from './abort.mts'
 import { ApiError, errorMessage, type SessionClient } from './api-client.mts'
@@ -25,9 +25,7 @@ export async function followSession(client: SessionClient, signal: AbortSignal, 
 	while (!signal.aborted) {
 		try {
 			const response = await fetch(client.eventsUrl, {
-				headers: {
-					Authorization: `Bearer ${client.token}`,
-				},
+				headers: { Authorization: `Bearer ${client.token}` },
 				cache: 'no-store',
 				signal,
 			})
@@ -68,9 +66,7 @@ async function* readServerSentEvents(body: ReadableStream<Uint8Array>): AsyncGen
 		for (;;) {
 			const { done, value } = await reader.read()
 			if (done) return
-			buffer += decoder.decode(value, {
-				stream: true,
-			})
+			buffer += decoder.decode(value, { stream: true })
 
 			let boundary = buffer.indexOf('\n\n')
 			while (boundary !== -1) {
@@ -94,11 +90,7 @@ function parseEvent(block: string): ServerSentEvent | undefined {
 		if (line.startsWith('event:')) name = line.slice('event:'.length).trim()
 		if (line.startsWith('data:')) data.push(line.slice('data:'.length).trimStart())
 	}
-	if (data.length === 0) return undefined
-	return {
-		name,
-		data: data.join('\n'),
-	}
+	return data.length === 0 ? undefined : { name, data: data.join('\n') }
 }
 
 function delay(ms: number, signal: AbortSignal): Promise<void> {
@@ -107,8 +99,6 @@ function delay(ms: number, signal: AbortSignal): Promise<void> {
 		signal.addEventListener('abort', () => {
 			clearTimeout(timer)
 			resolve()
-		}, {
-			once: true,
-		})
+		}, { once: true })
 	})
 }

@@ -28,11 +28,11 @@ jobs:
       - name: Lint
         run: pnpm exec eslint src/api
       - name: Typecheck
-        run: pnpm --filter @teams-vote/api typecheck
+        run: pnpm --filter @t-vote/api typecheck
       - name: Test
         run: pnpm exec vitest run --project api
       - name: Build
-        run: pnpm --filter @teams-vote/api build
+        run: pnpm --filter @t-vote/api build
 
   deploy:
     needs: check

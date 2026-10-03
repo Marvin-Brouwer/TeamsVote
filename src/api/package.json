@@ -1,5 +1,5 @@
 {
-  "name": "@teams-vote/api",
+  "name": "@t-vote/api",
   "private": true,
   "type": "module",
   "description": "TVote session API and Teams bot. Runs on Render, keeps sessions in memory only.",

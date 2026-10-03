@@ -11,7 +11,7 @@ import type { SessionClient } from '../_shared/api/api-client.mts'
 import type { TeamsHost } from '../_shared/teams/teams-host.mts'
 import type { ConnectionState, SessionStore } from './vote.store.mts'
 import type { Store } from '@rooted/store'
-import type { SessionView } from '@teams-vote/api/contracts'
+import type { SessionView } from '@t-vote/api/contracts'
 
 export type VoteBoardOptions = {
 	readonly session: SessionStore
@@ -32,66 +32,33 @@ export const VoteBoard = component<VoteBoardOptions>({
 		const initial = session.value
 		if (!initial) return
 
-		const status = element('div', {
-			classes: styles.status,
-			aria: {
-				live: 'polite',
-			},
-		})
+		const status = element('div', { classes: styles.status, aria: { live: 'polite' } })
 
-		append(
-			element('div', {
-				classes: styles.root,
-				children: [
-					create(TopicHeading, {
-						topic: initial.topic,
-						deck: initial.deck,
-					}),
-					status,
-					create(ParticipantList, {
-						session,
-					}),
-					element('div', {
-						classes: styles.controls,
-						children: [
-							create(CardPicker, {
-								session,
-								client,
-							}),
-							initial.you.admin
-								? create(AdminPanel, {
-									session,
-									client,
-									host,
-								})
-								: undefined,
-						],
-					}),
-				],
-			}),
-		)
+		append(element('div', {
+			classes: styles.root,
+			children: [
+				create(TopicHeading, { topic: initial.topic, deck: initial.deck }),
+				status,
+				create(ParticipantList, { session }),
+				element('div', {
+					classes: styles.controls,
+					children: [
+						create(CardPicker, { session, client }),
+						initial.you.admin ? create(AdminPanel, { session, client, host }) : undefined,
+					],
+				}),
+			],
+		}))
 
 		function showStatus() {
 			const view = session.value
 			if (view?.ended) {
-				status.replaceChildren(
-					create(Notice, {
-						intent: 'success',
-						message: endedMessage(view),
-					}),
-				)
+				status.replaceChildren(create(Notice, { intent: 'success', message: endedMessage(view) }))
 				return
 			}
-			status.replaceChildren(
-				...(connection.value === 'reconnecting'
-					? [
-						create(Notice, {
-							intent: 'warning',
-							message: 'Lost the connection, reconnecting…',
-						}),
-					]
-					: []),
-			)
+			status.replaceChildren(...(connection.value === 'reconnecting'
+				? [create(Notice, { intent: 'warning', message: 'Lost the connection, reconnecting…' })]
+				: []))
 		}
 
 		connection.on('change', signal, showStatus)
@@ -100,9 +67,7 @@ export const VoteBoard = component<VoteBoardOptions>({
 			// The admin's dialog closes itself by accepting. Everyone else's closes after a moment to read the result.
 			if (detail.state?.ended && !detail.state.you.admin) {
 				setTimeout(() => {
-					host.submit({
-						action: 'close',
-					})
+					host.submit({ action: 'close' })
 				}, closeAfterEndMs)
 			}
 		})

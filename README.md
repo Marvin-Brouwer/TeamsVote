@@ -17,7 +17,7 @@ Decks: modified Fibonacci (default), Fibonacci, and t-shirt sizes. `?` counts as
 
 | Folder | What | Hosted on |
 |---|---|---|
-| [`src/api`](./src/api) | The session API and the Teams bot, on the [Teams SDK](https://www.npmjs.com/package/@microsoft/teams.apps). Keeps sessions in memory only. Also exports the contracts the web app uses (`@teams-vote/api/contracts`). | Render, Frankfurt |
+| [`src/api`](./src/api) | The session API and the Teams bot, on the [Teams SDK](https://www.npmjs.com/package/@microsoft/teams.apps). Keeps sessions in memory only. Also exports the contracts the web app uses (`@t-vote/api/contracts`). | Render, Frankfurt |
 | [`src/web`](./src/web) | The start and vote dialogs, plus the home and legal pages. Built with [rooted](https://github.com/Marvin-Brouwer/rooted) and Fluent 2 web components, themed with the Teams tokens. | Azure Static Web Apps |
 | [`teams`](./teams) | The Teams app manifest and the script that packages it. | Uploaded to Teams |
 | [`infra`](./infra) | Bicep for the Azure and Entra ID side: app registrations, Azure Bot, Static Web App. | Deployed by hand |

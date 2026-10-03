@@ -29,5 +29,5 @@ jobs:
       - name: Upload package
         uses: actions/upload-artifact@v5
         with:
-          name: teamsvote-${{ steps.package.outputs.version }}
+          name: tvote-${{ steps.package.outputs.version }}
           path: ${{ steps.package.outputs.package }}

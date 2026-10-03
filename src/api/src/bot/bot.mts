@@ -20,7 +20,7 @@ const notInConversationMessage = 'Add TVote to this chat first: open the chat de
  * Credentials come from `CLIENT_ID`, `CLIENT_SECRET` and `TENANT_ID`, which the Teams SDK reads itself.
  */
 export async function createBot(server: Express, dependencies: BotDependencies, logLevel: LogLevel): Promise<App> {
-	const logger = new ConsoleLogger('teams-vote', { level: logLevel })
+	const logger = new ConsoleLogger('t-vote', { level: logLevel })
 	const app = new App({
 		logger,
 		httpServerAdapter: new ExpressAdapter(server, { logger }),

@@ -21,7 +21,7 @@ export function readConfiguration(environment: NodeJS.ProcessEnv = process.env):
 	const development = environment.NODE_ENV === 'development'
 
 	const webUrl = environment.WEB_URL ?? (development ? 'http://localhost:5173' : undefined)
-	if (!webUrl) throw new Error('WEB_URL is not set. It should be the origin of the web app, like https://teamsvote.example.com')
+	if (!webUrl) throw new Error('WEB_URL is not set. It should be the origin of the web app, like https://tvote.example.com')
 
 	// A random secret in development means tokens don't survive a restart, which is fine there.
 	const sessionTokenSecret = environment.SESSION_TOKEN_SECRET ?? (development ? randomBytes(48).toString('base64') : undefined)

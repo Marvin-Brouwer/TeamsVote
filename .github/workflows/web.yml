@@ -31,7 +31,7 @@ jobs:
         env:
           WEB_URL: ${{ vars.WEB_URL }}
           VITE_API_URL: ${{ vars.API_URL }}
-        run: pnpm --filter @teams-vote/web build
+        run: pnpm --filter @t-vote/web build
       - name: Upload build artifact
         uses: actions/upload-artifact@v5
         with:

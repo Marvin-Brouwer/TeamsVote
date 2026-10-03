@@ -1,5 +1,5 @@
 {
-  "name": "@teams-vote/web",
+  "name": "@t-vote/web",
   "private": true,
   "type": "module",
   "description": "The TVote dialogs and pages. Static, built with rooted, hosted on Azure Static Web Apps.",
@@ -27,7 +27,7 @@
     "@rooted-adapters/azure-static-webapp": "1.0.0-alpha.28",
     "@rooted/application": "1.0.0-alpha.41",
     "@rooted/seo": "1.0.0-alpha.19",
-    "@teams-vote/api": "workspace:*",
+    "@t-vote/api": "workspace:*",
     "happy-dom": "^20.14.5",
     "typescript": "~6.0.3",
     "vite": "^8.3.2",

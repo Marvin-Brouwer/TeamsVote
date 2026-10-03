@@ -1,5 +1,5 @@
 {
-  "name": "teams-vote",
+  "name": "t-vote",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
@@ -9,10 +9,10 @@
     "pnpm": ">=10.0.0"
   },
   "scripts": {
-    "dev": "concurrently --names api,web --prefix-colors blue,magenta \"pnpm --filter @teams-vote/api dev\" \"pnpm --filter @teams-vote/web dev\"",
+    "dev": "concurrently --names api,web --prefix-colors blue,magenta \"pnpm --filter @t-vote/api dev\" \"pnpm --filter @t-vote/web dev\"",
     "build": "pnpm -r --stream run build",
-    "deploy:build": "pnpm --filter @teams-vote/api build",
-    "deploy:start": "pnpm --filter @teams-vote/api start",
+    "deploy:build": "pnpm --filter @t-vote/api build",
+    "deploy:start": "pnpm --filter @t-vote/api start",
     "build:teams-package": "tsx teams/build-package.mts",
     "lint": "eslint --cache .",
     "lint:fix": "eslint --cache --fix .",
@@ -22,7 +22,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "^22.19.0",
     "concurrently": "^10.0.5",
     "dotenv": "^17.2.3",

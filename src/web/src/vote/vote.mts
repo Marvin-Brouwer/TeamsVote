@@ -19,26 +19,17 @@ export type VotePageOptions = {
 export const VotePage = component<VotePageOptions>({
 	name: 'vote-page',
 	async onMount({ replace, create, options, signal }) {
-		replace(
-			create(WakingUp),
-		)
+		replace(create(WakingUp))
 
 		const host = await connectTeams()
 		if (host.kind === 'browser') {
-			replace(
-				create(OpenInTeams),
-			)
+			replace(create(OpenInTeams))
 			return
 		}
 
 		const token = await sessionToken(options.sessionId, host.kind === 'development')
 		if (!token) {
-			replace(
-				create(Notice, {
-					intent: 'error',
-					message: 'This link is missing its key. Open the vote again from the card in the chat.',
-				}),
-			)
+			replace(create(Notice, { intent: 'error', message: 'This link is missing its key. Open the vote again from the card in the chat.' }))
 			return
 		}
 
@@ -49,14 +40,7 @@ export const VotePage = component<VotePageOptions>({
 		session.on('change', signal, ({ detail }) => {
 			if (!detail.state || connection.value !== 'connecting') return
 			connection.update(() => 'connected')
-			replace(
-				create(VoteBoard, {
-					session,
-					connection,
-					client,
-					host,
-				}),
-			)
+			replace(create(VoteBoard, { session, connection, client, host }))
 		})
 
 		void followSession(client, signal, {
@@ -68,12 +52,7 @@ export const VotePage = component<VotePageOptions>({
 				connection.update(() => connected ? 'connected' : 'reconnecting')
 			},
 			onRejected: error => {
-				replace(
-					create(Notice, {
-						intent: 'error',
-						message: error.message,
-					}),
-				)
+				replace(create(Notice, { intent: 'error', message: error.message }))
 			},
 		})
 	},

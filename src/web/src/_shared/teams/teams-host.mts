@@ -2,7 +2,7 @@ import { environment } from '@rooted/components'
 
 import { isTeamsTheme, themeStore } from '../theme/theme-store.mts'
 
-import type { DialogSubmission } from '@teams-vote/api/contracts'
+import type { DialogSubmission } from '@t-vote/api/contracts'
 
 /**
  * Where the page is running, and what it can hand back to Teams.
@@ -42,10 +42,7 @@ async function connect(): Promise<TeamsHost> {
 	try {
 		await withTimeout(app.initialize(), initializeTimeoutMs)
 	} catch {
-		return {
-			kind: 'browser',
-			submit: () => { /* Nothing to submit to outside Teams. */ },
-		}
+		return { kind: 'browser', submit: () => { /* Nothing to submit to outside Teams. */ } }
 	}
 
 	const { theme } = (await app.getContext()).app

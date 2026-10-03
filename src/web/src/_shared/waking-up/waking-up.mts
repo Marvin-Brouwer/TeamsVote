@@ -19,17 +19,10 @@ export const WakingUp = component({
 			textContent: 'Looks like you\'re the first one today, waking things up…',
 		})
 
-		append(
-			element('div', {
-				classes: styles.root,
-				children: [
-					element('fluent-spinner', {
-						size: 'medium',
-					}),
-					note,
-				],
-			}),
-		)
+		append(element('div', {
+			classes: styles.root,
+			children: [element('fluent-spinner', { size: 'medium' }), note],
+		}))
 
 		const timer = setTimeout(() => {
 			note.hidden = false

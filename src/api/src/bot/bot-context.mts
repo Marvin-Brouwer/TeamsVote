@@ -9,7 +9,7 @@ import type { IAdaptiveCard } from '@microsoft/teams.cards'
 export type BotDependencies = {
 	readonly sessions: SessionService
 	readonly tokens: SessionTokens
-	/** Origin of the web app, like `https://teamsvote.example.com`. No trailing slash. */
+	/** Origin of the web app, like `https://tvote.example.com`. No trailing slash. */
 	readonly webUrl: string
 }
 

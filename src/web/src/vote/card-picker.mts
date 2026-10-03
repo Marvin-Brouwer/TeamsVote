@@ -1,5 +1,5 @@
 import { component } from '@rooted/components'
-import { decks, unsureVote, type SessionView } from '@teams-vote/api/contracts'
+import { decks, unsureVote, type SessionView } from '@t-vote/api/contracts'
 
 import { ApiError, type SessionClient } from '../_shared/api/api-client.mts'
 import styles from './card-picker.css'
@@ -25,24 +25,18 @@ export const CardPicker = component<CardPickerOptions>({
 		if (!initial) return
 
 		const values = [...decks[initial.deck].cards.map(card => card.value), unsureVote]
-		const error = element('p', {
-			classes: styles.error,
-			role: 'alert',
-		})
+		const error = element('p', { classes: styles.error, role: 'alert' })
 
-		const buttons = new Map<string, ToggleButton>(values.map(value => [
-			value,
-			element('fluent-toggle-button', {
-				classes: styles.card,
-				textContent: value,
-				title: value === unsureVote ? 'I don\'t know' : `Vote ${value}`,
-				on: {
-					click() {
-						void vote(value)
-					},
+		const buttons = new Map<string, ToggleButton>(values.map(value => [value, element('fluent-toggle-button', {
+			classes: styles.card,
+			textContent: value,
+			title: value === unsureVote ? 'I don\'t know' : `Vote ${value}`,
+			on: {
+				click() {
+					void vote(value)
 				},
-			}),
-		]))
+			},
+		})]))
 
 		async function vote(value: string) {
 			error.textContent = ''
@@ -73,15 +67,10 @@ export const CardPicker = component<CardPickerOptions>({
 		const cards = element('div', {
 			classes: styles.cards,
 			role: 'group',
-			aria: {
-				label: 'Your estimate',
-			},
+			aria: { label: 'Your estimate' },
 			children: [...buttons.values()],
 		})
-		const area = element('div', {
-			classes: styles.area,
-			children: cards,
-		})
+		const area = element('div', { classes: styles.area, children: cards })
 		append(area, error)
 
 		// Capping the width of the centred, wrapping row is what makes the browser break it where we want.

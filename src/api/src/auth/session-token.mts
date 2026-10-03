@@ -10,8 +10,8 @@ export type SessionTokenClaims = {
 	readonly userName: string
 }
 
-const issuer = 'teams-vote-api'
-const audience = 'teams-vote-web'
+const issuer = 't-vote-api'
+const audience = 't-vote-web'
 const algorithm = 'HS256'
 
 export const sessionTokenLifetimeSeconds = 2 * 60 * 60

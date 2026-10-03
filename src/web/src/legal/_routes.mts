@@ -6,9 +6,7 @@ export const PrivacyRoute = route`/privacy/`({
 			import('./legal-page.mts'),
 			import('../../../../doc/privacy-policy.md'),
 		])
-		return create(LegalPage, {
-			source: privacy,
-		})
+		return create(LegalPage, { source: privacy })
 	},
 	seo: {
 		title: 'Privacy policy',
@@ -22,9 +20,7 @@ export const TermsRoute = route`/terms/`({
 			import('./legal-page.mts'),
 			import('../../../../doc/tos.md'),
 		])
-		return create(LegalPage, {
-			source: terms,
-		})
+		return create(LegalPage, { source: terms })
 	},
 	seo: {
 		title: 'Terms of service',

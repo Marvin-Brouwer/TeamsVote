@@ -13,15 +13,9 @@ const Router = router({
 })
 
 const Application = component({
-	name: 'teams-vote-application',
+	name: 't-vote-application',
 	onMount({ append, create }) {
-		append(
-			create(Router, {
-				scrollBehavior: {
-					scrollToTop: 'skip',
-				},
-			}),
-		)
+		append(create(Router, { scrollBehavior: { scrollToTop: 'skip' } }))
 	},
 })
 
