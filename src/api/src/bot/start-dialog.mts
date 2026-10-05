@@ -34,7 +34,7 @@ export async function openStartDialog(webUrl: string, checkMembership: () => Pro
 					card: cardAttachment('adaptive', installCard()),
 					// Microsoft's own install sample always sets a size. This fits the card plus the consent text Teams adds below it.
 					width: 480,
-					height: 320,
+					height: 360,
 				},
 			},
 		}
