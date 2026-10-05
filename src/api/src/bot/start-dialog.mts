@@ -32,9 +32,9 @@ export async function openStartDialog(webUrl: string, checkMembership: () => Pro
 				value: {
 					title: 'Start an estimate',
 					card: cardAttachment('adaptive', installCard()),
-					// Microsoft's own install sample always sets a height. 300px fits the card plus the consent text Teams adds below it.
-					width: 'medium',
-					height: 300,
+					// Microsoft's own install sample always sets a size. This fits the card plus the consent text Teams adds below it.
+					width: 480,
+					height: 320,
 				},
 			},
 		}

@@ -81,6 +81,13 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 	// "+" under the message box → TVote → Start estimate. Teams asks what to open: the start dialog, or first the
 	// install card when TVote isn't in this chat yet. This waits for the bot, so right after a quiet spell it can time out.
 	app.on('message.ext.open', async ({ activity, api }) => {
+		// After "Add TVote", Teams adds the bot and asks again. It can still refuse the member check for a moment then, and
+		// a second install card makes it give up with "can't reach the app". So skip the check after an install.
+		if (recentInstalls.has(activity.conversation.id)) {
+			logger.info('TVote was just added to the conversation, opening the start dialog')
+			return { task: { type: 'continue', value: startDialogTask(dependencies.webUrl) } }
+		}
+
 		try {
 			return await openStartDialog(
 				dependencies.webUrl,
@@ -96,8 +103,8 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 		}
 	})
 
-	// The start dialog submits topic and deck. The install card's button lands here too, once Teams has added the bot,
-	// without any of ours in it: that one gets the start dialog.
+	// The start dialog submits topic and deck. If Teams sends the install card's button here instead of asking again,
+	// it comes without any of ours in it: that one gets the start dialog too.
 	app.on('message.ext.submit', async context => {
 		const { activity } = context
 		if (!isFromStartDialog(activity.value.data)) {

@@ -25,20 +25,11 @@ describe('opening the start dialog', () => {
 			value: {
 				card: {
 					contentType: 'application/vnd.microsoft.card.adaptive',
-					content: {
-						actions: [
-							{
-								data: {
-									msteams: {
-										justInTimeInstall: true,
-									},
-								},
-							},
-						],
-					},
 				},
 			},
 		})
+		// The button sits in the card's body, so it can be on the left: look for its flag anywhere in the card.
+		expect(JSON.stringify(response)).toContain('"justInTimeInstall":true')
 	})
 
 	it('passes any other failure on', async () => {

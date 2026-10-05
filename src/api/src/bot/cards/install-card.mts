@@ -18,9 +18,19 @@ export function installCard(): IAdaptiveCard {
 		body: [
 			{ type: 'TextBlock', text: 'TVote isn\'t in this chat yet', weight: 'Bolder', wrap: true },
 			{ type: 'TextBlock', text: 'Add it to this chat, and it posts the vote card for everyone here.', isSubtle: true, wrap: true },
-		],
-		actions: [
-			{ type: 'Action.Submit', title: 'Add TVote', style: 'positive', data },
+			// Teams puts card actions on the right. In a column only as wide as the button, it sits on the left.
+			{
+				type: 'ColumnSet',
+				columns: [
+					{
+						type: 'Column',
+						width: 'auto',
+						items: [
+							{ type: 'ActionSet', actions: [{ type: 'Action.Submit', title: 'Add TVote', style: 'positive', data }] },
+						],
+					},
+				],
+			},
 		],
 	}
 }
