@@ -18,6 +18,7 @@ import type { MessageActivityInput, TaskModuleResponse } from '@microsoft/teams.
 import type { Express } from 'express'
 
 const installFailedMessage = 'TVote couldn\'t be added to this chat. Try again, or ask your Teams admin whether apps can be added here.'
+const oneOnOneMessage = 'TVote can\'t post in a chat between two people, Teams doesn\'t allow bots there. Start the estimate in a group chat, meeting or channel.'
 const notInConversationMessage = 'TVote isn\'t in this chat. Close this, and start the estimate again to add it.'
 const postFailedMessage = 'The vote card couldn\'t be posted. Please try again.'
 // About three and a half seconds in all, well within the time Teams waits for an answer.
@@ -97,6 +98,11 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 				},
 			)
 		} catch (error) {
+			// The check only fails like this in a personal conversation when it's between two people, not with TVote itself.
+			if (activity.conversation.conversationType === 'personal') {
+				logger.info(`Opened in a chat between two people, where the bot can't post\n${describeError(error)}`)
+				return { task: { type: 'message', value: oneOnOneMessage } }
+			}
 			// Can't tell, so open the dialog anyway: posting the card will say what's wrong if it fails too.
 			logger.error(`Could not check whether TVote is in the conversation\n${describeError(error)}`)
 			return { task: { type: 'continue', value: startDialogTask(dependencies.webUrl) } }

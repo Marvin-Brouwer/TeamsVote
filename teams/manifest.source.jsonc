@@ -28,6 +28,16 @@
 		"color": "color.png",
 		"outline": "outline.png"
 	},
+	// Only so TVote can be added to a meeting: Teams lists an app under a meeting's Apps, and adds it to the meeting chat
+	// with its bot, only when it has something for meetings. The panel itself explains how to start an estimate.
+	"configurableTabs": [
+		{
+			"configurationUrl": "<WEB_URL>/teams/configure/",
+			"canUpdateConfiguration": false,
+			"scopes": ["groupChat"],
+			"context": ["meetingSidePanel", "meetingChatTab", "meetingDetailsTab"]
+		}
+	],
 	"bots": [
 		{
 			"botId": "<BOT_CLIENT_ID>",
