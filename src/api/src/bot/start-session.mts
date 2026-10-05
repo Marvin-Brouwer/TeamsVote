@@ -59,11 +59,16 @@ export async function startSessionAfterInstall(dependencies: Pick<BotDependencie
 	return await startSession(dependencies, request)
 }
 
-// The Teams SDK sends with axios, whose errors carry the response. Checked by shape, axios isn't ours to import.
-function isForbidden(error: unknown): boolean {
+/** Whether Teams refused a request with a 403. The Teams SDK sends with axios, whose errors carry the response; checked by shape. */
+export function isForbidden(error: unknown): boolean {
 	if (typeof error !== 'object' || error === null || !('response' in error)) return false
 	const { response } = error
 	return typeof response === 'object' && response !== null && 'status' in response && response.status === 403
+}
+
+/** Whether a message extension submit comes from the start dialog, rather than from the install card's button. */
+export function isFromStartDialog(data: unknown): boolean {
+	return typeof data === 'object' && data !== null && 'action' in data && data.action === 'start'
 }
 
 /** Checks what the start dialog submitted. It came through Teams, but the page that built it is ours to distrust. */

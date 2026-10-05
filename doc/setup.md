@@ -95,7 +95,7 @@ Don't set `NODE_ENV=production`: pnpm would then skip the dev dependencies the b
 
 **→ note** the service id (`srv-…`, in the dashboard URL) and create an API key under Account settings → API keys.
 
-The free tier sleeps after about 15 minutes without traffic, and waking takes up to a minute. The start dialog shows a "waking things up" note while that happens. A click on a card's Vote button right after a quiet spell can still time out in Teams; clicking again works.
+The free tier sleeps after about 15 minutes without traffic, and waking takes up to a minute. Teams doesn't wait that long: the first **Start estimate** or **Vote** click after a quiet spell can fail with "can't reach the app", and clicking again works. Pinging the service to keep it awake goes against Render's policy, so that's the price of the free tier.
 
 ## 4. GitHub
 
@@ -138,11 +138,11 @@ Merge to `main` (or run the workflows by hand under Actions):
 
    These can take a few hours to apply, so do them on day one.
 3. **Upload the package:** Teams → Apps → Manage your apps → Upload an app → **Upload a custom app**, and pick the zip from step 5. The Teams Developer Portal (Apps → Import app) works too, and validates the package.
-4. **Nothing to add per chat.** The bot can only post cards in chats it's part of. The first time someone starts an estimate in a chat or meeting without TVote, the dialog shows **Add TVote and start**: one click adds the bot to that chat and posts the card. Typing `@TVote` only works after that, because Teams only suggests bots that are already in the chat.
+4. **Nothing to add per chat.** The bot can only post cards in chats it's part of. The first time someone opens **Start estimate** in a chat or meeting without TVote, the dialog shows **Add TVote**: one click adds the bot to that chat, and the start dialog opens. Typing `@TVote` only works after that, because Teams only suggests bots that are already in the chat.
 
 ## 7. Smoke test
 
-- In a chat without TVote, below the message box: **+** (or **…**) → TVote → **Start estimate**. Fill in a topic, Start, then **Add TVote and start**. A card appears and your vote dialog opens.
+- In a chat without TVote, below the message box: **+** (or **…**) → TVote → **Start estimate** → **Add TVote**. The start dialog opens: fill in a topic, Start. A card appears and your vote dialog opens.
 - In the same chat, send `@TVote help`, then `@TVote PROJ-1`. A vote card appears.
 - Do the same in a meeting chat.
 - Vote from two accounts, **Show votes**, **Re-vote**, vote again, **Accept**. The vote card turns into the result, and both dialogs close.

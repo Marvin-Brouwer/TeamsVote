@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { installCard, isAfterInstall } from '../src/bot/cards/install-card.mts'
-import { NotInConversationError, readStartSubmission, startSession, startSessionAfterInstall } from '../src/bot/start-session.mts'
+import { isFromStartDialog, NotInConversationError, startSession, startSessionAfterInstall } from '../src/bot/start-session.mts'
 import { createSessionEvents } from '../src/sessions/session-events.mts'
 import { createSessionService } from '../src/sessions/session-service.mts'
 import { createSessionStore } from '../src/sessions/session-store.mts'
@@ -98,25 +97,14 @@ describe('starting a session right after an install', () => {
 	})
 })
 
-describe('the install card', () => {
-	const submission = { topic: 'PROJ-1', deck: 't-shirt' } as const
-
-	function buttonData(): unknown {
-		const action = installCard(submission).actions?.[0]
-		return action && 'data' in action ? action.data : undefined
-	}
-
-	it('carries the topic and deck through the install, for the submit Teams sends after it', () => {
-		expect(readStartSubmission(buttonData())).toEqual(submission)
+describe('telling the start dialog apart from the install button', () => {
+	it('knows the start dialog by its action', () => {
+		expect(isFromStartDialog({ action: 'start', topic: 'PROJ-1', deck: 't-shirt' })).toBe(true)
 	})
 
-	it('marks that submit as coming back from an install', () => {
-		expect(isAfterInstall(buttonData())).toBe(true)
-	})
-
-	it('does not mistake a plain start for one', () => {
-		expect(isAfterInstall({ action: 'start', ...submission })).toBe(false)
-		expect(isAfterInstall({ msteams: {} })).toBe(false)
-		expect(isAfterInstall(undefined)).toBe(false)
+	it('takes anything else for the install button', () => {
+		expect(isFromStartDialog({ msteams: { justInTimeInstall: true } })).toBe(false)
+		expect(isFromStartDialog({})).toBe(false)
+		expect(isFromStartDialog(undefined)).toBe(false)
 	})
 })
