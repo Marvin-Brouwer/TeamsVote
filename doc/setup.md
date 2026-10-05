@@ -138,13 +138,16 @@ Merge to `main` (or run the workflows by hand under Actions):
 
    These can take a few hours to apply, so do them on day one.
 3. **Upload the package:** Teams → Apps → Manage your apps → Upload an app → **Upload a custom app**, and pick the zip from step 5. The Teams Developer Portal (Apps → Import app) works too, and validates the package.
-4. **Nothing to add per chat.** The bot can only post cards in chats it's part of. The first time someone opens **Start estimate** in a chat or meeting without TVote, the dialog shows **Add TVote**: one click adds the bot to that chat, and the start dialog opens. Typing `@TVote` only works after that, because Teams only suggests bots that are already in the chat.
+4. **Adding TVote where you vote.** The bot can only post cards in conversations it's part of:
+   - **Group chats and channels:** nothing to do up front. The first time someone opens **Start estimate** there, the dialog shows **Add TVote**: one click adds the bot, and the start dialog opens.
+   - **Meetings:** add TVote to the meeting first, through **Apps** in the meeting (or **+** at the top of the meeting chat). That adds the bot to the meeting chat, and puts a short how-to in the side panel. In our tests, the one-click **Add TVote** didn't install anything in a meeting chat.
+   - **Chats between two people:** not possible, Teams doesn't allow bots there. **Start estimate** says so.
 
 ## 7. Smoke test
 
 - In a chat without TVote, below the message box: **+** (or **…**) → TVote → **Start estimate** → **Add TVote**. The start dialog opens: fill in a topic, Start. A card appears and your vote dialog opens.
 - In the same chat, send `@TVote help`, then `@TVote PROJ-1`. A vote card appears.
-- Do the same in a meeting chat.
+- In a meeting: **Apps** → TVote → **Save**. The side panel shows the how-to. Then in the meeting chat: **+** → TVote → **Start estimate**, and the start dialog opens straight away.
 - Vote from two accounts, **Show votes**, **Re-vote**, vote again, **Accept**. The vote card turns into the result, and both dialogs close.
 - Switch Teams to dark, and to high contrast, with a dialog open. It should follow along.
 

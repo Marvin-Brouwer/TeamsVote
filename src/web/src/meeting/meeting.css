@@ -1,0 +1,18 @@
+.root {
+	display: block;
+	padding: var(--spacingVerticalXL, 20px) var(--spacingHorizontalXL, 20px);
+	max-width: 480px;
+	margin: 0 auto;
+}
+
+.steps {
+	padding-inline-start: var(--spacingHorizontalXL, 20px);
+}
+
+.steps li {
+	margin-bottom: var(--spacingVerticalS, 8px);
+}
+
+.note {
+	color: var(--colorNeutralForeground2);
+}
