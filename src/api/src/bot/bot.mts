@@ -82,7 +82,13 @@ export async function createBot(server: Express, dependencies: BotDependencies, 
 	// install card when TVote isn't in this chat yet. This waits for the bot, so right after a quiet spell it can time out.
 	app.on('message.ext.open', async ({ activity, api }) => {
 		try {
-			return await openStartDialog(dependencies.webUrl, async () => await api.conversations.getMemberById(activity.conversation.id, activity.from.id))
+			return await openStartDialog(
+				dependencies.webUrl,
+				async () => await api.conversations.getMemberById(activity.conversation.id, activity.from.id),
+				message => {
+					logger.info(message)
+				},
+			)
 		} catch (error) {
 			// Can't tell, so open the dialog anyway: posting the card will say what's wrong if it fails too.
 			logger.error(`Could not check whether TVote is in the conversation\n${describeError(error)}`)
