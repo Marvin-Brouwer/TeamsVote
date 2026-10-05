@@ -51,6 +51,8 @@ async function connect(): Promise<TeamsHost> {
 		if (isTeamsTheme(changed)) themeStore.update(() => changed)
 	})
 	document.documentElement.dataset.host = 'teams'
+	// Teams shows its own loading indicator until we say we're ready, and gives up with "can't reach the app" if we never do.
+	await app.notifySuccess()
 
 	return {
 		kind: 'teams',

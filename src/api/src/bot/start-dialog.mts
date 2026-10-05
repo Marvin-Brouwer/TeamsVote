@@ -18,25 +18,28 @@ export function startDialogTask(webUrl: string): UrlTaskModuleTaskInfo {
  * TVote isn't in the chat yet. Teams only adds the bot through that card when it's shown here, as the dialog opens.
  *
  * `checkMembership` asks Teams for the person opening the dialog, which it refuses with a 403 when the bot isn't
- * in the conversation. Any other failure is thrown.
+ * in the conversation. Any other failure is thrown. `log` hears which of the two it opens.
  */
-export async function openStartDialog(webUrl: string, checkMembership: () => Promise<unknown>): Promise<TaskModuleResponse> {
+export async function openStartDialog(webUrl: string, checkMembership: () => Promise<unknown>, log: (message: string) => void): Promise<TaskModuleResponse> {
 	try {
 		await checkMembership()
 	} catch (error) {
 		if (!isForbidden(error)) throw error
+		log('Not in the conversation yet, showing the install card')
 		return {
 			task: {
 				type: 'continue',
 				value: {
 					title: 'Start an estimate',
 					card: cardAttachment('adaptive', installCard()),
-					// No height: Teams fits the dialog to the card, plus the consent text it adds below the button.
-					width: 'medium',
+					// Microsoft's own install sample always sets a size. This fits the card plus the consent text Teams adds below it.
+					width: 480,
+					height: 320,
 				},
 			},
 		}
 	}
 
+	log('In the conversation, opening the start dialog')
 	return { task: { type: 'continue', value: startDialogTask(webUrl) } }
 }
