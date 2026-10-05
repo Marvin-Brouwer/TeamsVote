@@ -18,19 +18,11 @@ export function installCard(): IAdaptiveCard {
 		body: [
 			{ type: 'TextBlock', text: 'TVote isn\'t in this chat yet', weight: 'Bolder', wrap: true },
 			{ type: 'TextBlock', text: 'Add it to this chat, and it posts the vote card for everyone here.', isSubtle: true, wrap: true },
-			// Teams puts card actions on the right. In a column only as wide as the button, it sits on the left.
-			{
-				type: 'ColumnSet',
-				columns: [
-					{
-						type: 'Column',
-						width: 'auto',
-						items: [
-							{ type: 'ActionSet', actions: [{ type: 'Action.Submit', title: 'Add TVote', style: 'positive', data }] },
-						],
-					},
-				],
-			},
+		],
+		// The button has to be one of the card's own actions, which Teams aligns to the right. Teams only treats the card
+		// as an install card when it finds the flag there: anywhere else, it doesn't add the consent text or the bot.
+		actions: [
+			{ type: 'Action.Submit', title: 'Add TVote', style: 'positive', data },
 		],
 	}
 }

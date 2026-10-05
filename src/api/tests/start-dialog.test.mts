@@ -28,8 +28,24 @@ describe('opening the start dialog', () => {
 				},
 			},
 		})
-		// The button sits in the card's body, so it can be on the left: look for its flag anywhere in the card.
-		expect(JSON.stringify(response)).toContain('"justInTimeInstall":true')
+		// Teams only recognises the install button among the card's own actions, not in its body.
+		expect(response.task).toMatchObject({
+			value: {
+				card: {
+					content: {
+						actions: [
+							{
+								data: {
+									msteams: {
+										justInTimeInstall: true,
+									},
+								},
+							},
+						],
+					},
+				},
+			},
+		})
 	})
 
 	it('passes any other failure on', async () => {
