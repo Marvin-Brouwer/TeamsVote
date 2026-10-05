@@ -1,5 +1,6 @@
 import { environment } from '@rooted/components'
 
+import { trace } from '../diagnostics/trace.mts'
 import { isTeamsTheme, themeStore } from '../theme/theme-store.mts'
 
 import type { DialogSubmission } from '@t-vote/api/contracts'
@@ -39,11 +40,14 @@ async function connect(): Promise<TeamsHost> {
 	}
 
 	const { app, dialog } = await import('@microsoft/teams-js')
+	trace('Connecting to Teams')
 	try {
 		await withTimeout(app.initialize(), initializeTimeoutMs)
-	} catch {
+	} catch (error) {
+		trace('Not inside Teams, or Teams did not answer', error)
 		return { kind: 'browser', submit: () => { /* Nothing to submit to outside Teams. */ } }
 	}
+	trace('Connected to Teams')
 
 	const { theme } = (await app.getContext()).app
 	if (isTeamsTheme(theme)) themeStore.update(() => theme)
@@ -52,11 +56,17 @@ async function connect(): Promise<TeamsHost> {
 	})
 	document.documentElement.dataset.host = 'teams'
 	// Teams shows its own loading indicator until we say we're ready, and gives up with "can't reach the app" if we never do.
-	await app.notifySuccess()
+	try {
+		await app.notifySuccess()
+		trace('Told Teams the page is ready')
+	} catch (error) {
+		trace('Could not tell Teams the page is ready', error)
+	}
 
 	return {
 		kind: 'teams',
 		submit: result => {
+			trace(`Submitting "${result.action}" to Teams`)
 			dialog.url.submit(result)
 		},
 	}

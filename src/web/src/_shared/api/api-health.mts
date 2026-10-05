@@ -1,3 +1,4 @@
+import { trace } from '../diagnostics/trace.mts'
 import { isAbortError } from './abort.mts'
 import { apiUrl } from './api-client.mts'
 
@@ -9,12 +10,18 @@ const retryDelayMs = 2000
  * Network errors along the way are retried until `signal` aborts.
  */
 export async function waitForApi(signal: AbortSignal): Promise<void> {
+	trace('Waiting for the API')
 	while (!signal.aborted) {
 		try {
 			const response = await fetch(`${apiUrl}/health`, { signal, cache: 'no-store' })
-			if (response.ok) return
+			if (response.ok) {
+				trace('The API is up')
+				return
+			}
+			trace(`The API answered ${String(response.status)}, trying again`)
 		} catch (error) {
 			if (isAbortError(error)) throw error
+			trace('The API did not answer, trying again', error)
 		}
 		await delay(retryDelayMs, signal)
 	}
