@@ -1,6 +1,7 @@
 import { component } from '@rooted/components'
 
 import { waitForApi } from '../_shared/api/api-health.mts'
+import { trace } from '../_shared/diagnostics/trace.mts'
 import { connectTeams } from '../_shared/teams/teams-host.mts'
 import { OpenInTeams } from '../_shared/teams/open-in-teams.mts'
 import { WakingUp } from '../_shared/waking-up/waking-up.mts'
@@ -13,6 +14,7 @@ import { StartForm } from './start-form.mts'
 export const StartPage = component({
 	name: 'start-page',
 	async onMount({ replace, create, signal }) {
+		trace('Start dialog')
 		replace(
 			create(WakingUp),
 		)
@@ -31,6 +33,7 @@ export const StartPage = component({
 			return
 		}
 
+		trace('Showing the start form')
 		replace(
 			create(StartForm, {
 				host,

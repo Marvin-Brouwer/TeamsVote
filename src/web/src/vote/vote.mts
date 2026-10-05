@@ -3,6 +3,7 @@ import { createStore } from '@rooted/store'
 
 import { sessionClient } from '../_shared/api/api-client.mts'
 import { followSession } from '../_shared/api/session-stream.mts'
+import { trace } from '../_shared/diagnostics/trace.mts'
 import { Notice } from '../_shared/feedback/notice.mts'
 import { connectTeams } from '../_shared/teams/teams-host.mts'
 import { OpenInTeams } from '../_shared/teams/open-in-teams.mts'
@@ -19,6 +20,7 @@ export type VotePageOptions = {
 export const VotePage = component<VotePageOptions>({
 	name: 'vote-page',
 	async onMount({ replace, create, options, signal }) {
+		trace('Vote dialog')
 		replace(
 			create(WakingUp),
 		)
@@ -33,6 +35,7 @@ export const VotePage = component<VotePageOptions>({
 
 		const token = await sessionToken(options.sessionId, host.kind === 'development')
 		if (!token) {
+			trace('No session token in the URL')
 			replace(
 				create(Notice, {
 					intent: 'error',
@@ -49,6 +52,7 @@ export const VotePage = component<VotePageOptions>({
 		session.on('change', signal, ({ detail }) => {
 			if (!detail.state || connection.value !== 'connecting') return
 			connection.update(() => 'connected')
+			trace('Got the session, showing the vote board')
 			replace(
 				create(VoteBoard, {
 					session,
@@ -64,10 +68,12 @@ export const VotePage = component<VotePageOptions>({
 				session.update(() => view)
 			},
 			onConnectionChange: connected => {
+				trace(connected ? 'Following the session' : 'Lost the session stream, reconnecting')
 				if (connection.value === 'connecting') return
 				connection.update(() => connected ? 'connected' : 'reconnecting')
 			},
 			onRejected: error => {
+				trace(`The API refused the session: ${error.message}`)
 				replace(
 					create(Notice, {
 						intent: 'error',

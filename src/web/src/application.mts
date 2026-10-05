@@ -27,6 +27,9 @@ const Application = component({
 
 // Fluent, the theme and updates only make sense in a real browser. The pre-render gets the plain markup.
 if (environment.is('client')) {
+	const { trace, traceUncaughtErrors } = await import('./_shared/diagnostics/trace.mts')
+	traceUncaughtErrors()
+	trace('Page loaded')
 	const [{ followTheme }, { keepUpToDate }] = await Promise.all([
 		import('./_shared/theme/fluent.mts'),
 		import('./_shared/pwa/auto-update.mts'),
