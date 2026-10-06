@@ -1,14 +1,17 @@
-// The Azure Bot: ties the bot's app registration to the Teams channel and tells Microsoft where the bot listens.
-// It holds configuration only, no conversations or votes.
+// The Azure Bot: ties the bot's identity to the Teams channel and tells Microsoft where the bot listens.
+// It holds configuration only, no conversations or votes. Its type can't be changed after it's created.
 
 param name string
-param botClientId string
+@description('Client id of the bot\'s user-assigned managed identity. This is the bot id the Teams manifest uses.')
+param identityClientId string
+@description('Resource id of that managed identity.')
+param identityResourceId string
 param messagingEndpoint string
 
 resource bot 'Microsoft.BotService/botServices@2022-09-15' = {
   name: name
   // Global rather than the Europe region: Europe wasn't taking new customers when this was set up.
-  // It only affects where Microsoft's Bot Framework Service relays messages, the votes stay on Render.
+  // It only affects where Microsoft's Bot Framework Service relays messages, the votes stay in the App Service.
   location: 'global'
   kind: 'azurebot'
   sku: {
@@ -18,9 +21,10 @@ resource bot 'Microsoft.BotService/botServices@2022-09-15' = {
   properties: {
     displayName: 'TVote'
     endpoint: messagingEndpoint
-    msaAppId: botClientId
+    msaAppType: 'UserAssignedMSI'
+    msaAppId: identityClientId
+    msaAppMSIResourceId: identityResourceId
     msaAppTenantId: tenant().tenantId
-    msaAppType: 'SingleTenant'
   }
 }
 

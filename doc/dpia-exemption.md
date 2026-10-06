@@ -33,7 +33,7 @@ No secondary processing occurs.
 ## 3. Data Retention
 
 - All session data is held **in-memory only**  
-- Data is discarded automatically when the vote is accepted, after two hours without activity, or when the backend restarts  
+- Data is discarded automatically after two hours without activity, or when the backend restarts  
 - No personal data is persisted, logged, or exported
 
 ---
@@ -45,7 +45,7 @@ Given that:
 - Data is minimal and ephemeral  
 - No profiling or behavioral tracking occurs  
 - No sensitive categories are processed  
-- Data is processed entirely within the EU (Render, Frankfurt, Germany)  
+- Data is processed entirely within the EU (Microsoft Azure, West Europe, the Netherlands)  
 
 TVote poses **low or negligible risk** to the rights and freedoms of data subjects.
 

@@ -25,7 +25,7 @@
    - Teams conversation ID (group chat, meeting chat or channel)  
    - The topic and the votes  
 2. **Does your app transmit or store personal data outside Microsoft Teams?**  
-   `YES` Temporarily to an externally hosted backend for real-time coordination. All data is in-memory only and discarded at the end of the session. Backend is hosted in the EU (Render, Frankfurt).
+   `YES` Temporarily to the TVote bot on Microsoft Azure, for the vote cards. All data is in-memory only and discarded at the end of the session. The bot is hosted in the EU (Microsoft Azure App Service, West Europe).
 3. **Do you store personal data?**  
    `NO` No persistent storage exists.
 4. **Do you share data with third parties?**  
@@ -40,7 +40,7 @@
 ## 3. Authentication & Security
 
 1. **How is user authentication handled?**  
-   - Authentication is handled by Microsoft Teams through the bot. No sign-in or separate credentials are required. The bot issues a short-lived signed key per vote to the person opening it, and only the person who started a vote can reveal, reset or accept it.
+   - Authentication is handled by Microsoft Teams through the bot. No sign-in or separate credentials are required. Teams authenticates every click on a vote card, and only the person who started a vote can reveal or reset it. The bot itself signs in as an Azure managed identity, without a client secret.
 2. **How is personal data protected?**  
    - All communications are encrypted via HTTPS/TLS  
    - No personal data is stored or logged  
@@ -59,8 +59,7 @@
 2. **Offline behavior:**  
    - Not supported. Requires Microsoft Teams connectivity.
 3. **External dependencies:**  
-   - Externally hosted backend in EU (Render, Frankfurt) for ephemeral session coordination.  
-   - Static dialog pages on Microsoft Azure Static Web Apps (no personal data).
+   - Microsoft Azure App Service in the EU (West Europe): the TVote bot, for ephemeral vote sessions, and the static web pages and meeting tab (no personal data).
 4. **Error/downtime handling:**  
    - Votes cannot be cast if the backend is unavailable.  
    - No persistent data is lost since data is only in-memory per session.

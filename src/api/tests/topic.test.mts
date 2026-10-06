@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { parseTopic, topicTitle } from '../src/contracts/topic.mts'
+import { parseTopic, topicTitle } from '../src/sessions/topic.mts'
 
 describe('parseTopic', () => {
 	it('keeps plain text as text', () => {

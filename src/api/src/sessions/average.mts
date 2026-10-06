@@ -1,4 +1,4 @@
-import { decks, type DeckCard, type DeckId } from '../contracts/decks.mts'
+import { decks, type DeckCard, type DeckId } from './decks.mts'
 
 /**
  * The average of the votes, rounded to the nearest card in the deck.

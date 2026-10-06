@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 
-import type { DeckId } from '../contracts/decks.mts'
+import type { DeckId } from './decks.mts'
 import type { Session, SessionUser } from './session.mts'
 
 export type SessionStoreOptions = {

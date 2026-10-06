@@ -1,19 +1,10 @@
-import { accept, castVote, join, resetVotes, reveal, SessionRuleError } from './session.mts'
+import { castVote, resetVotes, reveal, SessionRuleError } from './session.mts'
 
-import type { SessionEvents } from './session-events.mts'
 import type { NewSession, SessionStore } from './session-store.mts'
 import type { Session, SessionCard, SessionUser } from './session.mts'
 
-export type AcceptedSession = {
-	readonly session: Session
-	readonly average: string | undefined
-}
-
-/**
- * Everything that changes a session goes through here, so every change is published to whoever is watching.
- * Used by both the HTTP routes and the bot.
- */
-export function createSessionService(store: SessionStore, events: SessionEvents) {
+/** Every change to a session goes through here. Sessions live in memory only, see `session-store.mts`. */
+export function createSessionService(store: SessionStore) {
 	function require(id: string): Session {
 		const session = store.get(id)
 		if (!session) throw new SessionRuleError(404, 'This vote has ended or expired.')
@@ -23,7 +14,6 @@ export function createSessionService(store: SessionStore, events: SessionEvents)
 	function change(id: string, apply: (session: Session) => void): Session {
 		const session = require(id)
 		apply(session)
-		events.publish(id)
 		return session
 	}
 
@@ -36,27 +26,28 @@ export function createSessionService(store: SessionStore, events: SessionEvents)
 			require(id).card = card
 		},
 
-		join: (id: string, user: SessionUser) => change(id, session => join(session, user)),
-		vote: (id: string, userId: string, vote: string) => change(id, session => castVote(session, userId, vote)),
-		reveal: (id: string, userId: string) => change(id, session => reveal(session, userId)),
-		reset: (id: string, userId: string) => change(id, session => resetVotes(session, userId)),
+		vote: (id: string, user: SessionUser, vote: string) => change(id, session => {
+			castVote(session, user, vote)
+		}),
+		reveal: (id: string, userId: string) => change(id, session => {
+			reveal(session, userId)
+		}),
+		reset: (id: string, userId: string) => change(id, session => {
+			resetVotes(session, userId)
+		}),
 
-		/** Ends the session for good: everyone watching gets the final state, then it's forgotten. */
-		accept(id: string, userId: string): AcceptedSession {
-			const session = require(id)
-			const average = accept(session, userId)
-			events.publish(id)
+		/** Forgets a session straight away, for one that never made it into the chat. */
+		drop(id: string): void {
 			store.delete(id)
-			return { session, average }
 		},
 
-		/** Ends and forgets every session that sat idle for too long. */
+		/**
+		 * Forgets every session that sat idle for too long. Their cards turn into the expired card on the next click,
+		 * or keep their result when the votes were shown.
+		 */
 		expireIdle(): Session[] {
 			const expired = store.sweep()
-			for (const session of expired) {
-				session.ended = true
-				events.publish(session.id)
-			}
+			for (const session of expired) session.ended = true
 			return expired
 		},
 	}

@@ -21,7 +21,7 @@
 	},
 	"description": {
 		"short": "Scrum voting, but simple",
-		"full": "Every planning poker tool does too much. TVote asks the chat for an estimate, lets everyone vote in a dialog, and replaces the card with the result. Votes live in memory for as long as the vote runs, nothing is stored."
+		"full": "Every planning poker tool does too much. TVote asks the meeting for an estimate, everyone votes right on the card in the chat, and the card turns into the result. Votes live in memory for as long as the vote runs, nothing is stored."
 	},
 	"accentColor": "#5B5FC7",
 	"icons": {
@@ -38,40 +38,25 @@
 			"context": ["meetingSidePanel", "meetingChatTab", "meetingDetailsTab"]
 		}
 	],
+	// The bot posts the start card and the vote cards, and handles every click on them. In meetings (group chats) and
+	// in its own chat. Channels can come back later.
 	"bots": [
 		{
 			"botId": "<BOT_CLIENT_ID>",
-			"scopes": ["groupChat", "team", "personal"],
+			"scopes": ["groupChat", "personal"],
 			"supportsFiles": false,
 			"supportsCalling": false,
 			"supportsVideo": false,
 			"isNotificationOnly": false,
 			"commandLists": [
 				{
-					"scopes": ["groupChat", "team", "personal"],
+					"scopes": ["groupChat", "personal"],
 					"commands": [
 						{
-							"title": "help",
-							"description": "How to start an estimate, and which decks there are"
+							"title": "start",
+							"description": "Posts the card to start an estimate"
 						}
 					]
-				}
-			]
-		}
-	],
-	"composeExtensions": [
-		{
-			"botId": "<BOT_CLIENT_ID>",
-			"commands": [
-				{
-					"id": "start-estimate",
-					"type": "action",
-					"title": "Start estimate",
-					"description": "Ask this chat for an estimate",
-					"context": ["compose", "commandBox"],
-					// Teams asks the bot what to open: the start dialog, or first the install card when TVote isn't in the
-					// chat yet. Teams only adds a bot to a chat from a card shown here. See src/api/src/bot/start-dialog.mts.
-					"fetchTask": true
 				}
 			]
 		}

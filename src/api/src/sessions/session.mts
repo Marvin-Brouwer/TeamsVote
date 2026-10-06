@@ -1,14 +1,14 @@
-import { isValidVote, type DeckId } from '../contracts/decks.mts'
-import { averageVote } from './average.mts'
-
-import type { SessionView } from '../contracts/session-view.mts'
+import { isValidVote, type DeckId } from './decks.mts'
 
 export type SessionUser = {
+	/** The Entra object id when Teams sends one, which is stable across chats. */
 	readonly id: string
 	readonly name: string
+	/** The id Teams knows the user by in this chat (`29:…`), which is what a card's `refresh.userIds` needs. */
+	readonly teamsId: string
 }
 
-/** Where the vote card lives, so the bot can replace it with the summary later. */
+/** Where the vote card lives, so the bot can update it for everyone. */
 export type SessionCard = {
 	readonly conversationId: string
 	readonly activityId: string
@@ -28,7 +28,7 @@ export type Session = {
 	lastActivity: number
 }
 
-/** A rule was broken. `status` is the HTTP status the API answers with. */
+/** A rule was broken. The message is meant for the person who broke it; `status` says what kind of rule. */
 export class SessionRuleError extends Error {
 	constructor(readonly status: 400 | 403 | 404 | 409, message: string) {
 		super(message)
@@ -40,19 +40,14 @@ export function isAdmin(session: Session, userId: string): boolean {
 	return session.adminId === userId
 }
 
-/** Adds someone to the participant list, or refreshes their name when they're already on it. */
-export function join(session: Session, user: SessionUser): void {
+/** Records a vote, or changes it. Voting is what makes someone a participant: there's no separate joining. */
+export function castVote(session: Session, user: SessionUser, vote: string): void {
 	assertOpen(session)
-	session.participants.set(user.id, user)
-}
-
-export function castVote(session: Session, userId: string, vote: string): void {
-	assertOpen(session)
-	assertParticipant(session, userId)
-	if (session.revealed) throw new SessionRuleError(409, 'The scores are already revealed. Ask for a re-vote first.')
+	if (session.revealed) throw new SessionRuleError(409, 'The votes are already shown. Ask for a re-vote first.')
 	if (!isValidVote(session.deck, vote)) throw new SessionRuleError(400, `"${vote}" is not a card in this deck.`)
 
-	session.votes.set(userId, vote)
+	session.participants.set(user.id, user)
+	session.votes.set(user.id, vote)
 }
 
 export function reveal(session: Session, userId: string): void {
@@ -69,48 +64,8 @@ export function resetVotes(session: Session, userId: string): void {
 	session.revealed = false
 }
 
-/** Ends the session and gives back the average, so the bot can put it on the summary card. */
-export function accept(session: Session, userId: string): string | undefined {
-	assertOpen(session)
-	assertAdmin(session, userId)
-	session.ended = true
-	session.revealed = true
-	return averageVote(session.deck, session.votes.values())
-}
-
-export function sessionView(session: Session, userId: string): SessionView {
-	const ownVote = session.votes.get(userId)
-	return {
-		id: session.id,
-		topic: session.topic,
-		deck: session.deck,
-		revealed: session.revealed,
-		ended: session.ended,
-		participants: [...session.participants.values()].map(participant => {
-			const vote = session.votes.get(participant.id)
-			return {
-				id: participant.id,
-				name: participant.name,
-				admin: isAdmin(session, participant.id),
-				status: vote === undefined ? 'pending' : 'voted',
-				...(session.revealed && vote !== undefined && { vote }),
-			}
-		}),
-		...(session.revealed && { average: averageVote(session.deck, session.votes.values()) }),
-		you: {
-			id: userId,
-			admin: isAdmin(session, userId),
-			...(ownVote !== undefined && { vote: ownVote }),
-		},
-	}
-}
-
 function assertOpen(session: Session): void {
 	if (session.ended) throw new SessionRuleError(409, 'This vote has already ended.')
-}
-
-function assertParticipant(session: Session, userId: string): void {
-	if (!session.participants.has(userId)) throw new SessionRuleError(403, 'You are not part of this vote.')
 }
 
 function assertAdmin(session: Session, userId: string): void {

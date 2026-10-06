@@ -12,13 +12,13 @@ export const HowTo = component({
 				classes: styles.steps,
 				children: [
 					element('li', {
-						textContent: 'In the meeting chat, click + under the message box, then TVote → Start estimate.',
+						textContent: 'In the meeting chat, click Start estimate on TVote\'s card. Send @TVote a message to get that card again.',
 					}),
 					element('li', {
-						textContent: 'Everyone clicks Vote on the card that appears, and picks a card.',
+						textContent: 'Fill in what you\'re estimating. A vote card appears, and everyone clicks their value right on it.',
 					}),
 					element('li', {
-						textContent: 'Whoever started it shows the votes and accepts. The card in the chat turns into the estimate.',
+						textContent: 'Whoever started it shows the votes, and the card shows the estimate. They can ask for a re-vote.',
 					}),
 				],
 			}),

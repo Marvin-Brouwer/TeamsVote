@@ -2,18 +2,18 @@ import { builtinModules } from 'node:module'
 
 import { defineConfig } from 'vite'
 
-// Bundles our own code into one file, dependencies stay in node_modules.
+// Bundles our own code into one module for the web app's server to import. Dependencies stay in node_modules.
 export default defineConfig({
   build: {
     target: 'node22',
     outDir: 'dist',
     minify: false,
     sourcemap: true,
-    ssr: 'src/server.mts',
+    ssr: 'src/index.mts',
     rolldownOptions: {
       external: [...builtinModules, /^node:/],
       output: {
-        entryFileNames: 'server.mjs',
+        entryFileNames: 'index.mjs',
         format: 'es',
       },
     },

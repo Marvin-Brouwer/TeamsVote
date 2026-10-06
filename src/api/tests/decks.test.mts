@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { isValidVote, parseDeckId } from '../src/contracts/decks.mts'
+import { isValidVote, parseDeckId } from '../src/sessions/decks.mts'
 
 describe('parseDeckId', () => {
 	it.each([

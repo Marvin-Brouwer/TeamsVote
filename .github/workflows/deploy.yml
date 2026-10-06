@@ -1,0 +1,81 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - src/**
+      - doc/privacy-policy.md
+      - doc/tos.md
+      - package.json
+      - pnpm-lock.yaml
+      - .github/workflows/deploy.yml
+
+permissions:
+  contents: read
+
+# One deploy at a time. Don't cancel a running one, a half-finished upload is worse than a late one.
+concurrency:
+  group: deploy-${{ github.ref }}${{ github.event_name == 'workflow_dispatch' && '[dispatch]' || '' }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - name: Lint
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Test
+        run: pnpm test
+      # The API first, the web app's server imports its build.
+      - name: Build
+        env:
+          WEB_URL: ${{ vars.WEB_URL }}
+        run: pnpm build
+      # The web app's dist (pages, server.mjs and the bot middleware) plus its production dependencies, @t-vote/api among them.
+      # A flat node_modules, because zip deploys don't keep the symlinks pnpm normally uses.
+      # No auto-installed peers: rooted's Express adapter lists Vite and Rolldown as peers, which only its build-time
+      # plugin needs. The server only loads its `/middleware` helper, so they'd add about 100 MB for nothing.
+      # App Service starts it with `node dist/server.mjs`, see infra/modules/app.bicep.
+      - name: Package
+        run: |
+          pnpm --filter @t-vote/web --config.node-linker=hoisted --config.auto-install-peers=false deploy --prod --legacy package
+          cd package
+          zip -qr ../app.zip dist node_modules package.json -x 'node_modules/.bin/*'
+      - name: Upload package
+        uses: actions/upload-artifact@v7
+        with:
+          name: app
+          path: app.zip
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    # The environment-scoped OIDC subject (repo:…:environment:production) is what the federated credential trusts.
+    environment:
+      name: production
+      url: ${{ vars.WEB_URL }}
+    permissions:
+      id-token: write
+    steps:
+      - name: Download package
+        uses: actions/download-artifact@v5
+        with:
+          name: app
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy to App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_APP_NAME }}
+          package: app.zip

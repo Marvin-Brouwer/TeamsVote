@@ -2,7 +2,7 @@
   "name": "@t-vote/web",
   "private": true,
   "type": "module",
-  "description": "The TVote dialogs and pages. Static, built with rooted, hosted on Azure Static Web Apps.",
+  "description": "TVote on one Node server: the pages (home, privacy, terms and the meeting tab), built with rooted, and the Teams bot from @t-vote/api as server middleware.",
   "scripts": {
     "dev": "vite",
     "build": "vite build -- --minify",
@@ -11,28 +11,28 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@rooted-adapters/express": "1.0.0-alpha.28",
+    "@t-vote/api": "workspace:*",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
     "@fluentui/tokens": "1.0.0-alpha.24",
     "@fluentui/web-components": "3.1.3",
     "@microsoft/fast-element": "3.0.4",
     "@microsoft/focusgroup-polyfill": "1.6.0",
     "@microsoft/teams-js": "2.57.0",
-    "@rooted/components": "1.0.0-alpha.24",
-    "@rooted/markdown": "1.0.0-alpha.12",
-    "@rooted/pwa": "1.0.0-alpha.5",
-    "@rooted/router": "1.0.0-alpha.31",
-    "@rooted/storage": "1.0.0-alpha.12",
-    "@rooted/store": "1.0.0-alpha.12"
-  },
-  "devDependencies": {
-    "@rooted-adapters/azure-static-webapp": "1.0.0-alpha.28",
-    "@rooted/application": "1.0.0-alpha.41",
-    "@rooted/seo": "1.0.0-alpha.19",
-    "@t-vote/api": "workspace:*",
+    "@rooted/application": "1.0.0-alpha.42",
+    "@rooted/components": "1.0.0-alpha.25",
+    "@rooted/markdown": "1.0.0-alpha.13",
+    "@rooted/pwa": "1.0.0-alpha.6",
+    "@rooted/router": "1.0.0-alpha.32",
+    "@rooted/seo": "1.0.0-alpha.20",
+    "@rooted/store": "1.0.0-alpha.13",
+    "@types/express": "^5.0.6",
     "happy-dom": "^20.14.5",
     "typescript": "~6.0.3",
     "vite": "^8.3.2",
     "vite-bundle-analyzer": "^1.3.9",
-    "vite-plugin-pwa": "^1.3.0",
-    "vitest": "^5.0.3"
+    "vite-plugin-pwa": "^1.3.0"
   }
 }
