@@ -4,18 +4,20 @@ Bicep for everything TVote needs in Azure and Entra ID. Not wired into a workflo
 
 | File | What it creates |
 |---|---|
-| [`main.bicep`](./main.bicep) | The resource group, and the three modules below. Subscription scope. |
-| [`modules/identities.bicep`](./modules/identities.bicep) | The `TVote Bot` and `tvote-github-deploy` app registrations, their service principals, and the federated credential that lets GitHub Actions deploy without a secret. |
-| [`modules/bot.bicep`](./modules/bot.bicep) | The Azure Bot (F0, single tenant) and its Teams channel. |
+| [`main.bicep`](./main.bicep) | The resource group, and the modules below. Subscription scope. |
+| [`modules/bot-identity.bicep`](./modules/bot-identity.bicep) | The user-assigned managed identity the bot is. No client secret. |
+| [`modules/api.bicep`](./modules/api.bicep) | The App Service (F1, Linux, Node 22) the bot runs in, as that identity, with its settings and logging, and Contributor on it for the deploy identity. |
+| [`modules/bot.bicep`](./modules/bot.bicep) | The Azure Bot (F0, managed identity) and its Teams channel, pointing at the App Service. |
 | [`modules/web.bicep`](./modules/web.bicep) | The Static Web App (Free), and Contributor on it for the deploy identity. |
-| [`main.bicepparam`](./main.bicepparam) | The repository and the bot's messaging endpoint. |
+| [`modules/identities.bicep`](./modules/identities.bicep) | The `tvote-github-deploy` app registration and the federated credential that lets GitHub Actions deploy without a secret. |
+| [`main.bicepparam`](./main.bicepparam) | The GitHub repository. |
 
 ```sh
 az deployment sub create --name tvote --location westeurope --parameters infra/main.bicepparam
 ```
 
-The app registrations use the [Microsoft Graph Bicep extension](https://learn.microsoft.com/graph/templates/bicep/overview-bicep-templates-for-graph), configured in [`bicepconfig.json`](./bicepconfig.json), so whoever deploys needs Application Administrator (or Global Administrator) in Entra ID, as well as Owner on the subscription.
+The deploy app registration uses the [Microsoft Graph Bicep extension](https://learn.microsoft.com/graph/templates/bicep/overview-bicep-templates-for-graph), configured in [`bicepconfig.json`](./bicepconfig.json), so whoever deploys needs Application Administrator (or Global Administrator) in Entra ID, as well as Owner on the subscription.
 
-The bot's client secret, Render, GitHub and Teams aren't in here. [`doc/setup.md`](../doc/setup.md) walks through all of it, in order, including this deployment.
+GitHub and Teams aren't in here. [`doc/setup.md`](../doc/setup.md) walks through all of it, in order, including this deployment and the move from the earlier Render setup.
 
-`prefix` (default `tvote`) goes into every name, so a second deployment with another prefix gives a separate copy, for a test bot for example.
+`prefix` (default `tvote`) goes into every name, so a second deployment with another prefix gives a separate copy, for a test bot for example. The App Service name has to be unique across Azure.

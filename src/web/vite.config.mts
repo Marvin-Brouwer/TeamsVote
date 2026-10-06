@@ -20,7 +20,7 @@ export default rootedManifest({
 		display: 'standalone',
 	},
 	seo: {
-		// The Teams dialogs are no use to a search engine, and the rest is a handful of pages.
+		// The meeting tab is no use to a search engine, and the rest is a handful of pages.
 		robots: { content: 'User-agent: *\nDisallow: /\n' },
 		llmsTxt: false,
 	},

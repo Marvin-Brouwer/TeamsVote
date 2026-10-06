@@ -9,14 +9,15 @@ TVote is a Microsoft Teams plugin that enables ephemeral, real-time voting sessi
 
 ## Data Handling
 
-- **Personal Data Processed:** Display name, Entra user object ID, Teams conversation ID, the topic and the votes  
-- **Processing:** Data is transmitted to an externally hosted backend for session coordination **in-memory only**  
-- **Storage:** No persistent storage; data is discarded when the vote is accepted, after two hours idle, or on restart. Request logs hold no personal data  
-- **Web hosting:** The dialogs are static files on Microsoft Azure Static Web Apps; no personal data is sent there  
+- **Personal Data Processed:** Display name, Entra user object ID and Teams user ID, Teams conversation ID, the topic and the votes  
+- **Processing:** The TVote bot, on Microsoft Azure App Service, holds the votes **in-memory only** and shows them on cards in the Teams chat  
+- **Storage:** No persistent storage; data is discarded when the vote is accepted, after two hours idle, or on restart. Technical logs hold no personal data and are kept three days  
+- **Web hosting:** The home, privacy and terms pages and the meeting tab are static files on Microsoft Azure Static Web Apps; no personal data is sent there  
+- **Credentials:** None to manage: the bot signs in as an Azure managed identity, without a client secret  
 - **Third-Party Sharing:** None  
 - **Analytics/Tracking:** None  
 
-All backend processing occurs in the **European Union (Render, Frankfurt)**, ensuring GDPR-compliant jurisdiction.
+All backend processing occurs in the **European Union (Microsoft Azure, West Europe)**, ensuring GDPR-compliant jurisdiction.
 
 ---
 

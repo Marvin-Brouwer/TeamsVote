@@ -35,16 +35,16 @@ No personal data exists at rest, and no logs containing personal data are create
 
 ## Data Processor & Hosting Location
 
-TVote communicates with an externally hosted backend for real-time coordination. This backend:
+The TVote backend (the bot) posts the vote cards in Teams and handles every click on them. This backend:
 
-- is hosted in the **European Union (Frankfurt, Germany)**
+- is hosted on **Microsoft Azure App Service, in the European Union (West Europe, the Netherlands)**
 - processes data **in-memory**
-- does **not** store or log data
+- does **not** store or log personal data
 - does **not** transfer data outside the EU
 
-The backend is hosted on Render within the EU Central region, ensuring compliance with GDPR restrictions on international data transfers (Chapter V).
+Hosting the backend within the EU keeps it within the GDPR restrictions on international data transfers (Chapter V). Messages between Teams and the bot are relayed by Microsoft's Bot Framework Service, as for every Teams bot.
 
-The dialogs are static files served by Microsoft Azure Static Web Apps. TVote sends no personal data there; Microsoft may process technical data such as IP addresses in its platform logs, under the organisation's existing agreements with Microsoft.
+The web pages (home, privacy, terms and the meeting tab) are static files served by Microsoft Azure Static Web Apps. TVote sends no personal data there; Microsoft may process technical data such as IP addresses in its platform logs. All of this falls under the organisation's existing agreements with Microsoft.
 
 ---
 

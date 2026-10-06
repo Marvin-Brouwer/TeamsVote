@@ -13,8 +13,8 @@ By using the Service, you acknowledge that you have read and understood this Pri
 TVote processes minimal personal data strictly for the purpose of enabling live voting functionality within Microsoft Teams. Specifically, TVote may process the following data provided by Microsoft Teams:
 
 - Microsoft Teams display name
-- Microsoft Entra user object identifier, as provided by Microsoft Teams
-- the identifier of the Teams conversation (group chat, meeting chat or channel) the vote was started in, and of the vote card message
+- Microsoft Entra user object identifier, and the Teams user identifier, as provided by Microsoft Teams (the latter so Teams can show you your own view of the vote card)
+- the identifier of the Teams conversation (meeting chat or group chat) the vote was started in, and of the vote card message
 - the topic you enter and the votes cast
 
 TVote does **not** create separate user accounts and does not collect additional personal information.
@@ -37,9 +37,9 @@ This data is not used for analytics, behavioral profiling, tracking, or marketin
 
 TVote does **not** store personal data. Session-related data is held temporarily **in-memory only**, and discarded automatically when the vote is accepted, after two hours without activity, or when the backend restarts, whichever comes first.
 
-The backend keeps a technical request log with the request method, path, response status and duration. It contains no names, identifiers, tokens or votes.
+The backend keeps a technical log with the request method, path, response status and duration, and the kind of Teams activity it handled. It contains no names, identifiers, tokens or votes, and is deleted after three days.
 
-In your browser, TVote remembers which card deck you picked last (local storage) and caches its own program files (service worker) so dialogs open faster. Neither contains personal data.
+The TVote tab in a meeting caches its own program files in your browser (service worker), so it opens faster. That cache contains no personal data.
 
 No data is:
 
@@ -53,16 +53,16 @@ No data is:
 
 ## 4. Backend Processing & Hosting Location
 
-To enable real-time voting, TVote communicates with an externally hosted backend. This backend:
+Voting happens on cards in the Teams chat. The TVote backend (the bot) posts and updates those cards, and handles every click on them. This backend:
 
-- is hosted in the **European Union (Frankfurt, Germany)**
+- is hosted on **Microsoft Azure App Service, in the European Union (West Europe, the Netherlands)**
 - processes session data **in-memory only**
 - does **not** persist or log personal data
 - does **not** transfer data outside the EU
 
-The backend is hosted on Render within the EU Central region, ensuring compliance with GDPR requirements.
+Messages between Teams and the bot are relayed by Microsoft's Bot Framework Service, as for every Teams bot, under your organisation's existing agreements with Microsoft.
 
-The dialogs and web pages themselves are static files served by Microsoft Azure Static Web Apps. They receive no personal data from TVote: the key that opens a vote travels in the part of the address browsers don't send to servers. As with any website, Microsoft may process technical data such as IP addresses in its own platform logs.
+The web pages (home, privacy, terms and the meeting tab) are static files served by Microsoft Azure Static Web Apps. TVote sends no personal data there. As with any website, Microsoft may process technical data such as IP addresses in its own platform logs.
 
 ---
 
@@ -73,9 +73,9 @@ TVote does **not** sell, share, or otherwise disclose personal data to third par
 Data remains contained within:
 
 1. Microsoft Teams, and  
-2. the TVote backend processor located in the EU
+2. the TVote backend on Microsoft Azure, located in the EU
 
-The static pages are hosted by Microsoft (Azure Static Web Apps), see section 4.
+The static pages are hosted by Microsoft as well (Azure Static Web Apps), see section 4.
 
 ---
 
@@ -83,7 +83,7 @@ The static pages are hosted by Microsoft (Azure Static Web Apps), see section 4.
 
 All communication between Microsoft Teams clients and the backend is encrypted in transit via HTTPS/TLS. Because no data is stored or logged, no data exists at rest.
 
-Who you are is established by Microsoft Teams, which authenticates every message to the TVote bot. When you open a vote, the bot gives your dialog a short-lived signed key for that one vote. Only the person who started a vote can reveal, reset or accept it.
+Who you are is established by Microsoft Teams, which authenticates every message and every click to the TVote bot. TVote has no sign-in, keys or passwords of its own. Only the person who started a vote can show the votes, start a re-vote or accept it. The bot signs in to Teams as an Azure managed identity, so there is no secret that could leak.
 
 Security and access control are additionally governed by:
 
@@ -101,7 +101,7 @@ TVote is not specifically targeted at children. Access requires a Microsoft Team
 
 ## 8. Third-Party Dependencies
 
-Aside from Microsoft Teams, Microsoft Azure Static Web Apps for the static pages, and the externally hosted backend processor located in the EU, no third-party services are used for personal data processing or storage.
+Aside from Microsoft (Teams, the Bot Framework Service, and Azure for the backend and the static pages), no third-party services are used for personal data processing or storage.
 
 ---
 

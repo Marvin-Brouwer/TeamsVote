@@ -2,14 +2,14 @@
 
 Teams scrum voting, but simple.
 
-Every planning poker tool does too much. TVote asks the chat for an estimate, everyone votes in a dialog, and the card in the chat is replaced with the result. Votes live in memory for as long as the vote runs, nothing is stored.
+Every planning poker tool does too much. TVote asks the meeting for an estimate, everyone votes right on the card in the chat, and the card turns into the result. Votes live in memory for as long as the vote runs, nothing is stored.
 
 ## How it works
 
-1. Someone starts a vote: `@TVote PROJ-123`, or **…** below the message box → TVote → Start estimate.
-2. The bot posts a card. Everyone clicks **Vote** and picks a card in the dialog.
-3. Whoever started it shows the votes, re-votes if needed, and accepts.
-4. The card is replaced with the estimate: the average, rounded to the nearest card.
+1. Add TVote to a meeting, through **Apps**. It posts a card in the meeting chat.
+2. **Start estimate** on that card, and fill in what you're estimating: a Jira key, a link, or just a few words.
+3. Everyone clicks their value on the vote card. Everyone sees who voted, not what.
+4. Whoever started it shows the votes, re-votes if needed, and accepts. The card turns into the estimate: the average, rounded to the nearest card.
 
 Decks: modified Fibonacci (default), Fibonacci, and t-shirt sizes. `?` counts as having voted but not towards the average.
 
@@ -17,20 +17,20 @@ Decks: modified Fibonacci (default), Fibonacci, and t-shirt sizes. `?` counts as
 
 | Folder | What | Hosted on |
 |---|---|---|
-| [`src/api`](./src/api) | The session API and the Teams bot, on the [Teams SDK](https://www.npmjs.com/package/@microsoft/teams.apps). Keeps sessions in memory only. Also exports the contracts the web app uses (`@t-vote/api/contracts`). | Render, Frankfurt |
-| [`src/web`](./src/web) | The start and vote dialogs, plus the home and legal pages. Built with [rooted](https://github.com/Marvin-Brouwer/rooted) and Fluent 2 web components, themed with the Teams tokens. | Azure Static Web Apps |
+| [`src/api`](./src/api) | The Teams bot, on the [Teams SDK](https://www.npmjs.com/package/@microsoft/teams.apps): the start card, the start form and the vote card, and every click on them. Keeps votes in memory only. | Azure App Service, West Europe |
+| [`src/web`](./src/web) | The home, privacy and terms pages, and the meeting tab. Built with [rooted](https://github.com/Marvin-Brouwer/rooted) and Fluent 2 web components, themed with the Teams tokens. | Azure Static Web Apps |
 | [`teams`](./teams) | The Teams app manifest and the script that packages it. | Uploaded to Teams |
-| [`infra`](./infra) | Bicep for the Azure and Entra ID side: app registrations, Azure Bot, Static Web App. | Deployed by hand |
+| [`infra`](./infra) | Bicep for the Azure and Entra ID side: the bot's managed identity, the App Service, the Azure Bot, the Static Web App and the deploy identity. | Deployed by hand |
 | [`doc`](./doc) | [Setup](./doc/setup.md), privacy policy, terms, and the GDPR and AppSource paperwork. | |
 
 ## Development
 
 ```sh
 pnpm install
-pnpm dev          # API on :3978 and web app on :5173, Teams faked in the browser
+pnpm test         # the session rules, the cards and every click
 pnpm lint
 pnpm typecheck
-pnpm test
+pnpm dev          # the web pages on :5173, the API on :3978
 ```
 
-[doc/setup.md](./doc/setup.md) covers local development in more detail, and everything that has to be set up by hand in Azure, Render, GitHub and Teams.
+The voting itself only happens in Teams. [doc/setup.md](./doc/setup.md) covers local development, everything that has to be set up in Azure, GitHub and Teams, and the move from the earlier Render setup.

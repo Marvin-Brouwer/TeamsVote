@@ -45,7 +45,7 @@ Given that:
 - Data is minimal and ephemeral  
 - No profiling or behavioral tracking occurs  
 - No sensitive categories are processed  
-- Data is processed entirely within the EU (Render, Frankfurt, Germany)  
+- Data is processed entirely within the EU (Microsoft Azure, West Europe, the Netherlands)  
 
 TVote poses **low or negligible risk** to the rights and freedoms of data subjects.
 
