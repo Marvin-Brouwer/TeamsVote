@@ -12,6 +12,8 @@ Bicep for everything TVote needs in Azure and Entra ID. Not wired into a workflo
 | [`modules/identities.bicep`](./modules/identities.bicep) | The `tvote-github-deploy` app registration and the federated credential that lets GitHub Actions deploy without a secret. |
 | [`main.bicepparam`](./main.bicepparam) | The GitHub repository. |
 
+Deploy it with the Bicep extension for VS Code (a recommended extension in this repository): open [`main.bicepparam`](./main.bicepparam) → **Show Deployment Pane** (the cloud icon at the top right) → **Pick Scope** → **Deploy**. The pane shows the outputs when it's done. [`doc/setup.md`](../doc/setup.md#1-azure-and-entra-id-bicep) has the steps. Or with the Azure CLI:
+
 ```sh
 az deployment sub create --name tvote --location westeurope --parameters infra/main.bicepparam
 ```

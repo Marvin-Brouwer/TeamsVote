@@ -32,23 +32,35 @@ Everything about a vote happens in cards that the bot posts and Teams draws. The
 - **A work account in that tenant** (`you@yourtenant.onmicrosoft.com`), not a personal Microsoft account.
 - **An Azure subscription in that tenant.** Pay-As-You-Go is fine: everything here is on a free tier. If the portal keeps showing "Welcome to Azure! Don't have a subscription?", there is none in this tenant yet: Subscriptions → + Add → Pay-As-You-Go. A new subscription can take a few minutes, and a sign out and back in, before the portal shows it.
 - **Rights:** Owner on the subscription (the deployment assigns roles), and Application Administrator or Global Administrator in Entra ID (it creates the deploy app registration).
-- **Tools:** [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) with Bicep (`az bicep install`), and the [GitHub CLI](https://cli.github.com) (`gh auth login`). Azure Cloud Shell has both.
+- **Tools:**
+  - VS Code with the [Bicep extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep) (`ms-azuretools.vscode-bicep`). VS Code suggests it when you open the repository, together with the other recommended extensions.
+  - The [GitHub CLI](https://cli.github.com) (`gh auth login`).
+  - The [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) only for [Logs](#logs) and [Moving over from Render](#moving-over-from-render); Azure Cloud Shell has it.
 
 ## 1. Azure and Entra ID (Bicep)
 
-Check the GitHub repository in `infra/main.bicepparam`. Then:
+With the Bicep extension's Deployment Pane:
+
+1. Open `infra/main.bicepparam` and check the GitHub repository in it.
+2. Open the Deployment Pane: the cloud icon at the top right of the editor, or right-click the file → **Show Deployment Pane**.
+3. **Pick Scope:**
+   - sign in with your work account, when VS Code asks;
+   - pick the subscription;
+   - pick **West Europe** as the location. It's where Azure keeps the deployment's record; the resources' own region is set in the template.
+
+   No subscription in the list? VS Code is signed in with another account, or the tenant needs a fresh sign-in: Accounts (bottom left) → sign out, and pick the scope again.
+4. The parameters come from the file. **What-If** shows what would change, without changing anything. Then **Deploy**.
+5. When it's done, the pane shows the **Outputs**: the values for the rest of this guide. They are `tenantId`, `subscriptionId`, `resourceGroupName`, `botClientId`, `deployClientId`, `apiAppName`, `apiUrl`, `staticWebAppName` and `webUrl`. None of them are secret. They stay in the portal too, under the subscription → Deployments.
+
+Running it again is safe: it updates what's there instead of creating copies.
+
+Without VS Code, the Azure CLI does the same:
 
 ```sh
 az login --tenant <your tenant>.onmicrosoft.com
 az account set --subscription <subscription id>
-
-az deployment sub create --name tvote --location westeurope --parameters infra/main.bicepparam
-az deployment sub show --name tvote --query properties.outputs --output json
+az deployment sub create --name tvote --location westeurope --parameters infra/main.bicepparam --query properties.outputs
 ```
-
-The outputs are the values for the rest of this guide: `tenantId`, `subscriptionId`, `resourceGroupName`, `botClientId`, `deployClientId`, `apiAppName`, `apiUrl`, `staticWebAppName` and `webUrl`. None of them are secret.
-
-Running it again is safe: it updates what's there instead of creating copies.
 
 Things the template already deals with:
 
