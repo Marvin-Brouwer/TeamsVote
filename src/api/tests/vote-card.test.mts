@@ -133,7 +133,7 @@ describe('the vote card once the votes are shown', () => {
 		const card = voteCard(session)
 
 		// Assert
-		expect(card.refresh?.action.data).toEqual({
+		expect(card.refresh?.action?.data).toEqual({
 			action: 'refresh',
 			sessionId: session.id,
 			result: { topic: 'PROJ-1', deck: 'modified-fibonacci', startedBy: 'Ada', votes: [['Ada', '5'], ['Vic', '8']] },
@@ -148,7 +148,7 @@ describe('the vote card once the votes are shown', () => {
 		const card = voteCard(session)
 
 		// Assert
-		expect(card.refresh?.action.data).toEqual({ action: 'refresh', sessionId: session.id })
+		expect(card.refresh?.action?.data).toEqual({ action: 'refresh', sessionId: session.id })
 	})
 })
 
