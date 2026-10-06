@@ -1,6 +1,5 @@
 import { MessageActivityInput, type Account } from '@microsoft/teams.api'
 
-import type { SessionTokens } from '../auth/session-token.mts'
 import type { SessionService } from '../sessions/session-service.mts'
 import type { SessionUser } from '../sessions/session.mts'
 import type { IAdaptiveCard } from '@microsoft/teams.cards'
@@ -8,9 +7,6 @@ import type { IAdaptiveCard } from '@microsoft/teams.cards'
 /** What every bot handler needs. Built once in `server.mts`. */
 export type BotDependencies = {
 	readonly sessions: SessionService
-	readonly tokens: SessionTokens
-	/** Origin of the web app, like `https://tvote.example.com`. No trailing slash. */
-	readonly webUrl: string
 }
 
 /**
@@ -21,6 +17,7 @@ export function userFromActivity(from: Account): SessionUser {
 	return {
 		id: from.aadObjectId ?? from.id,
 		name: nonEmpty(from.name?.trim()) ?? 'Someone',
+		teamsId: from.id,
 	}
 }
 

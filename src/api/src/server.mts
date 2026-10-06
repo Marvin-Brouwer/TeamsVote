@@ -1,12 +1,7 @@
-import cors from 'cors'
 import express, { type NextFunction, type Request, type Response } from 'express'
 
-import { createSessionTokens } from './auth/session-token.mts'
 import { createBot } from './bot/bot.mts'
 import { readConfiguration } from './configuration.mts'
-import { developmentRoutes } from './routes/development-routes.mts'
-import { sessionRoutes } from './routes/session-routes.mts'
-import { createSessionEvents } from './sessions/session-events.mts'
 import { createSessionService } from './sessions/session-service.mts'
 import { createSessionStore } from './sessions/session-store.mts'
 
@@ -14,27 +9,17 @@ const sessionIdleTimeoutMs = 2 * 60 * 60 * 1000
 const sweepIntervalMs = 10 * 60 * 1000
 
 const configuration = readConfiguration()
-const events = createSessionEvents()
-const sessions = createSessionService(createSessionStore({ idleTimeoutMs: sessionIdleTimeoutMs }), events)
-const tokens = createSessionTokens(configuration.sessionTokenSecret)
+const sessions = createSessionService(createSessionStore({ idleTimeoutMs: sessionIdleTimeoutMs }))
 
-// Only for what the web app calls. Bot activities are bigger and bring their own body parsing.
-const allowWebApp = cors({ origin: configuration.webUrl, methods: ['GET', 'POST'], allowedHeaders: ['Authorization', 'Content-Type'], maxAge: 600 })
-const browserMiddleware = [allowWebApp, express.json({ limit: '4kb' })]
-
-// The web app pings /health to wake the server up before it shows the start form.
 const server = express()
 	.disable('x-powered-by')
 	.use(logRequest)
-	.get(['/', '/health'], allowWebApp, (_request, response) => {
+	.get(['/', '/health'], (_request, response) => {
 		response.send({ status: 'healthy' })
 	})
 
-server.use('/api/sessions', ...browserMiddleware, sessionRoutes(sessions, events, tokens))
-if (configuration.development) server.use('/dev', ...browserMiddleware, developmentRoutes(sessions, tokens))
-
 // Registers /api/messages for the bot.
-await createBot(server, { sessions, tokens, webUrl: configuration.webUrl }, configuration.logLevel)
+await createBot(server, { sessions }, configuration.logLevel)
 
 server.use(handleUnexpectedError)
 
@@ -45,7 +30,7 @@ server.listen(configuration.port, '0.0.0.0', error => {
 		console.error('Could not start the server', error)
 		process.exit(1)
 	}
-	console.info(`TVote API listening on port ${configuration.port}, web app at ${configuration.webUrl}`)
+	console.info(`TVote API listening on port ${String(configuration.port)}`)
 })
 
 /**
@@ -60,8 +45,8 @@ function logRequest(request: Request, response: Response, next: NextFunction) {
 
 	const started = performance.now()
 	response.on('finish', () => {
-		const path = (request.originalUrl.split('?')[0] ?? '').replace(/\/sessions\/[^/]+/, '/sessions/:id')
-		console.info(`${request.method} ${path} ${response.statusCode} ${Math.round(performance.now() - started)}ms`)
+		const path = request.originalUrl.split('?')[0] ?? ''
+		console.info(`${request.method} ${path} ${String(response.statusCode)} ${String(Math.round(performance.now() - started))}ms`)
 	})
 	next()
 }

@@ -1,4 +1,4 @@
-import { decks, skipVote, unsureVote } from '../../contracts/decks.mts'
+import { decks, skipVote, unsureVote } from '../../sessions/decks.mts'
 import { topicMarkdown } from './topic-markdown.mts'
 
 import type { Session } from '../../sessions/session.mts'

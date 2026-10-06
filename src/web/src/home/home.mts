@@ -27,10 +27,10 @@ export const HomePage = component({
 						classes: styles.steps,
 						children: [
 							element('li', {
-								textContent: 'In a chat or meeting, type "@TVote PROJ-123", or pick TVote from the … under the message box.',
+								textContent: 'Add TVote to your meeting, through Apps. It posts a card in the meeting chat: click Start estimate and fill in what you\'re estimating.',
 							}),
 							element('li', {
-								textContent: 'Everyone clicks Vote on the card and picks a card. Nobody sees the others\' votes yet.',
+								textContent: 'Everyone clicks their value right on the vote card. Nobody sees the others\' votes yet.',
 							}),
 							element('li', {
 								textContent: 'Whoever started it shows the votes, re-votes if needed, and accepts.',

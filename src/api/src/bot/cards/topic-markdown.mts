@@ -1,4 +1,4 @@
-import { parseTopic } from '../../contracts/topic.mts'
+import { parseTopic } from '../../sessions/topic.mts'
 
 /** The topic as Adaptive Card markdown: a link when it's a URL, escaped text otherwise. */
 export function topicMarkdown(input: string): string {

@@ -31,9 +31,9 @@ export default rootedManifest({
 			routeManifestPath: './src/_routes.g.mts',
 		}),
 		routeSeoPlugin(),
-		// The vote page is the only dynamic route, and it's only ever opened inside Teams.
-		// A 200 for /teams/vote/<anything>/ is what we want; search engines aren't a concern.
-		azureStaticWebappAdapter({ dynamicRoutes: 'catch-all' }),
+		// Every page is static, pre-rendered to its own file. With no dynamic routes the choice only says
+		// what unknown paths get, and that's a 404.
+		azureStaticWebappAdapter({ dynamicRoutes: 'not-found' }),
 	],
 	codeSplitting: {
 		groups: [
