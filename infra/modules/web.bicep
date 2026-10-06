@@ -1,4 +1,4 @@
-// The Static Web App that serves the dialogs and pages, and the permission for GitHub to deploy to it.
+// The Static Web App that serves the home, privacy and terms pages and the meeting tab, and the permission for GitHub to deploy to it.
 // Deployments come from .github/workflows/web.yml, so the app isn't linked to a repository here.
 
 param name string

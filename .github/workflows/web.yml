@@ -7,7 +7,6 @@ on:
       - main
     paths:
       - src/web/**
-      - src/api/src/contracts/**
       - doc/privacy-policy.md
       - doc/tos.md
       - pnpm-lock.yaml
@@ -30,7 +29,6 @@ jobs:
       - name: Build
         env:
           WEB_URL: ${{ vars.WEB_URL }}
-          VITE_API_URL: ${{ vars.API_URL }}
         run: pnpm --filter @t-vote/web build
       - name: Upload build artifact
         uses: actions/upload-artifact@v5
