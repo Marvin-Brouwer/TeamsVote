@@ -2,11 +2,19 @@
   "name": "@t-vote/api",
   "private": true,
   "type": "module",
-  "description": "TVote Teams bot. Runs on Azure App Service, keeps votes in memory only.",
+  "description": "TVote server side: the Teams bot and the votes, kept in memory only. Mounted by the web app's server.",
+  "exports": {
+    ".": {
+      "types": "./src/index.mts",
+      "development": "./src/index.mts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "dev": "tsx watch --env-file=.env.development --env-file-if-exists=.env.local src/server.mts",
     "build": "vite build",
-    "start": "node dist/server.mjs",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {

@@ -44,7 +44,7 @@ The TVote backend (the bot) posts the vote cards in Teams and handles every clic
 
 Hosting the backend within the EU keeps it within the GDPR restrictions on international data transfers (Chapter V). Messages between Teams and the bot are relayed by Microsoft's Bot Framework Service, as for every Teams bot.
 
-The web pages (home, privacy, terms and the meeting tab) are static files served by Microsoft Azure Static Web Apps. TVote sends no personal data there; Microsoft may process technical data such as IP addresses in its platform logs. All of this falls under the organisation's existing agreements with Microsoft.
+The same App Service serves the web pages (home, privacy, terms and the meeting tab), as static files; loading them involves no personal data, and TVote doesn't log page loads. Microsoft may process technical data such as IP addresses in its platform logs. All of this falls under the organisation's existing agreements with Microsoft.
 
 ---
 

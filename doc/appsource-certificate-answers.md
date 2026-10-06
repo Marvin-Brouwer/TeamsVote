@@ -59,8 +59,7 @@
 2. **Offline behavior:**  
    - Not supported. Requires Microsoft Teams connectivity.
 3. **External dependencies:**  
-   - The TVote bot on Microsoft Azure App Service in the EU (West Europe), for ephemeral vote sessions.  
-   - Static web pages and the meeting tab on Microsoft Azure Static Web Apps (no personal data).
+   - Microsoft Azure App Service in the EU (West Europe): the TVote bot, for ephemeral vote sessions, and the static web pages and meeting tab (no personal data).
 4. **Error/downtime handling:**  
    - Votes cannot be cast if the backend is unavailable.  
    - No persistent data is lost since data is only in-memory per session.

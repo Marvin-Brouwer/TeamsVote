@@ -9,7 +9,7 @@
     "pnpm": ">=10.0.0"
   },
   "scripts": {
-    "dev": "concurrently --names api,web --prefix-colors blue,magenta \"pnpm --filter @t-vote/api dev\" \"pnpm --filter @t-vote/web dev\"",
+    "dev": "pnpm --filter @t-vote/web dev",
     "build": "pnpm -r --stream run build",
     "build:teams-package": "tsx teams/build-package.mts",
     "lint": "eslint --cache .",
@@ -21,7 +21,6 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^22.19.0",
-    "concurrently": "^10.0.5",
     "dotenv": "^17.2.3",
     "eslint": "^10.11.0",
     "fflate": "^0.8.3",

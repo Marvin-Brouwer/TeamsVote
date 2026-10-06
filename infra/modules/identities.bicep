@@ -25,7 +25,7 @@ resource githubCredential 'Microsoft.Graph/applications/federatedIdentityCredent
   audiences: ['api://AzureADTokenExchange']
   issuer: 'https://token.actions.githubusercontent.com'
   subject: 'repo:${githubRepository}:environment:${githubEnvironment}'
-  description: 'GitHub Actions deploying the API and the web app'
+  description: 'GitHub Actions deploying TVote to its App Service'
 }
 
 output deployClientId string = deployApp.appId

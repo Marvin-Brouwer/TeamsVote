@@ -1,5 +1,5 @@
-// The API and bot: one Node app on App Service's free tier, running as the bot's managed identity.
-// Votes live in this one instance's memory, so it must never scale out.
+// All of TVote in one Node app on App Service's free tier: the pages and the meeting tab, and the bot on /api/messages.
+// It runs as the bot's managed identity. Votes live in this one instance's memory, so it must never scale out.
 
 param name string
 param location string
@@ -27,7 +27,7 @@ resource plan 'Microsoft.Web/serverfarms@2024-04-01' = {
   }
 }
 
-resource api 'Microsoft.Web/sites@2024-04-01' = {
+resource app 'Microsoft.Web/sites@2024-04-01' = {
   name: name
   location: location
   kind: 'app,linux'
@@ -43,6 +43,7 @@ resource api 'Microsoft.Web/sites@2024-04-01' = {
     siteConfig: {
       linuxFxVersion: 'NODE|22-lts'
       // The deploy workflow uploads the built app with its production node_modules, nothing to build here.
+      // dist/server.mjs is the server rooted's Express adapter generates, with the bot as its middleware.
       appCommandLine: 'node dist/server.mjs'
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
@@ -61,7 +62,7 @@ resource api 'Microsoft.Web/sites@2024-04-01' = {
 
 // What the app writes to the console, in the portal's Log stream and `az webapp log tail`. Kept three days.
 resource logs 'Microsoft.Web/sites/config@2024-04-01' = {
-  parent: api
+  parent: app
   name: 'logs'
   properties: {
     applicationLogs: {
@@ -83,8 +84,8 @@ resource logs 'Microsoft.Web/sites/config@2024-04-01' = {
 var contributorRoleId = 'b24988ac-6180-42a0-ab88-20f7382dd24c'
 
 resource deployCanPublish 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: api
-  name: guid(api.id, deployPrincipalId, contributorRoleId)
+  scope: app
+  name: guid(app.id, deployPrincipalId, contributorRoleId)
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', contributorRoleId)
     principalId: deployPrincipalId
@@ -92,5 +93,5 @@ resource deployCanPublish 'Microsoft.Authorization/roleAssignments@2022-04-01' =
   }
 }
 
-output name string = api.name
-output url string = 'https://${api.properties.defaultHostName}'
+output name string = app.name
+output url string = 'https://${app.properties.defaultHostName}'

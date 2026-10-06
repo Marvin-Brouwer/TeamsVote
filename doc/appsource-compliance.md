@@ -33,7 +33,7 @@ TVote processes minimal personal data (display name, Entra user object ID and Te
 
 No personal data is persisted or logged. All session data is processed **in-memory only** and discarded after two hours without activity, or when the backend restarts.  
 
-The web pages (home, privacy, terms and the meeting tab) are static files served by Microsoft Azure Static Web Apps; no personal data is sent there.  
+The web pages (home, privacy, terms and the meeting tab) are static files, served by the same App Service; no personal data is involved.  
 
 Backend hosting:
 

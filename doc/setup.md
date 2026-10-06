@@ -7,22 +7,21 @@ Already running the earlier setup, with the API on Render? Skip to [Moving over 
 How the pieces fit:
 
 ```
-Teams (meeting chat) ──(Bot Framework, authenticated by Microsoft)──▶ App Service: src/api (Express + Teams SDK)
-  start card, start form, vote card                                    ├─ /api/messages   the bot, every click
-                                                                       └─ /health
-Teams (meeting tab) ──▶ Static Web App: src/web (rooted, static pages: home, privacy, terms, meeting tab)
+                                                                       App Service: node dist/server.mjs (src/web, rooted + Express)
+Teams (meeting chat) ──(Bot Framework, authenticated by Microsoft)──▶   ├─ /api/messages   the bot (src/api, Teams SDK), every click
+  start card, start form, vote card                                      ├─ /health
+Teams (meeting tab) ────────────────────────────────────────────────▶   └─ the pages: home, privacy, terms, meeting tab
 ```
 
-Everything about a vote happens in cards that the bot posts and Teams draws. The web app only serves pages: it never talks to the API.
+One Node server does everything. It's the server rooted's Express adapter generates for `src/web`: it serves the pre-rendered pages, and runs `src/web/src/server-middleware` ahead of them, which mounts the bot from `src/api`. Everything about a vote happens in cards that the bot posts and Teams draws; the pages never talk to the bot.
 
 | Where | What | How |
 |---|---|---|
 | Azure | Resource group `rg-tvote` | Bicep |
 | Azure | Managed identity `id-tvote-bot`: the bot's identity, no client secret | Bicep |
-| Azure | App Service `tvote-api` (F1, Linux, Node 22), running as that identity | Bicep |
+| Azure | App Service `tvote-app` (F1, Linux, Node 22), running as that identity: the pages and the bot | Bicep |
 | Azure | Azure Bot `tvote-bot` (F0, managed identity) with the Teams channel | Bicep |
-| Azure | Static Web App `tvote-web` (Free) | Bicep |
-| Entra ID | `tvote-github-deploy` app registration, with a federated credential for GitHub Actions and Contributor on the App Service and the Static Web App | Bicep |
+| Entra ID | `tvote-github-deploy` app registration, with a federated credential for GitHub Actions and Contributor on the App Service | Bicep |
 | GitHub | The `production` environment, secrets and variables | `gh` commands |
 | Microsoft 365 | Teams licence, custom apps allowed, the app package | By hand |
 
@@ -50,7 +49,7 @@ With the Bicep extension's Deployment Pane:
 
    No subscription in the list? VS Code is signed in with another account, or the tenant needs a fresh sign-in: Accounts (bottom left) → sign out, and pick the scope again.
 4. The parameters come from the file. **What-If** shows what would change, without changing anything. Then **Deploy**.
-5. When it's done, the pane shows the **Outputs**: the values for the rest of this guide. They are `tenantId`, `subscriptionId`, `resourceGroupName`, `botClientId`, `deployClientId`, `apiAppName`, `apiUrl`, `staticWebAppName` and `webUrl`. None of them are secret. They stay in the portal too, under the subscription → Deployments.
+5. When it's done, the pane shows the **Outputs**: the values for the rest of this guide. They are `tenantId`, `subscriptionId`, `resourceGroupName`, `botClientId`, `deployClientId`, `appName` and `webUrl`. None of them are secret. They stay in the portal too, under the subscription → Deployments.
 
 Running it again is safe: it updates what's there instead of creating copies.
 
@@ -64,10 +63,10 @@ az deployment sub create --name tvote --location westeurope --parameters infra/m
 
 Things the template already deals with:
 
-- **The App Service name is global.** `tvote-api` becomes `tvote-api.azurewebsites.net`. If someone else has it, deploy with another `prefix`.
+- **The App Service name is global.** `tvote-app` becomes `tvote-app.azurewebsites.net`. If someone else has it, deploy with another `prefix`.
 - **The bot is a managed identity.** The App Service runs as `id-tvote-bot`, and the Teams SDK signs in as it because `CLIENT_ID` and `MANAGED_IDENTITY_CLIENT_ID` are both its client id. There's no client secret, so nothing expires.
 - **The bot runs in the *global* region.** The Europe region of the Bot Service wasn't accepting new customers. That only changes where Microsoft relays Teams messages; the votes stay in the App Service in West Europe.
-- **F1 sleeps.** After about 20 minutes without traffic the App Service sleeps, and the first click after that can fail once while it wakes up (seconds). For about €12 a month, B1 with Always On removes that: change `F1` in `infra/modules/api.bicep` and set `alwaysOn: true`.
+- **F1 sleeps.** After about 20 minutes without traffic the App Service sleeps. The first click or page load after that waits a few seconds while it wakes up, and a click can fail once. For about €12 a month, B1 with Always On removes that: change `F1` in `infra/modules/app.bicep` and set `alwaysOn: true`.
 - **The GitHub federated credential uses the name-based subject**, `repo:Marvin-Brouwer/TeamsVote:environment:production`. That's what GitHub sends for repositories created before 15 July 2026. Newer repositories send the immutable format with numeric ids instead. If a deploy fails at "Azure login", the error shows the subject GitHub sent. Note that the portal's "GitHub Actions" credential form always writes the immutable format; use "Other issuer" there.
 
 ## 2. GitHub
@@ -82,8 +81,7 @@ gh secret set AZURE_TENANT_ID --body <tenantId>
 gh secret set AZURE_SUBSCRIPTION_ID --body <subscriptionId>
 
 gh variable set AZURE_RESOURCE_GROUP --body <resourceGroupName>
-gh variable set AZURE_API_APP_NAME --body <apiAppName>
-gh variable set AZURE_STATIC_WEBAPP_NAME --body <staticWebAppName>
+gh variable set AZURE_APP_NAME --body <appName>
 gh variable set WEB_URL --body <webUrl>
 gh variable set BOT_CLIENT_ID --body <botClientId>
 gh variable set TEAMS_APP_ID --body <a new GUID>
@@ -97,8 +95,7 @@ gh variable set TEAMS_APP_ID --body <a new GUID>
 
 Merge to `main`, or run the workflows by hand under Actions:
 
-- **Publish API** lints, tests and builds `src/api`, and uploads it to the App Service. Check `<apiUrl>/health` afterwards.
-- **Publish web app** builds `src/web` and uploads it to the Static Web App. Check `<webUrl>`.
+- **Deploy** lints, typechecks, tests and builds everything, and uploads the server with its production dependencies to the App Service. Check `<webUrl>` and `<webUrl>/health` afterwards.
 - **Teams app package** builds `tvote-1.0.<n>.zip` with your values filled in, as a run artifact.
 
 ## 4. Microsoft 365 and Teams
@@ -133,22 +130,22 @@ In a scheduled meeting with two accounts:
 
 ## Logs
 
-The API logs to the console, which the App Service keeps for three days:
+The server logs to the console, which the App Service keeps for three days:
 
 ```sh
-az webapp log tail --resource-group rg-tvote --name tvote-api
+az webapp log tail --resource-group rg-tvote --name tvote-app
 ```
 
-Or in the portal: the App Service → **Log stream**. `LOG_LEVEL=info` (an app setting) adds a line per request and per Teams activity, without names or ids. `warn` is quieter, for when everything works.
+Or in the portal: the App Service → **Log stream**. `LOG_LEVEL=info` (an app setting) adds a line per bot request and per Teams activity, without names or ids. Page loads aren't logged. `warn` is quieter, for when everything works.
 
 ## Moving over from Render
 
-For the setup that was clicked together in the portal earlier, with the API on Render, a bot app registration with a client secret, and the dialogs. Run this in Azure Cloud Shell (Bash). Do steps 1 to 4 **before** merging the redesign, so the first deploy and the new Teams package find everything in place.
+For the setup that was clicked together in the portal earlier, with the API on Render, the pages on a Static Web App, a bot app registration with a client secret, and the dialogs. Everything moves to one App Service. Run this in Azure Cloud Shell (Bash). Do steps 1 to 4 **before** merging the redesign, so the first deploy and the new Teams package find everything in place.
 
 ```sh
 RG=rg-tvote
 LOCATION=westeurope
-API=tvote-api        # becomes tvote-api.azurewebsites.net; pick another name if it's taken
+APP=tvote-app        # becomes tvote-app.azurewebsites.net; pick another name if it's taken
 TENANT_ID=$(az account show --query tenantId --output tsv)
 ```
 
@@ -163,19 +160,19 @@ BOT_IDENTITY_ID=$(az identity show --resource-group $RG --name id-tvote-bot --qu
 **2. The App Service**
 
 ```sh
-az appservice plan create --resource-group $RG --name $API-plan --location $LOCATION --is-linux --sku F1
-az webapp create --resource-group $RG --name $API --plan $API-plan --runtime "NODE:22-lts" --assign-identity $BOT_IDENTITY_ID
-az webapp update --resource-group $RG --name $API --https-only true
-az webapp config set --resource-group $RG --name $API --startup-file "node dist/server.mjs" --ftps-state Disabled --min-tls-version 1.2
-az webapp config appsettings set --resource-group $RG --name $API --settings \
+az appservice plan create --resource-group $RG --name $APP-plan --location $LOCATION --is-linux --sku F1
+az webapp create --resource-group $RG --name $APP --plan $APP-plan --runtime "NODE:22-lts" --assign-identity $BOT_IDENTITY_ID
+az webapp update --resource-group $RG --name $APP --https-only true
+az webapp config set --resource-group $RG --name $APP --startup-file "node dist/server.mjs" --ftps-state Disabled --min-tls-version 1.2 --generic-configurations '{"healthCheckPath": "/health"}'
+az webapp config appsettings set --resource-group $RG --name $APP --settings \
   CLIENT_ID=$BOT_CLIENT_ID MANAGED_IDENTITY_CLIENT_ID=$BOT_CLIENT_ID TENANT_ID=$TENANT_ID \
   LOG_LEVEL=info SCM_DO_BUILD_DURING_DEPLOYMENT=false
-az webapp log config --resource-group $RG --name $API --application-logging filesystem --docker-container-logging filesystem --level information
+az webapp log config --resource-group $RG --name $APP --application-logging filesystem --docker-container-logging filesystem --level information
 
 # Let GitHub deploy to it: the deploy app is the one in the AZURE_CLIENT_ID secret.
 DEPLOY_PRINCIPAL=$(az ad sp show --id <the deploy app's client id> --query id --output tsv)
 az role assignment create --assignee-object-id $DEPLOY_PRINCIPAL --assignee-principal-type ServicePrincipal \
-  --role Contributor --scope $(az webapp show --resource-group $RG --name $API --query id --output tsv)
+  --role Contributor --scope $(az webapp show --resource-group $RG --name $APP --query id --output tsv)
 ```
 
 **3. The Azure Bot, again, as a managed identity.** An Azure Bot's type can't be changed, so the old one goes. Check its name first with `az bot list --resource-group $RG --output table`.
@@ -184,7 +181,7 @@ az role assignment create --assignee-object-id $DEPLOY_PRINCIPAL --assignee-prin
 az bot delete --resource-group $RG --name tvote-bot
 az bot create --resource-group $RG --name tvote-bot --sku F0 \
   --app-type UserAssignedMSI --appid $BOT_CLIENT_ID --msi-resource-id $BOT_IDENTITY_ID --tenant-id $TENANT_ID \
-  --endpoint https://$API.azurewebsites.net/api/messages
+  --endpoint https://$APP.azurewebsites.net/api/messages
 az bot msteams create --resource-group $RG --name tvote-bot
 ```
 
@@ -192,17 +189,21 @@ az bot msteams create --resource-group $RG --name tvote-bot
 
 ```sh
 gh variable set BOT_CLIENT_ID --body <the BOT_CLIENT_ID from step 1>
-gh variable set AZURE_API_APP_NAME --body tvote-api
+gh variable set AZURE_APP_NAME --body tvote-app
 gh variable set AZURE_RESOURCE_GROUP --body rg-tvote
+gh variable set WEB_URL --body https://tvote-app.azurewebsites.net
 ```
 
-**5. Merge the redesign.** Publish API deploys to the App Service; check `https://tvote-api.azurewebsites.net/health`. Teams app package builds a new zip, with the new bot id: upload it as an update to TVote (step 4.3 above). The Teams app id stays the same.
+`WEB_URL` moves from the Static Web App to the App Service: the pages and the meeting tab are served there now.
+
+**5. Merge the redesign.** Deploy builds everything and uploads it to the App Service; check `https://tvote-app.azurewebsites.net/` and `/health`. Teams app package builds a new zip, with the new bot id and the new address: upload it as an update to TVote (step 4.3 above). The Teams app id stays the same.
 
 **6. Once a vote works, clean up the old setup:**
 
 - Render: delete the service.
+- Azure: delete the Static Web App (the one named in the `AZURE_STATIC_WEBAPP_NAME` variable). Its role assignment for the deploy app goes with it.
 - Entra ID → App registrations: delete **TVote Bot** (the old bot identity, with its client secret).
-- GitHub: delete the secret `RENDER_API_KEY`, the variables `RENDER_SERVICE_ID` and `API_URL`, and the `render-api` environment.
+- GitHub: delete the secret `RENDER_API_KEY`, the variables `RENDER_SERVICE_ID`, `API_URL`, `AZURE_STATIC_WEBAPP_NAME` and `AZURE_API_APP_NAME` (if you set it), and the `render-api` environment.
 
 ## Local development
 
@@ -213,8 +214,10 @@ pnpm install
 pnpm test         # the session rules, the cards' JSON and every click, see src/api/tests
 pnpm lint
 pnpm typecheck
-pnpm dev          # the web pages on :5173, and the API on :3978 (which refuses Teams traffic without the bot's identity)
+pnpm dev          # pages and bot on :5173, in one process: Vite runs the server middleware too
 ```
+
+The bot refuses all Teams traffic locally, because it has no identity to check it against. `LOG_LEVEL=info pnpm dev` shows what comes in.
 
 To look at a card, paste its JSON into the [Adaptive Cards Designer](https://adaptivecards.microsoft.com/designer) with the host set to Microsoft Teams, in light and dark. A test can print it: `console.log(JSON.stringify(voteCard(session, user)))`.
 

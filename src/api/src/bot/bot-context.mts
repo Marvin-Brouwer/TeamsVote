@@ -4,7 +4,7 @@ import type { SessionService } from '../sessions/session-service.mts'
 import type { SessionUser } from '../sessions/session.mts'
 import type { IAdaptiveCard } from '@microsoft/teams.cards'
 
-/** What every bot handler needs. Built once in `server.mts`. */
+/** What every bot handler needs. Built once in `index.mts`. */
 export type BotDependencies = {
 	readonly sessions: SessionService
 }

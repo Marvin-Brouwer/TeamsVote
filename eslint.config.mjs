@@ -50,6 +50,11 @@ export default tseslint.config(
 		},
 	},
 	{
+		// Runs in the web app's Node server, not in the browser.
+		files: ['src/web/src/server-middleware/**/*.mts'],
+		languageOptions: { globals: globals.node },
+	},
+	{
 		files: ['**/tests/**/*.mts'],
 		rules: {
 			'@typescript-eslint/no-non-null-assertion': 'off',
