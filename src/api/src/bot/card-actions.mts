@@ -1,7 +1,7 @@
 import { SessionRuleError, type SessionCard, type SessionUser } from '../sessions/session.mts'
 import { expiredCard } from './cards/expired-card.mts'
-import { summaryCard } from './cards/summary-card.mts'
-import { voteCard, type VoteCardAction } from './cards/vote-card.mts'
+import { readEstimateResult } from './cards/estimate-result.mts'
+import { resultCard, voteCard, type VoteCardAction } from './cards/vote-card.mts'
 
 import type { SessionService } from '../sessions/session-service.mts'
 import type { IAdaptiveCard } from '@microsoft/teams.cards'
@@ -17,6 +17,7 @@ export type CardActionOutcome = {
 }
 
 const brokenCardMessage = 'This card doesn\'t work any more. Send TVote a message to start a new estimate.'
+const endedMessage = 'This estimate has ended, so it can\'t be re-voted. Send TVote a message to start a new one.'
 
 /**
  * Handles a click on a vote card, or Teams asking for someone's own view of it (`refresh`).
@@ -27,12 +28,7 @@ export function handleCardAction(sessions: SessionService, user: SessionUser, da
 	if (!action) return { reply: brokenCardMessage }
 
 	const session = sessions.find(action.sessionId)
-	if (!session) {
-		// Expired, or the server restarted. Say so on the card too, so nobody else tries.
-		return action.action === 'refresh'
-			? { reply: expiredCard() }
-			: { reply: expiredCard(), shared: expiredCard() }
-	}
+	if (!session) return sessionGone(action)
 
 	const at = session.card
 	try {
@@ -48,11 +44,6 @@ export function handleCardAction(sessions: SessionService, user: SessionUser, da
 			case 'reset':
 				sessions.reset(session.id, user.id)
 				return { reply: voteCard(session, user), shared: voteCard(session), at }
-			case 'accept': {
-				const { average } = sessions.accept(session.id, user.id)
-				const summary = summaryCard(session, average)
-				return { reply: summary, shared: summary, at }
-			}
 		}
 	} catch (error) {
 		if (error instanceof SessionRuleError) return { reply: error.message }
@@ -60,19 +51,43 @@ export function handleCardAction(sessions: SessionService, user: SessionUser, da
 	}
 }
 
+/**
+ * The session expired, or the server restarted or slept. A revealed card keeps its result, everything else says it's over.
+ * A refresh of a card without a result only changes that person's view: Teams asks for views all the time,
+ * also for people who just scroll by, and a click will tell everyone soon enough.
+ */
+function sessionGone(action: VoteCardAction): CardActionOutcome {
+	switch (action.action) {
+		case 'refresh':
+			// The result came along in the card's data. Putting it on the shared card drops the refresh, so this happens once.
+			return action.result
+				? { reply: resultCard(action.result), shared: resultCard(action.result) }
+				: { reply: expiredCard() }
+		case 'reset':
+			// Only a revealed card has this button, and its result should stay.
+			return { reply: endedMessage }
+		case 'vote':
+		case 'reveal':
+			return { reply: expiredCard(), shared: expiredCard() }
+	}
+}
+
 /** The card's data, checked: it comes from Teams, but the card could be old, or copied around. */
 function readCardAction(data: unknown): VoteCardAction | undefined {
 	if (typeof data !== 'object' || data === null) return undefined
-	const { action, sessionId, vote } = data as Partial<Record<'action' | 'sessionId' | 'vote', unknown>>
+	const { action, sessionId, vote, result } = data as Partial<Record<'action' | 'sessionId' | 'vote' | 'result', unknown>>
 	if (typeof sessionId !== 'string' || sessionId === '') return undefined
 
 	switch (action) {
 		case 'vote':
 			return typeof vote === 'string' ? { action, sessionId, vote } : undefined
-		case 'refresh':
+		case 'refresh': {
+			// A result that doesn't make sense is left out: the card then simply can't show it once the session is gone.
+			const estimate = readEstimateResult(result)
+			return estimate ? { action, sessionId, result: estimate } : { action, sessionId }
+		}
 		case 'reveal':
 		case 'reset':
-		case 'accept':
 			return { action, sessionId }
 		default:
 			return undefined

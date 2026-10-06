@@ -40,7 +40,7 @@
 ## 3. Authentication & Security
 
 1. **How is user authentication handled?**  
-   - Authentication is handled by Microsoft Teams through the bot. No sign-in or separate credentials are required. Teams authenticates every click on a vote card, and only the person who started a vote can reveal, reset or accept it. The bot itself signs in as an Azure managed identity, without a client secret.
+   - Authentication is handled by Microsoft Teams through the bot. No sign-in or separate credentials are required. Teams authenticates every click on a vote card, and only the person who started a vote can reveal or reset it. The bot itself signs in as an Azure managed identity, without a client secret.
 2. **How is personal data protected?**  
    - All communications are encrypted via HTTPS/TLS  
    - No personal data is stored or logged  

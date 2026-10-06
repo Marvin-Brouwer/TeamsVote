@@ -33,7 +33,7 @@ No secondary processing occurs.
 ## 3. Data Retention
 
 - All session data is held **in-memory only**  
-- Data is discarded automatically when the vote is accepted, after two hours without activity, or when the backend restarts  
+- Data is discarded automatically after two hours without activity, or when the backend restarts  
 - No personal data is persisted, logged, or exported
 
 ---

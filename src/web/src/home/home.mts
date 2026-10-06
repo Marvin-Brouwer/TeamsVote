@@ -33,10 +33,10 @@ export const HomePage = component({
 								textContent: 'Everyone clicks their value right on the vote card. Nobody sees the others\' votes yet.',
 							}),
 							element('li', {
-								textContent: 'Whoever started it shows the votes, re-votes if needed, and accepts.',
+								textContent: 'Whoever started it shows the votes, and the card shows the estimate.',
 							}),
 							element('li', {
-								textContent: 'The card in the chat is replaced with the estimate.',
+								textContent: 'Not happy with it? They ask for a re-vote, and everyone votes again.',
 							}),
 						],
 					}),

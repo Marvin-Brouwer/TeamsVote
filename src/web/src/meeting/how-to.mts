@@ -18,7 +18,7 @@ export const HowTo = component({
 						textContent: 'Fill in what you\'re estimating. A vote card appears, and everyone clicks their value right on it.',
 					}),
 					element('li', {
-						textContent: 'Whoever started it shows the votes and accepts. The card turns into the estimate.',
+						textContent: 'Whoever started it shows the votes, and the card shows the estimate. They can ask for a re-vote.',
 					}),
 				],
 			}),

@@ -1,12 +1,7 @@
-import { accept, castVote, resetVotes, reveal, SessionRuleError } from './session.mts'
+import { castVote, resetVotes, reveal, SessionRuleError } from './session.mts'
 
 import type { NewSession, SessionStore } from './session-store.mts'
 import type { Session, SessionCard, SessionUser } from './session.mts'
-
-export type AcceptedSession = {
-	readonly session: Session
-	readonly average: string | undefined
-}
 
 /** Every change to a session goes through here. Sessions live in memory only, see `session-store.mts`. */
 export function createSessionService(store: SessionStore) {
@@ -41,15 +36,15 @@ export function createSessionService(store: SessionStore) {
 			resetVotes(session, userId)
 		}),
 
-		/** Ends the session for good and forgets it. */
-		accept(id: string, userId: string): AcceptedSession {
-			const session = require(id)
-			const average = accept(session, userId)
+		/** Forgets a session straight away, for one that never made it into the chat. */
+		drop(id: string): void {
 			store.delete(id)
-			return { session, average }
 		},
 
-		/** Forgets every session that sat idle for too long. Their cards turn into the expired card on the next click. */
+		/**
+		 * Forgets every session that sat idle for too long. Their cards turn into the expired card on the next click,
+		 * or keep their result when the votes were shown.
+		 */
 		expireIdle(): Session[] {
 			const expired = store.sweep()
 			for (const session of expired) session.ended = true

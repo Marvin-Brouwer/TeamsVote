@@ -27,7 +27,7 @@ In alignment with Articles 5(1)(b) and 5(1)(c), TVote:
 
 ## Data Storage & Retention
 
-TVote does **not** persist personal data. All session data is processed **in-memory only** and discarded when the vote is accepted, after two hours without activity, or when the backend restarts.
+TVote does **not** persist personal data. All session data is processed **in-memory only** and discarded after two hours without activity, or when the backend restarts. Once the votes are shown, the vote card in the chat shows who voted what; that card is an ordinary Teams message, kept by Microsoft Teams under the organisation's retention settings.
 
 No personal data exists at rest, and no logs containing personal data are created. The backend's request log holds only method, path, status and duration.
 

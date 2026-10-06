@@ -9,7 +9,7 @@ Every planning poker tool does too much. TVote asks the meeting for an estimate,
 1. Add TVote to a meeting, through **Apps**. It posts a card in the meeting chat.
 2. **Start estimate** on that card, and fill in what you're estimating: a Jira key, a link, or just a few words.
 3. Everyone clicks their value on the vote card. Everyone sees who voted, not what.
-4. Whoever started it shows the votes, re-votes if needed, and accepts. The card turns into the estimate: the average, rounded to the nearest card.
+4. Whoever started it shows the votes. The card then shows who voted what, and the estimate: the average, rounded to the nearest card. That's the result, unless the starter asks for a re-vote.
 
 Decks: modified Fibonacci (default), Fibonacci, and t-shirt sizes. `?` counts as having voted but not towards the average.
 

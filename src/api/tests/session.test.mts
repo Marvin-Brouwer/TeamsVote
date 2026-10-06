@@ -59,7 +59,7 @@ describe('session rules', () => {
 		expect(status).toBe(400)
 	})
 
-	it('only lets the admin reveal, reset and accept', () => {
+	it('only lets the admin reveal and reset', () => {
 		// Arrange
 		const { service, session } = arrangeSession()
 
@@ -67,11 +67,10 @@ describe('session rules', () => {
 		const statuses = [
 			ruleStatus(() => service.reveal(session.id, voter.id)),
 			ruleStatus(() => service.reset(session.id, voter.id)),
-			ruleStatus(() => service.accept(session.id, voter.id)),
 		]
 
 		// Assert
-		expect(statuses).toEqual([403, 403, 403])
+		expect(statuses).toEqual([403, 403])
 	})
 
 	it('refuses votes after the reveal until a re-vote', () => {
@@ -89,17 +88,14 @@ describe('session rules', () => {
 		expect(afterReset).toBeUndefined()
 	})
 
-	it('ends and forgets the session on accept', () => {
+	it('forgets a dropped session', () => {
 		// Arrange
 		const { service, session } = arrangeSession()
-		service.vote(session.id, admin, '3')
 
 		// Act
-		const { average } = service.accept(session.id, admin.id)
+		service.drop(session.id)
 
 		// Assert
-		expect(average).toBe('3')
-		expect(session.ended).toBe(true)
 		expect(service.find(session.id)).toBeUndefined()
 	})
 })

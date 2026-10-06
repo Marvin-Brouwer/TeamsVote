@@ -1,7 +1,8 @@
 import { averageVote } from '../../sessions/average.mts'
-import { decks, unsureVote } from '../../sessions/decks.mts'
+import { decks, skipVote, unsureVote } from '../../sessions/decks.mts'
 import { isAdmin, type Session, type SessionUser } from '../../sessions/session.mts'
 import { inRows } from './button-rows.mts'
+import { estimateResult, type EstimateResult } from './estimate-result.mts'
 import { topicMarkdown } from './topic-markdown.mts'
 
 import type { CardElement, IAdaptiveCard, IExecuteAction } from '@microsoft/teams.cards'
@@ -17,32 +18,54 @@ const maxRefreshUsers = 60
  */
 export type VoteCardAction =
 	| { readonly action: 'vote', readonly sessionId: string, readonly vote: string }
-	| { readonly action: 'refresh' | 'reveal' | 'reset' | 'accept', readonly sessionId: string }
+	/** `result` is on revealed cards only, so they can still show it once the session is gone. */
+	| { readonly action: 'refresh', readonly sessionId: string, readonly result?: EstimateResult }
+	| { readonly action: 'reveal' | 'reset', readonly sessionId: string }
 
 /**
  * The vote card. Without `viewer` it's the card everyone sees: who voted, never what.
  * With `viewer` it's that person's own view: their vote highlighted, and for whoever started it, the buttons to
- * show the votes, re-vote and accept. Teams asks for the own views by itself, through `refresh`.
+ * show the votes and re-vote. Teams asks for the own views by itself, through `refresh`.
+ *
+ * Once the votes are shown, that's the estimate, unless the starter asks for a re-vote.
  */
 export function voteCard(session: Session, viewer?: SessionUser): IAdaptiveCard {
-	const admin = session.participants.get(session.adminId)
 	const viewerIsAdmin = viewer !== undefined && isAdmin(session, viewer.id)
+	const result = session.revealed ? estimateResult(session) : undefined
 
 	return {
 		type: 'AdaptiveCard',
 		version: '1.5',
 		refresh: {
-			action: execute('Refresh', { action: 'refresh', sessionId: session.id }),
+			action: execute('Refresh', { action: 'refresh', sessionId: session.id, ...(result && { result }) }),
 			userIds: [...session.participants.values()].map(participant => participant.teamsId).slice(0, maxRefreshUsers),
 		},
 		body: [
-			{ type: 'TextBlock', text: 'Estimate', size: 'Small', isSubtle: true, spacing: 'None' },
-			{ type: 'TextBlock', text: topicMarkdown(session.topic), size: 'Large', weight: 'Bolder', wrap: true, spacing: 'None' },
-			{ type: 'TextBlock', text: `${decks[session.deck].label} · started by ${admin?.name ?? 'someone'}`, isSubtle: true, wrap: true },
-			...(session.revealed ? revealedVotes(session) : hiddenVotes(session, viewer)),
+			...header(estimateResult(session)),
+			...(result ? resultBody(result) : hiddenVotes(session, viewer)),
 			...(viewerIsAdmin ? adminButtons(session) : []),
 		],
 	}
+}
+
+/**
+ * A revealed vote card once its session is gone: the same result, without buttons, and without a refresh,
+ * so Teams stops asking for it.
+ */
+export function resultCard(result: EstimateResult): IAdaptiveCard {
+	return {
+		type: 'AdaptiveCard',
+		version: '1.5',
+		body: [...header(result), ...resultBody(result)],
+	}
+}
+
+function header({ topic, deck, startedBy }: EstimateResult): CardElement[] {
+	return [
+		{ type: 'TextBlock', text: 'Estimate', size: 'Small', isSubtle: true, spacing: 'None' },
+		{ type: 'TextBlock', text: topicMarkdown(topic), size: 'Large', weight: 'Bolder', wrap: true, spacing: 'None' },
+		{ type: 'TextBlock', text: `${decks[deck].label} · started by ${startedBy}`, isSubtle: true, wrap: true },
+	]
 }
 
 function hiddenVotes(session: Session, viewer: SessionUser | undefined): CardElement[] {
@@ -68,32 +91,37 @@ function hiddenVotes(session: Session, viewer: SessionUser | undefined): CardEle
 	]
 }
 
-function revealedVotes(session: Session): CardElement[] {
-	const average = averageVote(session.deck, session.votes.values())
+function resultBody({ deck, votes }: EstimateResult): CardElement[] {
+	const values = votes.map(([, vote]) => vote)
+	const average = averageVote(deck, values)
 
 	return [
-		session.votes.size === 0
+		votes.length === 0
 			? { type: 'TextBlock', text: 'Nobody voted.', wrap: true }
-			: {
-				type: 'FactSet',
-				facts: [...session.votes].map(([id, vote]) => ({ title: session.participants.get(id)?.name ?? 'Someone', value: vote })),
-			},
-		{ type: 'TextBlock', text: average === undefined ? 'No average: nobody voted a card.' : `Average: ${average}`, size: 'Large', weight: 'Bolder' },
+			: { type: 'FactSet', facts: votes.map(([name, vote]) => ({ title: name, value: vote })) },
+		...(average === undefined
+			? [{ type: 'TextBlock' as const, text: 'Nobody voted a card, so there is no estimate.', wrap: true }]
+			: [
+				// On its own, so it's easy to select and copy: cards can't put anything on the clipboard themselves.
+				{ type: 'TextBlock' as const, text: average, size: 'ExtraLarge' as const, weight: 'Bolder' as const, color: 'Accent' as const },
+				{ type: 'TextBlock' as const, text: averageExplanation(values), isSubtle: true, wrap: true, spacing: 'None' as const },
+			]),
 	]
 }
 
+function averageExplanation(votes: readonly string[]): string {
+	const counted = votes.filter(vote => vote !== unsureVote && vote !== skipVote).length
+	return `Average of ${String(counted)} ${counted === 1 ? 'vote' : 'votes'}, rounded to the nearest card`
+}
+
 function adminButtons(session: Session): CardElement[] {
-	const average = averageVote(session.deck, session.votes.values())
-	const actions = session.revealed
-		? [
-			execute('Re-vote', { action: 'reset', sessionId: session.id }),
-			execute(average === undefined ? 'Close' : `Accept ${average}`, { action: 'accept', sessionId: session.id }, 'positive'),
-		]
-		: [execute('Show votes', { action: 'reveal', sessionId: session.id }, 'positive')]
+	const action = session.revealed
+		? execute('Re-vote', { action: 'reset', sessionId: session.id })
+		: execute('Show votes', { action: 'reveal', sessionId: session.id }, 'positive')
 
 	return [
-		{ type: 'TextBlock', text: 'Only you see these, because you started this estimate.', isSubtle: true, wrap: true, separator: true },
-		{ type: 'ActionSet', actions },
+		{ type: 'TextBlock', text: 'Only you see this, because you started this estimate.', isSubtle: true, wrap: true, separator: true },
+		{ type: 'ActionSet', actions: [action] },
 	]
 }
 

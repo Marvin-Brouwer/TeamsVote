@@ -51,19 +51,18 @@ describe('the starter\'s buttons', () => {
 		expect(session.revealed).toBe(false)
 	})
 
-	it('turn the card into the result on accept, for everyone', () => {
+	it('show the result to everyone on reveal', () => {
 		// Arrange
 		const { sessions, session } = arrangeSession()
 		handleCardAction(sessions, voter, { action: 'vote', sessionId: session.id, vote: '8' })
-		handleCardAction(sessions, admin, { action: 'reveal', sessionId: session.id })
 
 		// Act
-		const outcome = handleCardAction(sessions, admin, { action: 'accept', sessionId: session.id })
+		const outcome = handleCardAction(sessions, admin, { action: 'reveal', sessionId: session.id })
 
 		// Assert
-		expect(outcome.shared).toBe(outcome.reply)
-		expect(text(outcome.shared)).toContain('"text":"8"')
-		expect(sessions.find(session.id)).toBeUndefined()
+		expect(text(outcome.shared)).toContain('"title":"Vic","value":"8"')
+		expect(text(outcome.reply)).toContain('Re-vote')
+		expect(text(outcome.shared)).not.toContain('Re-vote')
 	})
 })
 
@@ -89,6 +88,45 @@ describe('a card whose vote is gone', () => {
 
 		// Assert
 		expect(text(outcome.reply)).toContain('This vote ended without a result.')
+		expect(outcome.shared).toBeUndefined()
+	})
+
+	it('keeps its result, for everyone, when the votes were shown', () => {
+		// Arrange
+		const { sessions } = arrangeSession()
+		const result = { topic: 'PROJ-1', deck: 'modified-fibonacci', startedBy: 'Ada', votes: [['Vic', '8']] }
+
+		// Act
+		const outcome = handleCardAction(sessions, voter, { action: 'refresh', sessionId: 'gone', result })
+
+		// Assert
+		expect(text(outcome.reply)).toContain('"title":"Vic","value":"8"')
+		expect(outcome.shared).toEqual(outcome.reply)
+		expect(text(outcome.shared)).not.toContain('refresh')
+	})
+
+	it('ignores a result that makes no sense', () => {
+		// Arrange
+		const { sessions } = arrangeSession()
+		const result = { topic: 'PROJ-1', deck: 'tarot', startedBy: 'Ada', votes: [['Vic', '8']] }
+
+		// Act
+		const outcome = handleCardAction(sessions, voter, { action: 'refresh', sessionId: 'gone', result })
+
+		// Assert
+		expect(text(outcome.reply)).toContain('This vote ended without a result.')
+		expect(outcome.shared).toBeUndefined()
+	})
+
+	it('says a re-vote is no longer possible, and leaves the result alone', () => {
+		// Arrange
+		const { sessions } = arrangeSession()
+
+		// Act
+		const outcome = handleCardAction(sessions, admin, { action: 'reset', sessionId: 'gone' })
+
+		// Assert
+		expect(outcome.reply).toBe('This estimate has ended, so it can\'t be re-voted. Send TVote a message to start a new one.')
 		expect(outcome.shared).toBeUndefined()
 	})
 })

@@ -35,7 +35,9 @@ This data is not used for analytics, behavioral profiling, tracking, or marketin
 
 ## 3. Data Storage & Retention
 
-TVote does **not** store personal data. Session-related data is held temporarily **in-memory only**, and discarded automatically when the vote is accepted, after two hours without activity, or when the backend restarts, whichever comes first.
+TVote does **not** store personal data. Session-related data is held temporarily **in-memory only**, and discarded automatically after two hours without activity, or when the backend restarts, whichever comes first.
+
+The vote cards themselves are ordinary messages in the Teams chat. Once the votes are shown, the card shows who voted what and the estimate, and keeps showing it like any other message. It is kept by Microsoft Teams, under your organisation's retention settings, not by TVote.
 
 The backend keeps a technical log with the request method, path, response status and duration, and the kind of Teams activity it handled. It contains no names, identifiers, tokens or votes, and is deleted after three days.
 
@@ -83,7 +85,7 @@ The static pages are hosted by Microsoft as well (Azure Static Web Apps), see se
 
 All communication between Microsoft Teams clients and the backend is encrypted in transit via HTTPS/TLS. Because no data is stored or logged, no data exists at rest.
 
-Who you are is established by Microsoft Teams, which authenticates every message and every click to the TVote bot. TVote has no sign-in, keys or passwords of its own. Only the person who started a vote can show the votes, start a re-vote or accept it. The bot signs in to Teams as an Azure managed identity, so there is no secret that could leak.
+Who you are is established by Microsoft Teams, which authenticates every message and every click to the TVote bot. TVote has no sign-in, keys or passwords of its own. Only the person who started a vote can show the votes or start a re-vote. The bot signs in to Teams as an Azure managed identity, so there is no secret that could leak.
 
 Security and access control are additionally governed by:
 

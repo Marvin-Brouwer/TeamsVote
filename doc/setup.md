@@ -104,7 +104,7 @@ Merge to `main`, or run the workflows by hand under Actions:
 1. **Add TVote to the meeting, once:** open the meeting → **Apps** (during the call) or the **+** at the top of the meeting chat → TVote → **Save**. TVote joins the meeting chat and posts its start card. The meeting gets a TVote tab with a short how-to.
 2. **Start an estimate:** **Start estimate** on that card → fill in the topic (a Jira key or link) and the cards → **Start**. The vote card appears in the chat. Lost the start card? Send `@TVote` anything, and it posts a new one.
 3. **Vote:** everyone clicks their value on the vote card. Everyone sees who voted, not what; your own vote is highlighted on your own view.
-4. **Show, re-vote, accept:** whoever started it sees extra buttons on their view of the card. **Accept** turns the card into the result.
+4. **Show votes, re-vote:** whoever started it sees an extra button on their view of the card. **Show votes** shows who voted what and the estimate; that's the result. **Re-vote** clears the votes for another round.
 
 TVote doesn't work in a chat between two people: Teams doesn't allow bots there.
 
@@ -115,7 +115,8 @@ In a scheduled meeting with two accounts:
 - Add TVote through **Apps**: the start card appears in the chat.
 - **Start estimate** → topic → **Start**: the vote card appears.
 - Vote from both accounts: both see "2 voted", each with their own vote highlighted.
-- The starter: **Show votes**, **Re-vote**, vote again, **Show votes**, **Accept**: the card turns into the result.
+- The starter: **Show votes**, **Re-vote**, vote again, **Show votes**: everyone sees the votes and the estimate; only the starter sees **Re-vote**.
+- Restart the App Service (or wait for it to sleep), then open the chat again: the card still shows the result, without buttons.
 - Switch Teams to dark, and to high contrast.
 
 ## Logs

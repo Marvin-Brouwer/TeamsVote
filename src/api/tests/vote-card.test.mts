@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { voteCard } from '../src/bot/cards/vote-card.mts'
+import { resultCard, voteCard } from '../src/bot/cards/vote-card.mts'
 import { createSessionService } from '../src/sessions/session-service.mts'
 import { createSessionStore } from '../src/sessions/session-store.mts'
 
@@ -107,11 +107,12 @@ describe('the vote card once the votes are shown', () => {
 		const text = JSON.stringify(card.body)
 		expect(text).toContain('"title":"Ada","value":"5"')
 		expect(text).toContain('"title":"Vic","value":"8"')
-		expect(text).toContain('Average: 5')
+		expect(text).toContain('"text":"5"')
+		expect(text).toContain('Average of 2 votes')
 		expect(actionNames(card)).toEqual([])
 	})
 
-	it('gives the starter re-vote and accept', () => {
+	it('gives the starter only a re-vote', () => {
 		// Arrange
 		const { service, session } = arrangeVotedSession()
 		service.reveal(session.id, admin.id)
@@ -120,6 +121,62 @@ describe('the vote card once the votes are shown', () => {
 		const admins = buttons(voteCard(session, admin))
 
 		// Assert
-		expect(admins.map(button => button.title)).toEqual(['Re-vote', 'Accept 5'])
+		expect(admins.map(button => button.title)).toEqual(['Re-vote'])
+	})
+
+	it('carries the result in its refresh, for when the session is gone', () => {
+		// Arrange
+		const { service, session } = arrangeVotedSession()
+		service.reveal(session.id, admin.id)
+
+		// Act
+		const card = voteCard(session)
+
+		// Assert
+		expect(card.refresh?.action.data).toEqual({
+			action: 'refresh',
+			sessionId: session.id,
+			result: { topic: 'PROJ-1', deck: 'modified-fibonacci', startedBy: 'Ada', votes: [['Ada', '5'], ['Vic', '8']] },
+		})
+	})
+
+	it('keeps the result out of the refresh before the votes are shown', () => {
+		// Arrange
+		const { session } = arrangeVotedSession()
+
+		// Act
+		const card = voteCard(session)
+
+		// Assert
+		expect(card.refresh?.action.data).toEqual({ action: 'refresh', sessionId: session.id })
+	})
+})
+
+describe('the result card', () => {
+	it('shows the result without buttons or refresh', () => {
+		// Arrange
+		const result = { topic: 'PROJ-1', deck: 'modified-fibonacci', startedBy: 'Ada', votes: [['Ada', '5'], ['Vic', '?']] } as const
+
+		// Act
+		const card = resultCard(result)
+
+		// Assert
+		const text = JSON.stringify(card.body)
+		expect(text).toContain('"title":"Vic","value":"?"')
+		expect(text).toContain('"text":"5"')
+		expect(text).toContain('Average of 1 vote,')
+		expect(card.refresh).toBeUndefined()
+		expect(actionNames(card)).toEqual([])
+	})
+
+	it('says there is no estimate when nobody voted a card', () => {
+		// Arrange
+		const result = { topic: 'PROJ-1', deck: 'modified-fibonacci', startedBy: 'Ada', votes: [['Ada', '?']] } as const
+
+		// Act
+		const card = resultCard(result)
+
+		// Assert
+		expect(JSON.stringify(card.body)).toContain('Nobody voted a card, so there is no estimate.')
 	})
 })

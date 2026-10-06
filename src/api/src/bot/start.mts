@@ -56,7 +56,7 @@ export async function startSession({ sessions }: BotDependencies, request: Start
 		sessions.attachCard(session.id, { conversationId: request.conversationId, activityId: sent.id })
 		return session
 	} catch (error) {
-		sessions.accept(session.id, request.admin.id)
+		sessions.drop(session.id)
 		throw error
 	}
 }

@@ -31,7 +31,7 @@ TVote relies exclusively on Microsoft’s identity platform for authentication a
 
 TVote processes minimal personal data (display name, Entra user object ID and Teams user ID, and the Teams conversation identifier), plus the topic and the votes, in its bot on Microsoft Azure, to show the votes on cards in the Teams chat.  
 
-No personal data is persisted or logged. All session data is processed **in-memory only** and discarded when the vote is accepted, after two hours without activity, or when the backend restarts.  
+No personal data is persisted or logged. All session data is processed **in-memory only** and discarded after two hours without activity, or when the backend restarts.  
 
 The web pages (home, privacy, terms and the meeting tab) are static files served by Microsoft Azure Static Web Apps; no personal data is sent there.  
 

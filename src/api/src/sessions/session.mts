@@ -1,4 +1,3 @@
-import { averageVote } from './average.mts'
 import { isValidVote, type DeckId } from './decks.mts'
 
 export type SessionUser = {
@@ -9,7 +8,7 @@ export type SessionUser = {
 	readonly teamsId: string
 }
 
-/** Where the vote card lives, so the bot can replace it with the summary later. */
+/** Where the vote card lives, so the bot can update it for everyone. */
 export type SessionCard = {
 	readonly conversationId: string
 	readonly activityId: string
@@ -63,15 +62,6 @@ export function resetVotes(session: Session, userId: string): void {
 	assertAdmin(session, userId)
 	session.votes.clear()
 	session.revealed = false
-}
-
-/** Ends the session and gives back the average, so the bot can put it on the summary card. */
-export function accept(session: Session, userId: string): string | undefined {
-	assertOpen(session)
-	assertAdmin(session, userId)
-	session.ended = true
-	session.revealed = true
-	return averageVote(session.deck, session.votes.values())
 }
 
 function assertOpen(session: Session): void {
